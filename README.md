@@ -109,7 +109,7 @@ Mace-Exclusive/
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/sov-labs/Mace-Exclusive-Plugin.git
+    git clone https://github.com/ego-smp-labs/Mace-Exclusive-Plugin.git
     cd Mace-Exclusive-Plugin
     ```
 
@@ -137,12 +137,12 @@ Mace-Exclusive/
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-Copyright © 2026 **NirussVn0** and **SOV Labs**.
+Copyright © 2026 **NirussVn0** and **Ego SMP Labs**.
 
 ---
 
 ## Support
 
-If you find any issues or have suggestions, please open an issue on [GitHub](https://github.com/sov-labs/Mace-Exclusive-Plugin/issues).
+If you find any issues or have suggestions, please open an issue on [GitHub](https://github.com/ego-smp-labs/Mace-Exclusive-Plugin/issues).
 
 donate: [paypal](https://www.paypal.com/paypalme/nirussvn0)
