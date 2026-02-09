@@ -18,12 +18,13 @@ Originally part of **SabíSMP**, now a dedicated plugin.
 </div>
 
 ---
-
 ## Features
 
 ### 🔨 Limits the Power of the MACE
 A legendary weapon with unique mechanics:
 *   **Singleton Existence**: Only **ONE** Mace can exist on the server at a time (configurable).
+*   **Custom Recipe**
+* ![img](https://i.imgur.com/pLh7sXs.png)
 *   **Strict Mode** (Refined):
     *   **Allowed**: Anvil, Enchanting Table, Player Inventory.
     *   **Blocked**: Storing in Chests, Shulkers, Barrels, etc.
@@ -37,14 +38,17 @@ A legendary weapon with unique mechanics:
     *   *Ground Slam*: Hitting an entity causes blocks around to "jump" (visual effect).
     *   *Kill Message*: Custom chat message when killing a player.
 
-### 🔮 Mace Chaos (The Glitch)
+### 🔮  new mace: Mace Chaos (The Glitch)
 A corrupted variant with chaotic properties:
-*   **Hard Recipe**: 3 Heavy Cores, 4 Netherite Ingots, 1 Wither Rose.
+*   **Hard Recipe**:
+* ![Hard Recipe](https://i.imgur.com/XClFjxZ.png)
+
 *   **Self-Curse**: Wither + Inventory Shuffle when crafted or picked up.
 *   **Combat Effects**:
     *   **Unknown Power**: 20% chance to shuffle victim's inventory for 5s.
     *   **Glitch Kill**: Death message hides killer's name with glitches (e.g. "User was OBLITERATED by §kERROR").
 ---
+
 
 ## Infrastructure & Project Structure
 
