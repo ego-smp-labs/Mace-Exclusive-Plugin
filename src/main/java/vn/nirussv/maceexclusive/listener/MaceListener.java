@@ -104,6 +104,8 @@ public class MaceListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onInventoryMoveItem(InventoryMoveItemEvent event) {
+        if (!configManager.isPreventHopperPickup()) return;
+        
         ItemStack item = event.getItem();
         if (item.getType() != Material.MACE) return;
         
@@ -219,7 +221,24 @@ public class MaceListener implements Listener {
         if (!isAllowed) {
             if (event.getClickedInventory() == event.getView().getTopInventory() || event.isShiftClick()) {
                 event.setCancelled(true);
-                player.sendMessage(configManager.getPrefixedMessage("mace.cannot-move"));
+                
+                // Drop-on-store behavior: drop the mace at the player's feet
+                if (configManager.isStrictModeDrop()) {
+                    ItemStack maceItem = maceManager.isRegisteredMace(current) ? current : cursor;
+                    if (maceItem != null && maceManager.isRegisteredMace(maceItem)) {
+                        // Remove from current slot
+                        if (maceManager.isRegisteredMace(current)) {
+                            event.setCurrentItem(null);
+                        } else {
+                            player.setItemOnCursor(null);
+                        }
+                        // Drop at player's feet
+                        player.getWorld().dropItemNaturally(player.getLocation(), maceItem);
+                        player.sendMessage(configManager.getPrefixedMessage("mace.strict-mode-drop"));
+                    }
+                } else {
+                    player.sendMessage(configManager.getPrefixedMessage("mace.cannot-move"));
+                }
             }
         }
     }

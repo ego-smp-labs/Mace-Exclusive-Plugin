@@ -7,6 +7,11 @@ settings:
   # If true: Player CANNOT drop the Mace or put it in any container (Chest, etc.).
   # Player CAN still use Anvil and Enchanting Table.
   strict-mode: false
+  # If true AND strict-mode is true: When a player tries to store a mace,
+  # the mace is dropped at their feet instead of just cancelling the action.
+  strict-mode-drop: false
+  # If true: Prevents hoppers and droppers from moving registered maces.
+  prevent-hopper-pickup: true
 
 effects:
   # Effects when crafting the Mace for the first time

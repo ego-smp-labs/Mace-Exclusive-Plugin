@@ -10,6 +10,7 @@ mace:
   cannot-drop: "&cThis Mace binds to you! You cannot drop it."
   cannot-move: "&cThis Mace cannot be moved to this inventory."
   cannot-shift-click: "&cYou cannot Shift-Click craft this item! Craft one at a time."
+  strict-mode-drop: "&cThe Mace refuses to be stored! It has been dropped at your feet."
   warning: "&c&lWARNING: &7Holding this weapon reveals your location!"
   title: "&b&lMACE OF POWER"
   subtitle: "&7The artifact has chosen you."

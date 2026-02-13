@@ -10,6 +10,7 @@ mace:
   cannot-drop: "&cMace gắn liền với bạn! Bạn không thể vứt nó."
   cannot-move: "&cMace không thể di chuyển vào túi đồ này."
   cannot-shift-click: "&cBạn không thể chế tạo nhanh (Shift-Click) vật phẩm này! Hãy chế từng cái một."
+  strict-mode-drop: "&cMace từ chối bị cất giữ! Nó đã rơi dưới chân bạn."
   warning: "&c&lNGUY HIỂM: &7Cầm vũ khí này sẽ làm lộ vị trí của bạn!"
   title: "&b&lMACE OF POWER"
   subtitle: "&7Cổ vật đã chọn bạn."

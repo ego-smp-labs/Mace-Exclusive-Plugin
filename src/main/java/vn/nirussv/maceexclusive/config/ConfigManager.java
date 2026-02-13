@@ -96,4 +96,19 @@ public class ConfigManager {
     public boolean isVerboseLogging() {
         return plugin.getConfig().getBoolean("settings.verbose", false);
     }
+
+    /**
+     * If true AND strict-mode is enabled, trying to store a mace
+     * will drop it at the player's feet instead of just cancelling.
+     */
+    public boolean isStrictModeDrop() {
+        return plugin.getConfig().getBoolean("settings.strict-mode-drop", false);
+    }
+
+    /**
+     * If true, prevents hoppers and droppers from moving registered maces.
+     */
+    public boolean isPreventHopperPickup() {
+        return plugin.getConfig().getBoolean("settings.prevent-hopper-pickup", true);
+    }
 }
