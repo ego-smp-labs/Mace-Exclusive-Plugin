@@ -70,7 +70,8 @@ mace-chaos:
       - "HMH"
       - "NWN"
     ingredients:
-      N: NETHERITE_INGOT
+      # N = Dark Ego (NETHER_STAR with egosmp:dark_ego PDC tag)
+      N: NETHER_STAR
       H: HEAVY_CORE
       M: MACE
       W: WITHER_ROSE
@@ -81,8 +82,8 @@ mace-chaos:
     
     # Inventory Shuffle on hit
     shuffle-inventory:
-      chance: 0.20 # 20%
-      duration: 5 # seconds
+      chance: 0.10 # 10%
+      duration: 10 # seconds
       interval: 5 # ticks
       
     # Self-effect on first craft/pickup

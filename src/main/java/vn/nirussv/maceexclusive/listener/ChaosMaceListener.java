@@ -5,7 +5,9 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -52,6 +54,22 @@ public class ChaosMaceListener implements Listener {
         if (maceFactory.isChaosMace(result)) {
             if (!maceManager.canCraft(MaceType.CHAOS)) {
                 event.getInventory().setResult(null);
+                return;
+            }
+            
+            // Validate that all NETHER_STAR ingredients are Dark Ego items
+            // (have the egosmp:dark_ego PDC tag from the EgoSMP plugin)
+            NamespacedKey darkEgoKey = new NamespacedKey("egosmp", "dark_ego");
+            for (ItemStack ingredient : event.getInventory().getMatrix()) {
+                if (ingredient != null && ingredient.getType() == Material.NETHER_STAR) {
+                    if (!ingredient.hasItemMeta() || 
+                        !ingredient.getItemMeta().getPersistentDataContainer()
+                            .has(darkEgoKey, PersistentDataType.BYTE)) {
+                        // Plain Nether Star without Dark Ego tag - reject recipe
+                        event.getInventory().setResult(null);
+                        return;
+                    }
+                }
             }
         }
     }

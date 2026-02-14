@@ -124,7 +124,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
                 recipe.setIngredient('B', Material.BREEZE_ROD);
             } else {
                 recipe.shape("NHN", "HMH", "NWN");
-                recipe.setIngredient('N', Material.NETHERITE_INGOT);
+                recipe.setIngredient('N', Material.NETHER_STAR); // Dark Ego
                 recipe.setIngredient('H', Material.HEAVY_CORE);
                 recipe.setIngredient('M', Material.MACE);
                 recipe.setIngredient('W', Material.WITHER_ROSE);
