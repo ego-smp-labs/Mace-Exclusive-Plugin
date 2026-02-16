@@ -203,7 +203,7 @@ public class MaceListener implements Listener {
          
         boolean hasMace = maceManager.isRegisteredMace(current) || maceManager.isRegisteredMace(cursor);
          
-        if (event.getClick().isKeyboardClick()) {
+        if (event.getClick().isKeyboardClick() && event.getHotbarButton() >= 0) {
             ItemStack active = player.getInventory().getItem(event.getHotbarButton());
             if (maceManager.isRegisteredMace(active)) {
                 hasMace = true;
