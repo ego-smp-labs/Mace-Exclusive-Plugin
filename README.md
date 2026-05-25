@@ -1,4 +1,4 @@
-# Mace-Exclusive.  
+# Mace-Exclusive
 
 <div align="center">
 
@@ -8,10 +8,9 @@
 [![Gradle](https://img.shields.io/badge/Gradle-8.1-02303A?style=for-the-badge&logo=gradle&logoColor=white)](https://gradle.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](./LICENSE)
 
-**Standalone Powerful Mace Plugin** 🛠️
+**Standalone Powerful Exclusive Weapons Plugin** 🛠️
 
-A unique singleton weapon mechanic with custom effects, strict inventory tracking, and fully configurable settings.
-Originally part of **SabíSMP**, now a dedicated plugin.
+A unique singleton weapon mechanic with custom effects, strict inventory tracking, an immersive forging pipeline, and fully configurable settings. Refactored for Vanilla-like integration.
 
 [Features](#features) • [Installation](#installation) • [Commands](#commands) • [Permissions](#permissions) • [Architecture](docs/ARCHITECTURE.md) • [Support](#support)
 
@@ -20,44 +19,46 @@ Originally part of **SabíSMP**, now a dedicated plugin.
 ---
 ## Features
 
-### 🔨 Limits the Power of the MACE
-A legendary weapon with unique mechanics:
-*   **Singleton Existence**: Only **ONE** Mace can exist on the server at a time (configurable).
-*   **Custom Recipe**
-* ![img](https://i.imgur.com/pLh7sXs.png)
-*   **Strict Mode** (Refined):
+### 🔨 Singleton Limits & Strict Inventory
+Legendary weapons with strict possession rules:
+*   **Singleton Existence**: Only **ONE** instance of each exclusive weapon type can exist on the server at a time (configurable).
+*   **Strict Container Guard**: 
     *   **Allowed**: Anvil, Enchanting Table, Player Inventory.
-    *   **Blocked**: Storing in Chests, Shulkers, Barrels, etc.
-    *   **Blocked**: Dropping the item (if strict mode is enabled).
+    *   **Blocked**: Storing in Chests, Shulkers, Barrels, Hoppers, Crafters, Dispensers, Droppers.
 
-### ✨ Effect Mace (Visuals & Combat)
-*   **First Craft**: Player glows for 5 minutes (configurable) upon crafting.
-*   **Passive**:
-    *   *Holding*: Optional Glowing effect and Soul Particles.
-*   **Combat**:
-    *   *Ground Slam*: Hitting an entity causes blocks around to "jump" (visual effect).
-    *   *Kill Message*: Custom chat message when killing a player.
+### 🛡️ The Awakening (Forge Pipeline)
+*   **Unawakened Crafting**: Crafting a recipe yields an "Unawakened" weapon.
+*   **The Ritual**: Players must drop the unawakened item onto a designated block to start an **Awakening Session**.
+*   **Persistence**: A 5-minute process guarded by Holograms (TextDisplay). State is saved across server restarts.
 
-### 🔮 Custom Mace: Mace Chaos (The Glitch)
+### ✨ Weapon: Power Mace
+The ultimate brute force:
+*   **Passive (Stored Momentum)**: Increases knockback slightly when falling.
+*   **Active (Ground Pulse)**: Smashing the ground releases an area-of-effect pulse that knocks enemies into the air.
+
+### 🔮 Weapon: Chaos Mace
 A corrupted variant with chaotic properties and void origins:
-*   **Hard Recipe**:
-    *   Requires **3x Dark Ego** (custom `NETHER_STAR` items with the `egosmp:dark_ego` PDC tag), **2x Heavy Core**, **1x Mace**, and **3x Wither Rose**.
-    *   ![Hard Recipe](https://i.imgur.com/XClFjxZ.png)
-*   **Self-Curse**: Wither II and Inventory Shuffling (periodically shuffles hotbar and main inventory slots 0-35) for 10 seconds upon crafting or picking up.
-*   **Combat Effects**:
-    *   **Glitch Strike**: 10-20% chance (configurable) to corrupt the victim's inventory, forcing periodic slot shuffling for 5-10 seconds.
-    *   **Glitch Kill**: Overrides standard death messages to obfuscate the killer's identity (e.g. `Victim was OBLITERATED by §kERROR_404`).
+*   **Hold Curse**: Reduces max health when equipped.
+*   **Environment Backfire**: Submerging in water causes rapid damage.
+*   **Passive (Fractured Step)**: Dodges behind the attacker upon taking damage (internal cooldown).
+*   **Active (Rift Reversal)**: Swaps positions with a target, inflicting damage. If the target dies within 3 seconds, a backfire applies to the user.
 
+### ⚓ Weapon: Chronos Anchor Spear
+A weapon that commands time:
+*   **Hold Curse**: Reduces max health when equipped.
+*   **Active (Time Pin)**: Throwing the spear and hitting an entity freezes them completely for 2.25s (cancels movement, jumping, interactions).
+*   **Miss Backfire**: If the spear hits a block or misses, it returns to the user and freezes them for 1.25s instead.
 
+---
 
 ## Installation
 
-1.  **Download**: Get the latest JAR from [Modrinth](https://modrinth.com/).
+1.  **Download**: Get the latest JAR from [Modrinth](https://modrinth.com/) or build from source.
 2.  **Install**: Drop the file into your server's `plugins/` folder.
 3.  **Restart**: Start your server to generate configuration files.
 4.  **Configure**: Edit files in `plugins/Mace-Exclusive/`:
-    *   `config.yml`: Feature toggles (Strict mode, recipes, combat stats)
-    *   `lang_en.yml` / `lang_vi.yml`: Custom localization strings
+    *   `config.yml`: Feature toggles, abilities, cooldowns.
+    *   `lang_en.yml` / `lang_vi.yml`: Custom localization strings using MiniMessage.
 5.  **Reload**: Use `/macee reload` to apply configuration changes live.
 
 ---
@@ -67,12 +68,12 @@ A corrupted variant with chaotic properties and void origins:
 | Command | Description | Permission |
 |---------|-------------|------------|
 | `/macee help` | Show the plugin help menu | `mace.use` |
-| `/macee info [power\|chaos]` | View current holder and coordinate location of the selected Mace type | `mace.use` |
-| `/macee give [power\|chaos]` | **Admin**: Gives the selected Mace type to the player executing the command | `mace.admin` |
-| `/macee reset [power\|chaos]` | **Admin**: Resets registration status, allowing the selected Mace type to be crafted again | `mace.admin` |
+| `/macee info <weapon_id>` | View current holder of the specified exclusive weapon | `mace.use` |
+| `/macee give <weapon_id>` | **Admin**: Gives the weapon to the executing player | `mace.admin` |
+| `/macee reset <weapon_id>` | **Admin**: Resets ownership, allowing the weapon to be forged again | `mace.admin` |
 | `/macee reload` | **Admin**: Reloads plugin configuration and localization files | `mace.admin` |
 
-*Note: If no mace type is specified, commands default to the `power` mace.*
+*Weapon IDs: `power_mace`, `chaos_mace`, `chronos_anchor_spear`*
 
 ---
 
@@ -81,13 +82,13 @@ A corrupted variant with chaotic properties and void origins:
 | Permission | Default | Description |
 |------------|---------|-------------|
 | `mace.use` | true | Allows usage of `/macee help` and `/macee info` |
-| `mace.admin` | op | Allows access to `/macee give`, `/macee reset`, `/macee reload`, and bypasses strict mode container block restrictions |
+| `mace.admin` | op | Allows access to `/macee give`, `/macee reset`, `/macee reload` |
 
 ---
 
 ## Developer Guide
 
-For details on the project's internal architecture, code flow, and instructions to build the plugin from source, please check the [Architecture & Development Guide](docs/ARCHITECTURE.md).
+For details on the project's internal architecture, code flow, and instructions to build the plugin from source, please check the [Architecture & Development Guide](docs/ARCHITECTURE.md) and the new [Implementation Report](docs/IMPLEMENTATION_REPORT.md).
 
 ---
 
