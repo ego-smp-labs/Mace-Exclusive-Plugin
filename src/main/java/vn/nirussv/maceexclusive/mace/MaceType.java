@@ -1,5 +1,8 @@
 package vn.nirussv.maceexclusive.mace;
 
+import vn.nirussv.maceexclusive.item.ExclusiveItemId;
+
+@Deprecated
 public enum MaceType {
 
     POWER("mace", "mace_power_item"),
@@ -19,6 +22,13 @@ public enum MaceType {
 
     public String getPdcKey() {
         return pdcKey;
+    }
+
+    public ExclusiveItemId getExclusiveItemId() {
+        return switch (this) {
+            case POWER -> ExclusiveItemId.POWER_MACE;
+            case CHAOS -> ExclusiveItemId.CHAOS_MACE;
+        };
     }
 
     public static MaceType fromPdcKey(String key) {

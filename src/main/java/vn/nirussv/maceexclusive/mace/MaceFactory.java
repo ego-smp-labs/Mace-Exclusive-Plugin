@@ -1,68 +1,38 @@
 package vn.nirussv.maceexclusive.mace;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
+import vn.nirussv.maceexclusive.config.ConfigManager;
+import vn.nirussv.maceexclusive.item.ExclusiveItemFactory;
+import vn.nirussv.maceexclusive.item.ExclusiveItemId;
+import vn.nirussv.maceexclusive.item.ItemMatcher;
+import vn.nirussv.maceexclusive.item.PdcKeys;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 public class MaceFactory {
 
-    private final MaceExclusivePlugin plugin;
+    private final ExclusiveItemFactory itemFactory;
+    private final ItemMatcher itemMatcher;
 
-    public MaceFactory(MaceExclusivePlugin plugin) {
-        this.plugin = plugin;
+    public MaceFactory(MaceExclusivePlugin plugin, ConfigManager configManager) {
+        PdcKeys keys = new PdcKeys(plugin);
+        this.itemFactory = new ExclusiveItemFactory(configManager, keys);
+        this.itemMatcher = new ItemMatcher(keys);
     }
 
     public ItemStack createMace(MaceType type) {
-        ConfigurationSection section = plugin.getConfig().getConfigurationSection(type.getConfigPath());
-        if (section == null) {
-            return new ItemStack(Material.MACE);
-        }
+        return createItem(type.getExclusiveItemId());
+    }
 
-        String matName = section.getString("material", "MACE");
-        Material material = Material.matchMaterial(matName);
-        if (material == null) {
-            material = Material.MACE;
-        }
+    public ItemStack createUnawakenedWeapon(MaceType type) {
+        return ExclusiveItemId.unawakenedFor(type)
+            .map(this::createItem)
+            .orElseGet(() -> createMace(type));
+    }
 
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        
-        if (meta != null) {
-            String name = section.getString("name");
-            if (name != null) {
-                meta.displayName(LegacyComponentSerializer.legacyAmpersand().deserialize(name));
-            }
-
-            List<String> lore = section.getStringList("lore");
-            if (!lore.isEmpty()) {
-                List<Component> componentLore = new ArrayList<>();
-                for (String line : lore) {
-                    componentLore.add(LegacyComponentSerializer.legacyAmpersand().deserialize(line));
-                }
-                meta.lore(componentLore);
-            }
-
-            if (section.contains("custom-model-data")) {
-                meta.setCustomModelData(section.getInt("custom-model-data"));
-            }
-
-            NamespacedKey key = new NamespacedKey(plugin, type.getPdcKey());
-            meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 1);
-            
-            item.setItemMeta(meta);
-        }
-
-        return item;
+    public ItemStack createItem(ExclusiveItemId id) {
+        return itemFactory.create(id);
     }
 
     public ItemStack createPowerMace() {
@@ -74,23 +44,20 @@ public class MaceFactory {
     }
 
     public MaceType getMaceType(ItemStack item) {
-        if (item == null || item.getType() != Material.MACE) {
-            return null;
-        }
-        if (!item.hasItemMeta()) {
-            return null;
-        }
-        
-        PersistentDataContainer pdc = item.getItemMeta().getPersistentDataContainer();
-        
-        for (MaceType type : MaceType.values()) {
-            NamespacedKey key = new NamespacedKey(plugin, type.getPdcKey());
-            if (pdc.has(key, PersistentDataType.BYTE)) {
-                return type;
-            }
-        }
-        
-        return null;
+        Optional<ExclusiveItemId> itemId = getExclusiveItemId(item);
+        return itemId.flatMap(ExclusiveItemId::legacyMaceType).orElse(null);
+    }
+
+    public Optional<ExclusiveItemId> getExclusiveItemId(ItemStack item) {
+        return itemMatcher.match(item);
+    }
+
+    public Optional<MaceType> getAwakeningResult(ItemStack item) {
+        return getExclusiveItemId(item).flatMap(ExclusiveItemId::awakeningResult);
+    }
+
+    public ItemMatcher getItemMatcher() {
+        return itemMatcher;
     }
 
     public boolean isMaceItem(ItemStack item) {
