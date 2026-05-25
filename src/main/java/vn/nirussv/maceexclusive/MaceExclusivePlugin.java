@@ -1,25 +1,26 @@
 package vn.nirussv.maceexclusive;
 
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.plugin.java.JavaPlugin;
+import vn.nirussv.maceexclusive.ability.AbilityService;
 import vn.nirussv.maceexclusive.command.MaceCommand;
 import vn.nirussv.maceexclusive.config.ConfigManager;
+import vn.nirussv.maceexclusive.curse.CurseService;
+import vn.nirussv.maceexclusive.effect.FreezeService;
+import vn.nirussv.maceexclusive.forge.ForgeListener;
+import vn.nirussv.maceexclusive.forge.ForgeService;
+import vn.nirussv.maceexclusive.listener.AbilityListener;
 import vn.nirussv.maceexclusive.listener.ChaosMaceListener;
+import vn.nirussv.maceexclusive.listener.ContainerGuardListener;
 import vn.nirussv.maceexclusive.listener.EffectMaceListener;
 import vn.nirussv.maceexclusive.listener.MaceListener;
+import vn.nirussv.maceexclusive.listener.SpearListener;
 import vn.nirussv.maceexclusive.mace.MaceFactory;
 import vn.nirussv.maceexclusive.mace.MaceManager;
 import vn.nirussv.maceexclusive.mace.MaceRepository;
-import vn.nirussv.maceexclusive.mace.MaceType;
-import vn.nirussv.maceexclusive.task.MaceEffectTask;
+import vn.nirussv.maceexclusive.persistence.ForgeSessionStore;
+import vn.nirussv.maceexclusive.projectile.SpearProjectileService;
+import vn.nirussv.maceexclusive.recipe.RecipeRegistry;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 
 public class MaceExclusivePlugin extends JavaPlugin {
@@ -28,6 +29,12 @@ public class MaceExclusivePlugin extends JavaPlugin {
     private MaceFactory maceFactory;
     private MaceRepository maceRepository;
     private MaceManager maceManager;
+    private CurseService curseService;
+    private AbilityService abilityService;
+    private FreezeService freezeService;
+    private SpearProjectileService spearProjectileService;
+    private RecipeRegistry recipeRegistry;
+    private ForgeService forgeService;
 
     @Override
     public void onEnable() {
@@ -41,9 +48,15 @@ public class MaceExclusivePlugin extends JavaPlugin {
             }
             this.configManager.reload();
             
-            this.maceFactory = new MaceFactory(this);
+            this.maceFactory = new MaceFactory(this, configManager);
             this.maceRepository = new MaceRepository(this);
             this.maceManager = new MaceManager(this, maceRepository, configManager, maceFactory);
+            this.curseService = new CurseService(this, configManager, maceFactory.getItemMatcher());
+            this.abilityService = new AbilityService(configManager, maceManager);
+            this.freezeService = new FreezeService(this);
+            this.spearProjectileService = new SpearProjectileService(this, configManager, maceFactory.getItemMatcher(), freezeService);
+            this.recipeRegistry = new RecipeRegistry(this, configManager, maceFactory);
+            this.forgeService = new ForgeService(this, configManager, maceFactory, maceManager, new ForgeSessionStore(this));
             
             MaceCommand cmd = new MaceCommand(this, maceManager, configManager, maceFactory);
             if (getCommand("macee") != null) {
@@ -56,18 +69,31 @@ public class MaceExclusivePlugin extends JavaPlugin {
             getServer().getPluginManager().registerEvents(
                 new MaceListener(this, maceManager, configManager, maceFactory), this);
             getServer().getPluginManager().registerEvents(
+                new ContainerGuardListener(maceManager, configManager), this);
+            getServer().getPluginManager().registerEvents(
                 new EffectMaceListener(this, maceManager, configManager), this);
             getServer().getPluginManager().registerEvents(
                 new ChaosMaceListener(this, maceManager, configManager, maceFactory), this);
-            
+            getServer().getPluginManager().registerEvents(
+                new AbilityListener(abilityService), this);
+            getServer().getPluginManager().registerEvents(freezeService, this);
+            getServer().getPluginManager().registerEvents(
+                new SpearListener(spearProjectileService), this);
+            getServer().getPluginManager().registerEvents(
+                new ForgeListener(this, forgeService, maceFactory), this);
+
             try {
-                new MaceEffectTask(this, maceManager).runTaskTimer(this, 10L, 5L);
+                getServer().getPluginManager().registerEvents(curseService, this);
+                curseService.start();
             } catch (Exception e) {
-                getLogger().log(Level.SEVERE, "Failed to start MaceEffectTask", e);
+                getLogger().log(Level.SEVERE, "Failed to start CurseService", e);
             }
             
-            removeVanillaRecipe();
-            registerRecipes();
+            if (configManager.shouldRemoveVanillaMaceRecipe()) {
+                recipeRegistry.removeVanillaMaceRecipe();
+            }
+            recipeRegistry.registerAll();
+            forgeService.start();
             
             getLogger().info("Mace-Exclusive has been enabled! Version: " + getDescription().getVersion());
         } catch (Throwable t) {
@@ -77,77 +103,21 @@ public class MaceExclusivePlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (curseService != null) {
+            curseService.shutdown();
+        }
+        if (spearProjectileService != null) {
+            spearProjectileService.shutdown();
+        }
+        if (freezeService != null) {
+            freezeService.shutdown();
+        }
+        if (forgeService != null) {
+            forgeService.shutdown();
+        }
         if (maceRepository != null) {
             maceRepository.save();
         }
-    }
-
-    private void removeVanillaRecipe() {
-        Iterator<Recipe> it = getServer().recipeIterator();
-        while (it.hasNext()) {
-            Recipe r = it.next();
-            if (r.getResult().getType() == Material.MACE) {
-                if (r instanceof ShapedRecipe sr) {
-                    if (sr.getKey().getNamespace().equals("minecraft")) {
-                        it.remove();
-                        getLogger().info("Removed vanilla Mace recipe.");
-                    }
-                }
-            }
-        }
-    }
-
-    private void registerRecipes() {
-        registerMaceRecipe(MaceType.POWER, "exclusive_mace_recipe", "mace.recipe");
-        
-        if (getConfig().getBoolean("mace-chaos.enabled", true)) {
-            registerMaceRecipe(MaceType.CHAOS, "chaos_mace_recipe", "mace-chaos.recipe");
-        }
-    }
-
-    private void registerMaceRecipe(MaceType type, String recipeKey, String configPath) {
-        if (!getConfig().getBoolean(configPath.replace(".recipe", ".recipe.enabled"), true) 
-            && type == MaceType.POWER) {
-            return;
-        }
-
-        NamespacedKey key = new NamespacedKey(this, recipeKey);
-        ItemStack result = maceFactory.createMace(type);
-        ShapedRecipe recipe = new ShapedRecipe(key, result);
-
-        List<String> shape = getConfig().getStringList(configPath + ".shape");
-        if (shape.size() != 3) {
-            if (type == MaceType.POWER) {
-                recipe.shape(" H ", " I ", " B ");
-                recipe.setIngredient('H', Material.HEAVY_CORE);
-                recipe.setIngredient('I', Material.NETHERITE_INGOT);
-                recipe.setIngredient('B', Material.BREEZE_ROD);
-            } else {
-                recipe.shape("NHN", "HMH", "NWN");
-                recipe.setIngredient('N', Material.NETHER_STAR); // Dark Ego
-                recipe.setIngredient('H', Material.HEAVY_CORE);
-                recipe.setIngredient('M', Material.MACE);
-                recipe.setIngredient('W', Material.WITHER_ROSE);
-            }
-        } else {
-            recipe.shape(shape.toArray(new String[0]));
-            
-            ConfigurationSection ingredients = getConfig().getConfigurationSection(configPath + ".ingredients");
-            if (ingredients != null) {
-                for (String k : ingredients.getKeys(false)) {
-                    String matName = ingredients.getString(k);
-                    Material mat = Material.matchMaterial(matName);
-                    if (mat != null) {
-                        recipe.setIngredient(k.charAt(0), mat);
-                    } else {
-                        getLogger().warning("Invalid ingredient: " + k + " -> " + matName);
-                    }
-                }
-            }
-        }
-        
-        getServer().addRecipe(recipe);
-        getLogger().info("Registered " + type.name() + " Mace recipe: " + key);
     }
 
     public MaceFactory getMaceFactory() {
