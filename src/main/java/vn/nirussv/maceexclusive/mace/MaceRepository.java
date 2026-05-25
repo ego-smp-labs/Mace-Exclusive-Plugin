@@ -3,6 +3,7 @@ package vn.nirussv.maceexclusive.mace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
+import vn.nirussv.maceexclusive.item.ExclusiveItemId;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +17,7 @@ public class MaceRepository {
     private final MaceExclusivePlugin plugin;
     private final File dataFile;
     private FileConfiguration config;
-    private final Map<MaceType, UUID> holders = new EnumMap<>(MaceType.class);
+    private final Map<ExclusiveItemId, UUID> holders = new EnumMap<>(ExclusiveItemId.class);
 
     public MaceRepository(MaceExclusivePlugin plugin) {
         this.plugin = plugin;
@@ -31,11 +32,16 @@ public class MaceRepository {
         
         config = YamlConfiguration.loadConfiguration(dataFile);
         
-        for (MaceType type : MaceType.values()) {
-            String holderString = config.getString(type.name().toLowerCase() + ".holder");
+        for (ExclusiveItemId id : ExclusiveItemId.values()) {
+            String holderString = config.getString(id.id() + ".holder");
+            if (holderString == null) {
+                holderString = id.legacyMaceType()
+                    .map(type -> config.getString(type.name().toLowerCase() + ".holder"))
+                    .orElse(null);
+            }
             if (holderString != null && !holderString.isEmpty()) {
                 try {
-                    holders.put(type, UUID.fromString(holderString));
+                    holders.put(id, UUID.fromString(holderString));
                 } catch (IllegalArgumentException ignored) {
                 }
             }
@@ -47,9 +53,9 @@ public class MaceRepository {
             config = new YamlConfiguration();
         }
         
-        for (MaceType type : MaceType.values()) {
-            String path = type.name().toLowerCase();
-            UUID holder = holders.get(type);
+        for (ExclusiveItemId id : ExclusiveItemId.values()) {
+            String path = id.id();
+            UUID holder = holders.get(id);
             config.set(path + ".registered", holder != null);
             config.set(path + ".holder", holder != null ? holder.toString() : null);
         }
@@ -61,25 +67,25 @@ public class MaceRepository {
         }
     }
 
-    public boolean isRegistered(MaceType type) {
-        return holders.containsKey(type) && holders.get(type) != null;
+    public boolean isRegistered(ExclusiveItemId id) {
+        return holders.containsKey(id) && holders.get(id) != null;
     }
 
-    public UUID getHolder(MaceType type) {
-        return holders.get(type);
+    public UUID getHolder(ExclusiveItemId id) {
+        return holders.get(id);
     }
 
-    public void setHolder(MaceType type, UUID holder) {
+    public void setHolder(ExclusiveItemId id, UUID holder) {
         if (holder != null) {
-            holders.put(type, holder);
+            holders.put(id, holder);
         } else {
-            holders.remove(type);
+            holders.remove(id);
         }
         save();
     }
 
-    public void reset(MaceType type) {
-        holders.remove(type);
+    public void reset(ExclusiveItemId id) {
+        holders.remove(id);
         save();
     }
 
@@ -89,22 +95,42 @@ public class MaceRepository {
     }
 
     @Deprecated
+    public boolean isRegistered(MaceType type) {
+        return ExclusiveItemId.fromMaceType(type).map(this::isRegistered).orElse(false);
+    }
+
+    @Deprecated
+    public UUID getHolder(MaceType type) {
+        return ExclusiveItemId.fromMaceType(type).map(this::getHolder).orElse(null);
+    }
+
+    @Deprecated
+    public void setHolder(MaceType type, UUID holder) {
+        ExclusiveItemId.fromMaceType(type).ifPresent(id -> setHolder(id, holder));
+    }
+
+    @Deprecated
+    public void reset(MaceType type) {
+        ExclusiveItemId.fromMaceType(type).ifPresent(this::reset);
+    }
+
+    @Deprecated
     public boolean isMaceRegistered() {
-        return isRegistered(MaceType.POWER);
+        return isRegistered(ExclusiveItemId.POWER_MACE);
     }
 
     @Deprecated
     public UUID getCurrentHolder() {
-        return getHolder(MaceType.POWER);
+        return getHolder(ExclusiveItemId.POWER_MACE);
     }
 
     @Deprecated
     public void setCurrentHolder(UUID holder) {
-        setHolder(MaceType.POWER, holder);
+        setHolder(ExclusiveItemId.POWER_MACE, holder);
     }
 
     @Deprecated
     public void reset() {
-        reset(MaceType.POWER);
+        reset(ExclusiveItemId.POWER_MACE);
     }
 }

@@ -1,6 +1,5 @@
 package vn.nirussv.maceexclusive.command;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -11,13 +10,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
+import vn.nirussv.maceexclusive.item.ExclusiveItemId;
 import vn.nirussv.maceexclusive.mace.MaceFactory;
 import vn.nirussv.maceexclusive.mace.MaceManager;
-import vn.nirussv.maceexclusive.mace.MaceType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class MaceCommand implements CommandExecutor, TabCompleter {
 
@@ -67,64 +68,89 @@ public class MaceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void handleGive(Player player, String[] args) {
-        MaceType type = parseType(args, 1);
+        Optional<ExclusiveItemId> parsed = parseItemId(args, 1);
+        if (parsed.isEmpty()) {
+            sendItemUsage(player);
+            return;
+        }
+        ExclusiveItemId id = parsed.get();
         
-        if (maceManager.canCraft(type)) {
-            ItemStack mace = maceFactory.createMace(type);
-            maceManager.register(mace, player.getUniqueId(), type);
-            player.getInventory().addItem(mace);
-            maceManager.onPlayerBecameHolder(player, player.getLocation(), type);
+        if (maceManager.canCreate(id)) {
+            ItemStack item = maceFactory.createItem(id);
+            maceManager.register(item, player.getUniqueId(), id);
+            player.getInventory().addItem(item);
+            id.legacyMaceType().ifPresent(type -> maceManager.onPlayerBecameHolder(player, player.getLocation(), type));
             
-            String msgKey = type == MaceType.CHAOS ? "chaos.received" : "mace.received";
+            String msgKey = id == ExclusiveItemId.CHAOS_MACE ? "chaos.received" : "mace.received";
             player.sendMessage(configManager.getPrefixedMessage(msgKey));
         } else {
-            String holderName = maceManager.getHolderName(type);
+            String holderName = maceManager.getHolderName(id);
             Map<String, String> placeholders = Map.of("player", holderName != null ? holderName : "Unknown");
-            String msgKey = type == MaceType.CHAOS ? "chaos.already-exists" : "mace.already-exists";
+            String msgKey = id == ExclusiveItemId.CHAOS_MACE ? "chaos.already-exists" : "mace.already-exists";
             player.sendMessage(configManager.getPrefixedMessage(msgKey, placeholders));
         }
     }
 
     private void handleReset(CommandSender sender, String[] args) {
-        MaceType type = parseType(args, 1);
+        Optional<ExclusiveItemId> parsed = parseItemId(args, 1);
+        if (parsed.isEmpty()) {
+            sendItemUsage(sender);
+            return;
+        }
+        ExclusiveItemId id = parsed.get();
         
-        if (maceManager.reset(type)) {
-            String msgKey = type == MaceType.CHAOS ? "chaos.reset" : "mace.reset";
+        if (maceManager.reset(id)) {
+            String msgKey = id == ExclusiveItemId.CHAOS_MACE ? "chaos.reset" : "mace.reset";
             sender.sendMessage(configManager.getPrefixedMessage(msgKey));
         } else {
-            String msgKey = type == MaceType.CHAOS ? "chaos.not-found" : "mace.not-found";
+            String msgKey = id == ExclusiveItemId.CHAOS_MACE ? "chaos.not-found" : "mace.not-found";
             sender.sendMessage(configManager.getPrefixedMessage(msgKey));
         }
     }
 
     private void handleInfo(CommandSender sender, String[] args) {
-        MaceType type = parseType(args, 1);
-        String holder = maceManager.getHolderName(type);
+        Optional<ExclusiveItemId> parsed = parseItemId(args, 1);
+        if (parsed.isEmpty()) {
+            sendItemUsage(sender);
+            return;
+        }
+        ExclusiveItemId id = parsed.get();
+        String holder = maceManager.getHolderName(id);
         
         if (holder != null) {
             Map<String, String> placeholders = Map.of("player", holder);
-            String msgKey = type == MaceType.CHAOS ? "chaos.holder-info" : "mace.holder-info";
+            String msgKey = id == ExclusiveItemId.CHAOS_MACE ? "chaos.holder-info" : "mace.holder-info";
             sender.sendMessage(configManager.getPrefixedMessage(msgKey, placeholders));
         } else {
-            String msgKey = type == MaceType.CHAOS ? "chaos.not-found" : "mace.not-found";
+            String msgKey = id == ExclusiveItemId.CHAOS_MACE ? "chaos.not-found" : "mace.not-found";
             sender.sendMessage(configManager.getPrefixedMessage(msgKey));
         }
     }
 
-    private MaceType parseType(String[] args, int index) {
-        if (args.length > index) {
-            String typeArg = args[index].toLowerCase();
-            if (typeArg.equals("chaos")) {
-                return MaceType.CHAOS;
-            }
+    private Optional<ExclusiveItemId> parseItemId(String[] args, int index) {
+        if (args.length <= index) {
+            return Optional.empty();
         }
-        return MaceType.POWER;
+        String arg = args[index].toLowerCase();
+        if (arg.equals("power")) arg = "power_mace";
+        if (arg.equals("chaos")) arg = "chaos_mace";
+        return ExclusiveItemId.fromId(arg).filter(this::isGiveableItem);
+    }
+
+    private boolean isGiveableItem(ExclusiveItemId id) {
+        return id == ExclusiveItemId.POWER_MACE
+            || id == ExclusiveItemId.CHAOS_MACE
+            || id == ExclusiveItemId.CHRONOS_ANCHOR_SPEAR;
+    }
+
+    private void sendItemUsage(CommandSender sender) {
+        sender.sendMessage("Usage: /macee <give|reset|info> <power_mace|chaos_mace|chronos_anchor_spear>");
     }
 
     private void sendHelp(CommandSender sender) {
         sender.sendMessage(configManager.getMessage("help.header"));
         sender.sendMessage(configManager.getMessage("help.link"));
-        sender.sendMessage(Component.text("Commands: /macee <info|give|reset|reload> [power|chaos]"));
+        sender.sendMessage(configManager.getMessage("help.commands"));
         sender.sendMessage(configManager.getMessage("help.footer"));
     }
 
@@ -159,10 +185,9 @@ public class MaceCommand implements CommandExecutor, TabCompleter {
             String sub = args[0].toLowerCase();
             if (sub.equals("info") || sub.equals("give") || sub.equals("reset")) {
                 List<String> types = new ArrayList<>();
-                for (MaceType type : MaceType.values()) {
-                    String name = type.name().toLowerCase();
-                    if (name.startsWith(args[1].toLowerCase())) {
-                        types.add(name);
+                for (ExclusiveItemId id : Arrays.asList(ExclusiveItemId.POWER_MACE, ExclusiveItemId.CHAOS_MACE, ExclusiveItemId.CHRONOS_ANCHOR_SPEAR)) {
+                    if (id.id().startsWith(args[1].toLowerCase())) {
+                        types.add(id.id());
                     }
                 }
                 return types;

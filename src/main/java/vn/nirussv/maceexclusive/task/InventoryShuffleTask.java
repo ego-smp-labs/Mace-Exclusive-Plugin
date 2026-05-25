@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
-import vn.nirussv.maceexclusive.MaceExclusivePlugin;
+import vn.nirussv.maceexclusive.config.ConfigManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,13 +15,15 @@ public class InventoryShuffleTask extends BukkitRunnable {
 
     private final Player player;
     private final int durationTicks;
+    private final ConfigManager configManager;
     private int ticksElapsed = 0;
     private final int interval;
 
-    public InventoryShuffleTask(Player player, int durationSeconds, int intervalTicks) {
+    public InventoryShuffleTask(Player player, int durationSeconds, int intervalTicks, ConfigManager configManager) {
         this.player = player;
         this.durationTicks = durationSeconds * 20;
         this.interval = intervalTicks;
+        this.configManager = configManager;
     }
 
     @Override
@@ -33,7 +35,7 @@ public class InventoryShuffleTask extends BukkitRunnable {
 
         if (ticksElapsed >= durationTicks) {
             this.cancel();
-            player.sendMessage("§aYour inventory has stabilized.");
+            player.sendMessage(configManager.getMessage("chaos.inventory-stabilized"));
             return;
         }
 

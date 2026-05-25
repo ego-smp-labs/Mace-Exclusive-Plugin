@@ -51,7 +51,7 @@ public class ChaosMaceListener implements Listener {
         
         if (result == null || result.getType() != Material.MACE) return;
         
-        if (maceFactory.isChaosMace(result)) {
+        if (maceFactory.isChaosMace(result) || maceFactory.getAwakeningResult(result).filter(type -> type == MaceType.CHAOS).isPresent()) {
             if (!maceManager.canCraft(MaceType.CHAOS)) {
                 event.getInventory().setResult(null);
                 return;
@@ -77,9 +77,10 @@ public class ChaosMaceListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onCraftChaos(CraftItemEvent event) {
         ItemStack result = event.getRecipe().getResult();
-        if (!maceFactory.isChaosMace(result)) return;
+        boolean unawakenedRecipe = maceFactory.getAwakeningResult(result).filter(type -> type == MaceType.CHAOS).isPresent();
+        if (!maceFactory.isChaosMace(result) && !unawakenedRecipe) return;
 
-        if (event.isShiftClick()) {
+        if (event.isShiftClick() && configManager.isCraftingShiftClickPrevented()) {
             event.setCancelled(true);
             if (event.getWhoClicked() instanceof Player player) {
                 player.sendMessage(configManager.getPrefixedMessage("mace.cannot-shift-click"));
@@ -94,6 +95,10 @@ public class ChaosMaceListener implements Listener {
                 player.sendMessage(configManager.getPrefixedMessage("chaos.already-exists", 
                     Map.of("player", holderName != null ? holderName : "Unknown")));
             }
+            return;
+        }
+
+        if (unawakenedRecipe) {
             return;
         }
 
@@ -143,13 +148,13 @@ public class ChaosMaceListener implements Listener {
 
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
         if (maceManager.isChaosMace(weapon)) {
-            double chance = plugin.getConfig().getDouble("mace-chaos.effects.shuffle-inventory.chance", 0.2);
+            double chance = configManager.getWeaponEffectDouble("chaos_mace", "shuffle-inventory.chance", 0.2);
             if (random.nextDouble() < chance) {
-                int duration = plugin.getConfig().getInt("mace-chaos.effects.shuffle-inventory.duration", 5);
-                int interval = plugin.getConfig().getInt("mace-chaos.effects.shuffle-inventory.interval", 5);
+                int duration = configManager.getWeaponEffectInt("chaos_mace", "shuffle-inventory.duration", 5);
+                int interval = configManager.getWeaponEffectInt("chaos_mace", "shuffle-inventory.interval", 5);
                 
-                victim.sendMessage("§c§k||| §r§cSYSTEM ERROR: INVENTORY CORRUPTION §c§k|||");
-                new InventoryShuffleTask(victim, duration, interval).runTaskTimer(plugin, 0L, 1L);
+                victim.sendMessage(configManager.getMessage("chaos.inventory-corruption"));
+                new InventoryShuffleTask(victim, duration, interval, configManager).runTaskTimer(plugin, 0L, 1L);
             }
         }
     }
@@ -162,11 +167,11 @@ public class ChaosMaceListener implements Listener {
         if (killer != null) {
             ItemStack weapon = killer.getInventory().getItemInMainHand();
             if (maceManager.isChaosMace(weapon)) {
-                if (plugin.getConfig().getBoolean("mace-chaos.effects.glitch-kill-name", true)) {
+                if (configManager.getWeaponEffectBoolean("chaos_mace", "glitch-kill-name", true)) {
                     event.deathMessage(
                         Component.text(victim.getName(), NamedTextColor.RED)
                         .append(Component.text(" was OBLITERATED by ", NamedTextColor.GRAY))
-                        .append(Component.text("§kERROR_404", NamedTextColor.DARK_PURPLE))
+                        .append(Component.text("ERROR_404", NamedTextColor.DARK_PURPLE, TextDecoration.OBFUSCATED))
                     );
                 }
             }
@@ -174,14 +179,14 @@ public class ChaosMaceListener implements Listener {
     }
 
     private void applySelfCurse(Player player) {
-        if (!plugin.getConfig().getBoolean("mace-chaos.effects.self-curse.enabled", true)) return;
+        if (!configManager.getWeaponEffectBoolean("chaos_mace", "self-curse.enabled", true)) return;
         
-        int witherDur = plugin.getConfig().getInt("mace-chaos.effects.self-curse.wither-duration", 10) * 20;
-        int shuffleDur = plugin.getConfig().getInt("mace-chaos.effects.self-curse.shuffle-duration", 10);
+        int witherDur = configManager.getWeaponEffectInt("chaos_mace", "self-curse.wither-duration", 10) * 20;
+        int shuffleDur = configManager.getWeaponEffectInt("chaos_mace", "self-curse.shuffle-duration", 10);
         
         player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, witherDur, 1));
         
-        player.sendMessage("§5The §kCHAOS§r§5 corrupts your body!");
-        new InventoryShuffleTask(player, shuffleDur, 10).runTaskTimer(plugin, 0L, 1L);
+        player.sendMessage(configManager.getMessage("chaos.self-curse"));
+        new InventoryShuffleTask(player, shuffleDur, 10, configManager).runTaskTimer(plugin, 0L, 1L);
     }
 }

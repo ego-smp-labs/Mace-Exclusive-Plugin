@@ -12,9 +12,6 @@ import org.bukkit.event.block.CrafterCraftEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -83,6 +80,9 @@ public class MaceListener implements Listener {
         if (result == null || result.getType() != Material.MACE) return;
         
         MaceType type = maceFactory.getMaceType(result);
+        if (type == null) {
+            type = maceFactory.getAwakeningResult(result).orElse(null);
+        }
         if (type == null) return;
         
         if (!maceManager.canCraft(type)) {
@@ -103,26 +103,19 @@ public class MaceListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onInventoryMoveItem(InventoryMoveItemEvent event) {
-        if (!configManager.isPreventHopperPickup()) return;
-        
-        ItemStack item = event.getItem();
-        if (item.getType() != Material.MACE) return;
-        
-        if (maceManager.isRegisteredMace(item)) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onCraftMace(CraftItemEvent event) {
         ItemStack result = event.getRecipe().getResult();
         if (result.getType() != Material.MACE) return;
 
         MaceType type = maceFactory.getMaceType(result);
+        boolean unawakenedRecipe = false;
+        if (type == null) {
+            type = maceFactory.getAwakeningResult(result).orElse(null);
+            unawakenedRecipe = type != null;
+        }
         if (type == null || type == MaceType.CHAOS) return;
 
-        if (event.isShiftClick()) {
+        if (event.isShiftClick() && configManager.isCraftingShiftClickPrevented()) {
             event.setCancelled(true);
             if (event.getWhoClicked() instanceof Player player) {
                 player.sendMessage(configManager.getPrefixedMessage("mace.cannot-shift-click"));
@@ -138,6 +131,10 @@ public class MaceListener implements Listener {
                 player.sendMessage(configManager.getPrefixedMessage(msgKey, 
                     Map.of("player", holderName != null ? holderName : "Unknown")));
             }
+            return;
+        }
+
+        if (unawakenedRecipe) {
             return;
         }
 
@@ -193,53 +190,4 @@ public class MaceListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player player)) return;
-        if (!configManager.isStrictMode()) return;
-
-        ItemStack current = event.getCurrentItem();
-        ItemStack cursor = event.getCursor();
-         
-        boolean hasMace = maceManager.isRegisteredMace(current) || maceManager.isRegisteredMace(cursor);
-         
-        if (event.getClick().isKeyboardClick() && event.getHotbarButton() >= 0) {
-            ItemStack active = player.getInventory().getItem(event.getHotbarButton());
-            if (maceManager.isRegisteredMace(active)) {
-                hasMace = true;
-            }
-        }
-         
-        if (!hasMace) return;
-
-        InventoryType top = event.getView().getTopInventory().getType();
-         
-        boolean isAllowed = top == InventoryType.CRAFTING 
-                || top == InventoryType.ANVIL 
-                || top == InventoryType.ENCHANTING;
-                 
-        if (!isAllowed) {
-            if (event.getClickedInventory() == event.getView().getTopInventory() || event.isShiftClick()) {
-                event.setCancelled(true);
-                
-                // Drop-on-store behavior: drop the mace at the player's feet
-                if (configManager.isStrictModeDrop()) {
-                    ItemStack maceItem = maceManager.isRegisteredMace(current) ? current : cursor;
-                    if (maceItem != null && maceManager.isRegisteredMace(maceItem)) {
-                        // Remove from current slot
-                        if (maceManager.isRegisteredMace(current)) {
-                            event.setCurrentItem(null);
-                        } else {
-                            player.setItemOnCursor(null);
-                        }
-                        // Drop at player's feet
-                        player.getWorld().dropItemNaturally(player.getLocation(), maceItem);
-                        player.sendMessage(configManager.getPrefixedMessage("mace.strict-mode-drop"));
-                    }
-                } else {
-                    player.sendMessage(configManager.getPrefixedMessage("mace.cannot-move"));
-                }
-            }
-        }
-    }
 }

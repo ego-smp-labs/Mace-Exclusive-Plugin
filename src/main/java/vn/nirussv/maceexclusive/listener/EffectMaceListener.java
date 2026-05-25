@@ -19,6 +19,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
+import vn.nirussv.maceexclusive.config.PerformanceConfig;
 import vn.nirussv.maceexclusive.mace.MaceManager;
 
 import java.util.ArrayList;
@@ -38,7 +39,8 @@ public class EffectMaceListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCraftMace(CraftItemEvent event) {
-        if (!plugin.getConfig().getBoolean("effects.first-craft.glowing", true)) return;
+        PerformanceConfig performance = configManager.getPerformanceConfig();
+        if (!performance.firstCraftGlowing()) return;
         
         ItemStack result = event.getRecipe().getResult();
         if (result.getType() != Material.MACE) return;
@@ -47,7 +49,7 @@ public class EffectMaceListener implements Listener {
         if (event.isCancelled()) return;
 
         if (event.getWhoClicked() instanceof Player player) {
-            int duration = plugin.getConfig().getInt("effects.first-craft.duration", 300) * 20;
+            int duration = performance.firstCraftDurationSeconds() * 20;
             player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, duration, 0));
         }
     }
@@ -58,7 +60,7 @@ public class EffectMaceListener implements Listener {
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
 
         if (maceManager.isRegisteredMace(weapon)) {
-            if (plugin.getConfig().getBoolean("effects.combat.ground-slam.enabled", false)) {
+            if (configManager.getPerformanceConfig().groundSlamEnabled()) {
                 performGroundSlam(attacker, event.getEntity().getLocation());
             }
         }
@@ -66,7 +68,7 @@ public class EffectMaceListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (!plugin.getConfig().getBoolean("effects.combat.custom-kill-message", true)) return;
+        if (!configManager.getPerformanceConfig().customKillMessage()) return;
 
         Player victim = event.getEntity();
         Player killer = victim.getKiller();
@@ -82,15 +84,16 @@ public class EffectMaceListener implements Listener {
     }
 
     private void performGroundSlam(Player attacker, org.bukkit.Location targetLoc) {
-        int radius = plugin.getConfig().getInt("effects.combat.ground-slam.radius", 3);
+        PerformanceConfig performance = configManager.getPerformanceConfig();
+        int radius = performance.groundSlamRadius();
         List<Block> blocks = new ArrayList<>();
         
         for (int x = -radius; x <= radius; x++) {
             for (int z = -radius; z <= radius; z++) {
                  Block block = targetLoc.clone().add(x, -1, z).getBlock();
-                 if (!block.getType().isAir() && block.getType().isSolid()) {
-                     blocks.add(block);
-                 }
+                  if (!block.getType().isAir() && block.getType().isSolid() && blocks.size() < performance.groundSlamMaxBlocks()) {
+                      blocks.add(block);
+                  }
             }
         }
 
