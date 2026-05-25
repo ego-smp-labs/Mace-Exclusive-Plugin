@@ -10,6 +10,7 @@ import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.item.ExclusiveItemId;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -18,11 +19,15 @@ import java.util.Map;
 
 public class ConfigManager {
 
+    private static final String WEAPON_CONFIG_DIRECTORY = "weapons";
+    private static final String YAML_EXTENSION = ".yml";
+
     private final MaceExclusivePlugin plugin;
     private final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacyAmpersand();
     private FileConfiguration langConfig;
     private PerformanceConfig performanceConfig;
     private final Map<String, WeaponConfig> weaponConfigs = new HashMap<>();
+    private final Map<String, YamlConfiguration> weaponFiles = new HashMap<>();
     private final Map<String, String> messageCache = new HashMap<>();
 
     public ConfigManager(MaceExclusivePlugin plugin) {
@@ -68,10 +73,83 @@ public class ConfigManager {
     private void loadTypedConfigs() {
         performanceConfig = PerformanceConfig.fromConfig(plugin.getConfig());
         weaponConfigs.clear();
+        weaponFiles.clear();
+        ensureWeaponConfigDirectory();
         for (ExclusiveItemId itemId : ExclusiveItemId.values()) {
             ConfigurationSection section = getWeaponSection(itemId.id(), itemId.legacyConfigPath());
             weaponConfigs.put(itemId.id(), WeaponConfig.fromSection(itemId.id(), section, itemId.material(), itemId.fallbackName()));
         }
+    }
+
+    private void ensureWeaponConfigDirectory() {
+        File weaponDirectory = getWeaponConfigDirectory();
+        if (weaponDirectory.exists()) {
+            if (!weaponDirectory.isDirectory()) {
+                plugin.getLogger().warning("Weapon config path exists but is not a directory: " + weaponDirectory.getPath());
+            }
+            return;
+        }
+
+        if (!weaponDirectory.mkdirs()) {
+            plugin.getLogger().warning("Could not create weapon config directory: " + weaponDirectory.getPath());
+        }
+    }
+
+    private File getWeaponConfigDirectory() {
+        return new File(plugin.getDataFolder(), WEAPON_CONFIG_DIRECTORY);
+    }
+
+    private YamlConfiguration loadWeaponFile(String id) {
+        if (weaponFiles.containsKey(id)) {
+            return weaponFiles.get(id);
+        }
+
+        ensureWeaponResource(id);
+
+        File file = new File(getWeaponConfigDirectory(), id + YAML_EXTENSION);
+        if (!file.exists()) {
+            return null;
+        }
+
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        String resourcePath = weaponResourcePath(id);
+        try (InputStream defaultStream = plugin.getResource(resourcePath)) {
+            if (defaultStream != null) {
+                configuration.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream, StandardCharsets.UTF_8)));
+            }
+        } catch (IOException exception) {
+            plugin.getLogger().warning("Could not load default weapon config for " + id + ": " + exception.getMessage());
+        }
+
+        weaponFiles.put(id, configuration);
+        return configuration;
+    }
+
+    private void ensureWeaponResource(String id) {
+        File file = new File(getWeaponConfigDirectory(), id + YAML_EXTENSION);
+        if (file.exists()) {
+            return;
+        }
+
+        String resourcePath = weaponResourcePath(id);
+        if (!resourceExists(resourcePath)) {
+            return;
+        }
+
+        plugin.saveResource(resourcePath, false);
+    }
+
+    private boolean resourceExists(String resourcePath) {
+        try (InputStream inputStream = plugin.getResource(resourcePath)) {
+            return inputStream != null;
+        } catch (IOException exception) {
+            plugin.getLogger().warning("Could not inspect resource " + resourcePath + ": " + exception.getMessage());
+            return false;
+        }
+    }
+
+    private String weaponResourcePath(String id) {
+        return WEAPON_CONFIG_DIRECTORY + "/" + id + YAML_EXTENSION;
     }
 
     public String getRawMessage(String key) {
@@ -132,9 +210,9 @@ public class ConfigManager {
     }
 
     public ConfigurationSection getWeaponSection(String id, String legacyPath) {
-        ConfigurationSection section = plugin.getConfig().getConfigurationSection("weapons." + id);
-        if (section != null) {
-            return section;
+        YamlConfiguration weaponFile = loadWeaponFile(id);
+        if (weaponFile != null) {
+            return weaponFile;
         }
         return plugin.getConfig().getConfigurationSection(legacyPath);
     }
@@ -174,10 +252,7 @@ public class ConfigManager {
         if (!isSingletonWeaponsEnabled()) {
             return false;
         }
-        ConfigurationSection section = plugin.getConfig().getConfigurationSection("weapons." + id.id());
-        if (section == null) {
-            section = getWeaponSection(id.id(), id.legacyConfigPath());
-        }
+        ConfigurationSection section = getWeaponSection(id.id(), id.legacyConfigPath());
         return section == null || section.getBoolean("singleton", true);
     }
 
@@ -201,7 +276,8 @@ public class ConfigManager {
     }
 
     public double getWeaponCurseDouble(String weaponId, String path, double fallback) {
-        ConfigurationSection curse = plugin.getConfig().getConfigurationSection("weapons." + weaponId + ".curse");
+        ConfigurationSection weaponSection = getWeaponSection(weaponId, "weapons." + weaponId);
+        ConfigurationSection curse = weaponSection == null ? null : weaponSection.getConfigurationSection("curse");
         if (curse != null && curse.contains(path)) {
             return curse.getDouble(path, fallback);
         }

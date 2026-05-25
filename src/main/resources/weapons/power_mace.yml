@@ -1,0 +1,21 @@
+enabled: true
+name: "&b&lMACE OF POWER"
+material: MACE
+custom-model-data: 2001
+lore:
+  - "&7An ancient weapon."
+  - "&7Hold to charge power."
+  - "&7&oOnly one can exist."
+recipe:
+  enabled: true
+  shape:
+    - " H "
+    - " I "
+    - " B "
+  ingredients:
+    H: HEAVY_CORE
+    I: NETHERITE_INGOT
+    B: BREEZE_ROD
+effects:
+  combat:
+    blindness-duration: 60 # ticks
