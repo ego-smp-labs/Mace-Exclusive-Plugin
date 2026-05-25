@@ -18,7 +18,7 @@ public class MaceFactory {
     public MaceFactory(MaceExclusivePlugin plugin, ConfigManager configManager) {
         PdcKeys keys = new PdcKeys(plugin);
         this.itemFactory = new ExclusiveItemFactory(configManager, keys);
-        this.itemMatcher = new ItemMatcher(keys);
+        this.itemMatcher = new ItemMatcher(keys, configManager);
     }
 
     public ItemStack createMace(MaceType type) {

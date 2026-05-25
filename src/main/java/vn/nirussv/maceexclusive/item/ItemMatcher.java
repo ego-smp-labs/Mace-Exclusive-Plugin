@@ -1,5 +1,6 @@
 package vn.nirussv.maceexclusive.item;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -11,9 +12,11 @@ import java.util.Optional;
 public final class ItemMatcher {
 
     private final PdcKeys keys;
+    private final vn.nirussv.maceexclusive.config.ConfigManager configManager;
 
-    public ItemMatcher(PdcKeys keys) {
+    public ItemMatcher(PdcKeys keys, vn.nirussv.maceexclusive.config.ConfigManager configManager) {
         this.keys = keys;
+        this.configManager = configManager;
     }
 
     public Optional<ExclusiveItemId> match(ItemStack item) {
@@ -30,7 +33,11 @@ public final class ItemMatcher {
 
         String itemId = pdc.get(keys.itemId(), PersistentDataType.STRING);
         Optional<ExclusiveItemId> rootMatch = ExclusiveItemId.fromId(itemId)
-            .filter(id -> item.getType() == id.material());
+            .filter(id -> {
+                vn.nirussv.maceexclusive.config.WeaponConfig wc = configManager.getWeaponConfig(id);
+                Material expected = wc != null ? wc.material() : id.material();
+                return item.getType() == expected;
+            });
         if (rootMatch.isPresent()) {
             return rootMatch;
         }
@@ -38,7 +45,11 @@ public final class ItemMatcher {
         for (MaceType legacyType : MaceType.values()) {
             if (pdc.has(keys.legacyMaceKey(legacyType), PersistentDataType.BYTE)) {
                 return ExclusiveItemId.fromMaceType(legacyType)
-                    .filter(id -> item.getType() == id.material());
+                    .filter(id -> {
+                        vn.nirussv.maceexclusive.config.WeaponConfig wc = configManager.getWeaponConfig(id);
+                        Material expected = wc != null ? wc.material() : id.material();
+                        return item.getType() == expected;
+                    });
             }
         }
 

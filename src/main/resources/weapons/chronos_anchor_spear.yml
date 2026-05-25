@@ -1,6 +1,6 @@
 enabled: false
 name: "&6&lCHRONOS ANCHOR SPEAR"
-material: TRIDENT
+material: NETHERITE_SPEAR
 custom-model-data: 2003
 lore:
   - "&7A time-anchored spear."
@@ -12,5 +12,5 @@ recipe:
     - " S "
   ingredients:
     E: ENDER_PEARL
-    T: TRIDENT
+    T: NETHERITE_SPEAR
     S: AMETHYST_SHARD
