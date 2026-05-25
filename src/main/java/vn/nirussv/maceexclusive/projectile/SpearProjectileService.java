@@ -111,6 +111,10 @@ public final class SpearProjectileService {
         if (hitEntity instanceof LivingEntity target && !target.getUniqueId().equals(tracked.shooterId())) {
             freezeService.freeze(target, TARGET_FREEZE_TICKS);
             playFreezeImpact(target.getLocation());
+            if (shooter != null && shooter.isOnline()) {
+                net.kyori.adventure.text.Component msg = configManager.getItemMessage("chronos_anchor_spear", "messages.skill-time-pin");
+                if (msg != null) shooter.sendMessage(msg);
+            }
             complete(trident, tracked, false);
             return;
         }
@@ -118,6 +122,8 @@ public final class SpearProjectileService {
         if (shooter != null && shooter.isOnline()) {
             freezeService.freeze(shooter, BACKFIRE_FREEZE_TICKS);
             shooter.playSound(shooter.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.PLAYERS, 0.8f, 0.65f);
+            net.kyori.adventure.text.Component msg = configManager.getItemMessage("chronos_anchor_spear", "messages.skill-miss-backfire");
+            if (msg != null) shooter.sendMessage(msg);
         }
         complete(trident, tracked, false);
     }

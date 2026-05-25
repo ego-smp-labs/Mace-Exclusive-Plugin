@@ -69,6 +69,11 @@ public final class ChaosRiftReversalAbility implements ActiveAbility, PassiveAbi
 
         sound.play(player.getLocation());
         cooldownService.setCooldown(player, id(), configManager.getItemEffectInt("chaos_mace", "rift-reversal.cooldown-seconds", 18) * 1000L);
+
+        net.kyori.adventure.text.Component msg = configManager.getItemMessage("chaos_mace", "messages.skill-rift-reversal");
+        if (msg != null) {
+            player.sendMessage(msg);
+        }
     }
 
     @Override

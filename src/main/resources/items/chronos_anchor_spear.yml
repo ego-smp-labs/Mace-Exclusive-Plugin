@@ -19,3 +19,6 @@ cooldowns:
   time_pin: 55
 curse:
   max_health_multiplier: 0.85
+messages:
+  skill-time-pin: "&6[Chronos Spear] &fKỹ năng &eTime Pin&f đã kích hoạt! Mục tiêu bị đóng băng."
+  skill-miss-backfire: "&c[Chronos Spear] &fNém trượt! Kỹ năng phản hệ, bạn bị đóng băng!"

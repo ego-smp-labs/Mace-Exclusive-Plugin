@@ -27,3 +27,6 @@ curse:
 effects:
   combat:
     blindness-duration: 60
+messages:
+  skill-ground-pulse: "&b[Power Mace] &fKỹ năng &eGround Pulse&f đã được kích hoạt!"
+  skill-momentum: "&b[Power Mace] &fĐã tích tụ &eStored Momentum&f!"

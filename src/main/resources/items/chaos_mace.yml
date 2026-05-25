@@ -40,3 +40,6 @@ effects:
   # Combat/Usage
   glowing: true
   announce-on-chat: true
+messages:
+  skill-fractured-step: "&5[Chaos Mace] &fKỹ năng &dFractured Step&f đã kích hoạt! Né tránh đòn đánh."
+  skill-rift-reversal: "&5[Chaos Mace] &fKỹ năng &dRift Reversal&f đã kích hoạt! Hoán đổi vị trí."

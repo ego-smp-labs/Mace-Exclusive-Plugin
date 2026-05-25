@@ -57,5 +57,10 @@ public final class PowerStoredMomentumAbility implements PassiveAbility {
 
         particles.play(target.getLocation().add(0.0D, 1.0D, 0.0D));
         sound.play(target.getLocation());
+
+        net.kyori.adventure.text.Component msg = configManager.getItemMessage("power_mace", "messages.skill-momentum");
+        if (msg != null) {
+            context.player().sendMessage(msg);
+        }
     }
 }

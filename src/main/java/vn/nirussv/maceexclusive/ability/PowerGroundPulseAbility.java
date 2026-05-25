@@ -65,5 +65,10 @@ public final class PowerGroundPulseAbility implements ActiveAbility {
         particles.play(origin.add(0.0D, 0.15D, 0.0D));
         sound.play(player.getLocation());
         cooldownService.setCooldown(player, id(), cooldownMillis);
+
+        net.kyori.adventure.text.Component msg = configManager.getItemMessage("power_mace", "messages.skill-ground-pulse");
+        if (msg != null) {
+            player.sendMessage(msg);
+        }
     }
 }
