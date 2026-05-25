@@ -7,7 +7,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.CrafterCraftEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.ItemDespawnEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
@@ -144,5 +146,26 @@ public final class ContainerGuardListener implements Listener {
             || type == InventoryType.ANVIL
             || type == InventoryType.ENCHANTING
             || type == InventoryType.PLAYER;
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onEntityDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof org.bukkit.entity.Item item) {
+            java.util.Optional<vn.nirussv.maceexclusive.item.ExclusiveItemId> id = maceManager.getExclusiveItemId(item.getItemStack());
+            if (id.isPresent()) {
+                if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
+                    maceManager.reset(id.get());
+                    return;
+                }
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onItemDespawn(ItemDespawnEvent event) {
+        if (maceManager.isExclusiveItem(event.getEntity().getItemStack())) {
+            event.setCancelled(true);
+        }
     }
 }

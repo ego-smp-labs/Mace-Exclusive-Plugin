@@ -292,6 +292,24 @@ public class ConfigManager {
         return Math.max(1, plugin.getConfig().getInt("performance.environment-curse-interval-ticks", 20));
     }
      
+    public Component getItemMessage(String itemId, String path) {
+        return getItemMessage(itemId, path, Map.of());
+    }
+
+    public Component getItemMessage(String itemId, String path, Map<String, String> placeholders) {
+        ConfigurationSection itemSection = getItemSection(itemId, "items." + itemId);
+        if (itemSection == null || !itemSection.contains(path)) {
+            return null;
+        }
+        String msg = itemSection.getString(path);
+        if (msg == null || msg.isBlank()) {
+            return null;
+        }
+        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+            msg = msg.replace("%" + entry.getKey() + "%", entry.getValue());
+        }
+        return toComponent(msg);
+    }
     public boolean isDropAllowed() {
         return plugin.getConfig().getBoolean("settings.allow-drop", true);
     }
