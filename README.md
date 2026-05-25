@@ -38,43 +38,114 @@ A legendary weapon with unique mechanics:
     *   *Ground Slam*: Hitting an entity causes blocks around to "jump" (visual effect).
     *   *Kill Message*: Custom chat message when killing a player.
 
-### 🔮  new mace: Mace Chaos (The Glitch)
-A corrupted variant with chaotic properties:
+### 🔮 Custom Mace: Mace Chaos (The Glitch)
+A corrupted variant with chaotic properties and void origins:
 *   **Hard Recipe**:
-* ![Hard Recipe](https://i.imgur.com/XClFjxZ.png)
-
-*   **Self-Curse**: Wither + Inventory Shuffle when crafted or picked up.
+    *   Requires **3x Dark Ego** (custom `NETHER_STAR` items with the `egosmp:dark_ego` PDC tag), **2x Heavy Core**, **1x Mace**, and **3x Wither Rose**.
+    *   ![Hard Recipe](https://i.imgur.com/XClFjxZ.png)
+*   **Self-Curse**: Wither II and Inventory Shuffling (periodically shuffles hotbar and main inventory slots 0-35) for 10 seconds upon crafting or picking up.
 *   **Combat Effects**:
-    *   **Unknown Power**: 20% chance to shuffle victim's inventory for 5s.
-    *   **Glitch Kill**: Death message hides killer's name with glitches (e.g. "User was OBLITERATED by §kERROR").
----
+    *   **Glitch Strike**: 10-20% chance (configurable) to corrupt the victim's inventory, forcing periodic slot shuffling for 5-10 seconds.
+    *   **Glitch Kill**: Overrides standard death messages to obfuscate the killer's identity (e.g. `Victim was OBLITERATED by §kERROR_404`).
 
+---
 
 ## Infrastructure & Project Structure
 
-The project follows a standard Maven/Gradle layout with a clean architecture:
+The project follows a modular Spigot/Paper plugin directory structure:
 ```
 Mace-Exclusive/
 ├── src/main/java/vn/nirussv/maceexclusive/
-│   ├── config/       # Configuration Management
-│   ├── listener/     # Event Listeners (Strict, Effects, Chaos)
-│   ├── mace/         # Mace Logic & Factory
-│   ├── task/         # Runnables (Particles, Shuffle)
-│   └── MaceExclusivePlugin.java # Main Entry Point
+│   ├── command/      # Command handler and tab completer (/macee)
+│   ├── config/       # Configuration and Language loader (Adventure API)
+│   ├── listener/     # Spigot Event Listeners (Strict Mode, Combat, Effects)
+│   ├── mace/         # Core weapon logic, state persistence, factory pattern
+│   ├── task/         # Bukkit Runnables (Active particles, inventory shuffler)
+│   └── MaceExclusivePlugin.java # Plugin entry point & lifecycle hooks
 └── src/main/resources/
-     ├── config.yml    # Main Configuration
-     └── plugin.yml    # Plugin Description
+     ├── config.yml    # Configuration properties & toggles
+     ├── lang_en.yml   # English localization
+     ├── lang_vi.yml   # Vietnamese localization
+     └── plugin.yml    # Plugin declaration & commands
 ```
+
+## Architectural Design
+
+The plugin is designed with clean OOP principles and separation of concerns:
+
+```mermaid
+classDiagram
+    class MaceExclusivePlugin {
+        +onEnable()
+        +onDisable()
+    }
+    class ConfigManager {
+        +reload()
+        +getMessage()
+        +isStrictMode()
+    }
+    class MaceFactory {
+        +createMace(MaceType)
+        +getMaceType(ItemStack)
+    }
+    class MaceRepository {
+        -holders Map
+        +save()
+        +load()
+        +setHolder()
+    }
+    class MaceManager {
+        +register()
+        +reset()
+        +onPlayerBecameHolder()
+    }
+    class MaceListener {
+        +onPrepareCraft()
+        +onCraftMace()
+        +onInventoryClick()
+    }
+
+    MaceExclusivePlugin --> ConfigManager
+    MaceExclusivePlugin --> MaceFactory
+    MaceExclusivePlugin --> MaceRepository
+    MaceExclusivePlugin --> MaceManager
+    MaceManager --> MaceRepository
+    MaceManager --> ConfigManager
+    MaceManager --> MaceFactory
+    MaceListener --> MaceManager
+    MaceListener --> ConfigManager
+    MaceListener --> MaceFactory
+```
+
+### Key Components
+
+1. **State & Registry Persistence (`MaceRepository`)**:
+   - Manages an in-memory `EnumMap<MaceType, UUID>` mapping each singleton mace to its current holder's UUID.
+   - Automatically saves and loads state to/from a dedicated `mace-data.yml` file to ensure consistency across server restarts.
+
+2. **Creation Decoupling (`MaceFactory`)**:
+   - Compiles custom `ItemStack` representations of maces using configured names, custom model data, and lore.
+   - Sets a `PersistentDataContainer` (PDC) byte tag on the item (e.g. `mace_power_item` or `mace_chaos_item`) to uniquely identify the weapon instance across the server.
+
+3. **Business Logic orchestrator (`MaceManager`)**:
+   - Mediates state changes, checks if a mace type can be crafted, registers new maces, and processes holder transition effects (Glowing potion effects, Adventure Titles, and global coordinate broadcasts).
+
+4. **Strict Inventory Control (`MaceListener`)**:
+   - Blocks storage of registered maces inside unauthorized containers (Chests, Shulker Boxes, Barrels, etc.) while allowing utility blocks like Anvils, Crafting Tables, and Enchanting Tables.
+   - Provides an optional `strict-mode-drop` mechanism that drops the mace at the player's feet if they try to bypass the container restriction.
+   - Blocks automated Hopper extraction and Crafter blocks from manipulating registered maces.
+
+---
 
 ## Installation
 
-1.  **Download**: Get the latest JAR from [Nodrinth here](https://nodrinth.com/plugin/mace-exclusive).
+1.  **Download**: Get the latest JAR from [Modrinth](https://modrinth.com/).
 2.  **Install**: Drop the file into your server's `plugins/` folder.
-3.  **Restart**: Start your server to generate config files.
+3.  **Restart**: Start your server to generate configuration files.
 4.  **Configure**: Edit files in `plugins/Mace-Exclusive/`:
-    *   `config.yml`: Feature toggles (Strict mode, Recipe, Item stats)
-    *   `lang_en.yml` / `lang_vi.yml`: Localization
-5.  **Reload**: Use `/macee reload` to apply changes.
+    *   `config.yml`: Feature toggles (Strict mode, recipes, combat stats)
+    *   `lang_en.yml` / `lang_vi.yml`: Custom localization strings
+5.  **Reload**: Use `/macee reload` to apply configuration changes live.
 
 ---
 
@@ -82,11 +153,13 @@ Mace-Exclusive/
 
 | Command | Description | Permission |
 |---------|-------------|------------|
-| `/macee help` | Show help menu | `mace.use` |
-| `/macee info` | View current Mace holder & location | `mace.use` |
-| `/macee give <player>` | **Admin**: Force give the Mace to a player | `mace.admin` |
-| `/macee reset` | **Admin**: Reset Mace status (allows crafting again) | `mace.admin` |
-| `/macee reload` | **Admin**: Reload configuration | `mace.admin` |
+| `/macee help` | Show the plugin help menu | `mace.use` |
+| `/macee info [power\|chaos]` | View current holder and coordinate location of the selected Mace type | `mace.use` |
+| `/macee give [power\|chaos]` | **Admin**: Gives the selected Mace type to the player executing the command | `mace.admin` |
+| `/macee reset [power\|chaos]` | **Admin**: Resets registration status, allowing the selected Mace type to be crafted again | `mace.admin` |
+| `/macee reload` | **Admin**: Reloads plugin configuration and localization files | `mace.admin` |
+
+*Note: If no mace type is specified, commands default to the `power` mace.*
 
 ---
 
@@ -94,8 +167,8 @@ Mace-Exclusive/
 
 | Permission | Default | Description |
 |------------|---------|-------------|
-| `mace.use` | true | Access to basic info/help commands |
-| `mace.admin` | op | Full access to admin commands & bypasses |
+| `mace.use` | true | Allows usage of `/macee help` and `/macee info` |
+| `mace.admin` | op | Allows access to `/macee give`, `/macee reset`, `/macee reload`, and bypasses strict mode container block restrictions |
 
 ---
 
