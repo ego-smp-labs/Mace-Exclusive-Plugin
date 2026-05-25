@@ -46,7 +46,7 @@ public final class ChaosFracturedStepAbility implements PassiveAbility {
             return;
         }
 
-        double chance = configManager.getWeaponEffectDouble("chaos_mace", "fractured-step.chance", 0.35D);
+        double chance = configManager.getItemEffectDouble("chaos_mace", "fractured-step.chance", 0.35D);
         if (Math.random() > chance) {
             return;
         }
@@ -61,9 +61,9 @@ public final class ChaosFracturedStepAbility implements PassiveAbility {
         particles.play(player.getLocation().add(0, 1, 0));
         sound.play(player.getLocation());
 
-        double reduction = configManager.getWeaponEffectDouble("chaos_mace", "fractured-step.damage-reduction", 0.25D);
+        double reduction = configManager.getItemEffectDouble("chaos_mace", "fractured-step.damage-reduction", 0.25D);
         event.setDamage(event.getDamage() * Math.max(0.0D, 1.0D - reduction));
-        cooldownService.setCooldown(player, id(), configManager.getWeaponEffectInt("chaos_mace", "fractured-step.cooldown-seconds", 8) * 1000L);
+        cooldownService.setCooldown(player, id(), configManager.getItemEffectInt("chaos_mace", "fractured-step.cooldown-seconds", 8) * 1000L);
     }
 
     private Location behind(LivingEntity entity, double fallbackY) {

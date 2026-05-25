@@ -19,15 +19,15 @@ import java.util.Map;
 
 public class ConfigManager {
 
-    private static final String WEAPON_CONFIG_DIRECTORY = "weapons";
+    private static final String ITEM_CONFIG_DIRECTORY = "items";
     private static final String YAML_EXTENSION = ".yml";
 
     private final MaceExclusivePlugin plugin;
     private final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacyAmpersand();
     private FileConfiguration langConfig;
     private PerformanceConfig performanceConfig;
-    private final Map<String, WeaponConfig> weaponConfigs = new HashMap<>();
-    private final Map<String, YamlConfiguration> weaponFiles = new HashMap<>();
+    private final Map<String, ItemConfig> itemConfigs = new HashMap<>();
+    private final Map<String, YamlConfiguration> itemFiles = new HashMap<>();
     private final Map<String, String> messageCache = new HashMap<>();
 
     public ConfigManager(MaceExclusivePlugin plugin) {
@@ -72,47 +72,47 @@ public class ConfigManager {
 
     private void loadTypedConfigs() {
         performanceConfig = PerformanceConfig.fromConfig(plugin.getConfig());
-        weaponConfigs.clear();
-        weaponFiles.clear();
-        ensureWeaponConfigDirectory();
+        itemConfigs.clear();
+        itemFiles.clear();
+        ensureItemConfigDirectory();
         for (ExclusiveItemId itemId : ExclusiveItemId.values()) {
-            ConfigurationSection section = getWeaponSection(itemId.id(), itemId.legacyConfigPath());
-            weaponConfigs.put(itemId.id(), WeaponConfig.fromSection(itemId.id(), section, itemId.material(), itemId.fallbackName()));
+            ConfigurationSection section = getItemSection(itemId.id(), itemId.legacyConfigPath());
+            itemConfigs.put(itemId.id(), ItemConfig.fromSection(itemId.id(), section, itemId.material(), itemId.fallbackName()));
         }
     }
 
-    private void ensureWeaponConfigDirectory() {
-        File weaponDirectory = getWeaponConfigDirectory();
-        if (weaponDirectory.exists()) {
-            if (!weaponDirectory.isDirectory()) {
-                plugin.getLogger().warning("Weapon config path exists but is not a directory: " + weaponDirectory.getPath());
+    private void ensureItemConfigDirectory() {
+        File itemDirectory = getItemConfigDirectory();
+        if (itemDirectory.exists()) {
+            if (!itemDirectory.isDirectory()) {
+                plugin.getLogger().warning("Weapon config path exists but is not a directory: " + itemDirectory.getPath());
             }
             return;
         }
 
-        if (!weaponDirectory.mkdirs()) {
-            plugin.getLogger().warning("Could not create weapon config directory: " + weaponDirectory.getPath());
+        if (!itemDirectory.mkdirs()) {
+            plugin.getLogger().warning("Could not create weapon config directory: " + itemDirectory.getPath());
         }
     }
 
-    private File getWeaponConfigDirectory() {
-        return new File(plugin.getDataFolder(), WEAPON_CONFIG_DIRECTORY);
+    private File getItemConfigDirectory() {
+        return new File(plugin.getDataFolder(), ITEM_CONFIG_DIRECTORY);
     }
 
-    private YamlConfiguration loadWeaponFile(String id) {
-        if (weaponFiles.containsKey(id)) {
-            return weaponFiles.get(id);
+    private YamlConfiguration loadItemFile(String id) {
+        if (itemFiles.containsKey(id)) {
+            return itemFiles.get(id);
         }
 
-        ensureWeaponResource(id);
+        ensureItemResource(id);
 
-        File file = new File(getWeaponConfigDirectory(), id + YAML_EXTENSION);
+        File file = new File(getItemConfigDirectory(), id + YAML_EXTENSION);
         if (!file.exists()) {
             return null;
         }
 
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-        String resourcePath = weaponResourcePath(id);
+        String resourcePath = itemResourcePath(id);
         try (InputStream defaultStream = plugin.getResource(resourcePath)) {
             if (defaultStream != null) {
                 configuration.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream, StandardCharsets.UTF_8)));
@@ -121,17 +121,17 @@ public class ConfigManager {
             plugin.getLogger().warning("Could not load default weapon config for " + id + ": " + exception.getMessage());
         }
 
-        weaponFiles.put(id, configuration);
+        itemFiles.put(id, configuration);
         return configuration;
     }
 
-    private void ensureWeaponResource(String id) {
-        File file = new File(getWeaponConfigDirectory(), id + YAML_EXTENSION);
+    private void ensureItemResource(String id) {
+        File file = new File(getItemConfigDirectory(), id + YAML_EXTENSION);
         if (file.exists()) {
             return;
         }
 
-        String resourcePath = weaponResourcePath(id);
+        String resourcePath = itemResourcePath(id);
         if (!resourceExists(resourcePath)) {
             return;
         }
@@ -148,8 +148,8 @@ public class ConfigManager {
         }
     }
 
-    private String weaponResourcePath(String id) {
-        return WEAPON_CONFIG_DIRECTORY + "/" + id + YAML_EXTENSION;
+    private String itemResourcePath(String id) {
+        return ITEM_CONFIG_DIRECTORY + "/" + id + YAML_EXTENSION;
     }
 
     public String getRawMessage(String key) {
@@ -191,15 +191,15 @@ public class ConfigManager {
         return toComponent(legacyText == null ? "" : legacyText);
     }
 
-    public WeaponConfig getWeaponConfig(String id) {
-        if (weaponConfigs.isEmpty()) {
+    public ItemConfig getItemConfig(String id) {
+        if (itemConfigs.isEmpty()) {
             loadTypedConfigs();
         }
-        return weaponConfigs.get(id);
+        return itemConfigs.get(id);
     }
 
-    public WeaponConfig getWeaponConfig(ExclusiveItemId id) {
-        return getWeaponConfig(id.id());
+    public ItemConfig getItemConfig(ExclusiveItemId id) {
+        return getItemConfig(id.id());
     }
 
     public PerformanceConfig getPerformanceConfig() {
@@ -209,10 +209,10 @@ public class ConfigManager {
         return performanceConfig;
     }
 
-    public ConfigurationSection getWeaponSection(String id, String legacyPath) {
-        YamlConfiguration weaponFile = loadWeaponFile(id);
-        if (weaponFile != null) {
-            return weaponFile;
+    public ConfigurationSection getItemSection(String id, String legacyPath) {
+        YamlConfiguration itemFile = loadItemFile(id);
+        if (itemFile != null) {
+            return itemFile;
         }
         return plugin.getConfig().getConfigurationSection(legacyPath);
     }
@@ -239,20 +239,20 @@ public class ConfigManager {
         return (float) Math.max(0.0D, plugin.getConfig().getDouble("forge.abort-explosion-power", 1.5D));
     }
 
-    public boolean isWeaponEnabled(ExclusiveItemId id) {
-        WeaponConfig weaponConfig = getWeaponConfig(id);
+    public boolean isItemEnabled(ExclusiveItemId id) {
+        ItemConfig weaponConfig = getItemConfig(id);
         return weaponConfig == null || weaponConfig.enabled();
     }
 
-    public boolean isSingletonWeaponsEnabled() {
+    public boolean isSingletonItemsEnabled() {
         return plugin.getConfig().getBoolean("settings.singleton-weapons", true);
     }
 
-    public boolean isSingletonWeapon(ExclusiveItemId id) {
-        if (!isSingletonWeaponsEnabled()) {
+    public boolean isSingletonItem(ExclusiveItemId id) {
+        if (!isSingletonItemsEnabled()) {
             return false;
         }
-        ConfigurationSection section = getWeaponSection(id.id(), id.legacyConfigPath());
+        ConfigurationSection section = getItemSection(id.id(), id.legacyConfigPath());
         return section == null || section.getBoolean("singleton", true);
     }
 
@@ -260,29 +260,29 @@ public class ConfigManager {
         return plugin.getConfig().getBoolean("settings.strict-container-block", true);
     }
 
-    public boolean getWeaponEffectBoolean(String weaponId, String path, boolean fallback) {
-        ConfigurationSection effects = getWeaponConfig(weaponId) == null ? null : getWeaponConfig(weaponId).effects();
+    public boolean getItemEffectBoolean(String itemId, String path, boolean fallback) {
+        ConfigurationSection effects = getItemConfig(itemId) == null ? null : getItemConfig(itemId).effects();
         return effects == null ? fallback : effects.getBoolean(path, fallback);
     }
 
-    public int getWeaponEffectInt(String weaponId, String path, int fallback) {
-        ConfigurationSection effects = getWeaponConfig(weaponId) == null ? null : getWeaponConfig(weaponId).effects();
+    public int getItemEffectInt(String itemId, String path, int fallback) {
+        ConfigurationSection effects = getItemConfig(itemId) == null ? null : getItemConfig(itemId).effects();
         return effects == null ? fallback : effects.getInt(path, fallback);
     }
 
-    public double getWeaponEffectDouble(String weaponId, String path, double fallback) {
-        ConfigurationSection effects = getWeaponConfig(weaponId) == null ? null : getWeaponConfig(weaponId).effects();
+    public double getItemEffectDouble(String itemId, String path, double fallback) {
+        ConfigurationSection effects = getItemConfig(itemId) == null ? null : getItemConfig(itemId).effects();
         return effects == null ? fallback : effects.getDouble(path, fallback);
     }
 
-    public double getWeaponCurseDouble(String weaponId, String path, double fallback) {
-        ConfigurationSection weaponSection = getWeaponSection(weaponId, "weapons." + weaponId);
-        ConfigurationSection curse = weaponSection == null ? null : weaponSection.getConfigurationSection("curse");
+    public double getItemCurseDouble(String itemId, String path, double fallback) {
+        ConfigurationSection itemSection = getItemSection(itemId, "items." + itemId);
+        ConfigurationSection curse = itemSection == null ? null : itemSection.getConfigurationSection("curse");
         if (curse != null && curse.contains(path)) {
             return curse.getDouble(path, fallback);
         }
 
-        WeaponConfig weaponConfig = getWeaponConfig(weaponId);
+        ItemConfig weaponConfig = getItemConfig(itemId);
         ConfigurationSection effects = weaponConfig == null ? null : weaponConfig.effects();
         ConfigurationSection effectCurse = effects == null ? null : effects.getConfigurationSection("curse");
         return effectCurse == null ? fallback : effectCurse.getDouble(path, fallback);

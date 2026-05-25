@@ -61,14 +61,14 @@ public final class ChaosRiftReversalAbility implements ActiveAbility, PassiveAbi
         player.teleport(targetLocation.setDirection(player.getLocation().getDirection()));
         target.teleport(playerLocation.setDirection(target.getLocation().getDirection()));
 
-        double damage = configManager.getWeaponEffectDouble("chaos_mace", "rift-reversal.damage", 5.0D);
+        double damage = configManager.getItemEffectDouble("chaos_mace", "rift-reversal.damage", 5.0D);
         target.damage(damage, player);
 
-        long windowMillis = configManager.getWeaponEffectInt("chaos_mace", "rift-reversal.backfire-window-seconds", 3) * 1000L;
+        long windowMillis = configManager.getItemEffectInt("chaos_mace", "rift-reversal.backfire-window-seconds", 3) * 1000L;
         marks.put(target.getUniqueId(), new Mark(player.getUniqueId(), System.currentTimeMillis() + windowMillis));
 
         sound.play(player.getLocation());
-        cooldownService.setCooldown(player, id(), configManager.getWeaponEffectInt("chaos_mace", "rift-reversal.cooldown-seconds", 18) * 1000L);
+        cooldownService.setCooldown(player, id(), configManager.getItemEffectInt("chaos_mace", "rift-reversal.cooldown-seconds", 18) * 1000L);
     }
 
     @Override
@@ -81,7 +81,7 @@ public final class ChaosRiftReversalAbility implements ActiveAbility, PassiveAbi
         if (player == null || player.isDead()) {
             return;
         }
-        double backfireDamage = configManager.getWeaponEffectDouble("chaos_mace", "rift-reversal.backfire-damage", 6.0D);
+        double backfireDamage = configManager.getItemEffectDouble("chaos_mace", "rift-reversal.backfire-damage", 6.0D);
         particles.play(player.getLocation().add(0, 1, 0));
         player.damage(backfireDamage);
     }

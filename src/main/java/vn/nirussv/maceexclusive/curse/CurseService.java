@@ -203,13 +203,13 @@ public final class CurseService implements Listener {
     private void applyHoldCurse(Player player, ExclusiveItemId itemId) {
         switch (itemId) {
             case CHAOS_MACE -> {
-                double amount = -Math.abs(configManager.getWeaponCurseDouble(
+                double amount = -Math.abs(configManager.getItemCurseDouble(
                     itemId.id(), "max_health_penalty", DEFAULT_CHAOS_HEALTH_PENALTY));
                 attributeLease.apply(player, Attribute.GENERIC_MAX_HEALTH, maxHealthLeaseKey, amount,
                     AttributeModifier.Operation.ADD_NUMBER);
             }
             case CHRONOS_ANCHOR_SPEAR -> {
-                double multiplier = configManager.getWeaponCurseDouble(
+                double multiplier = configManager.getItemCurseDouble(
                     itemId.id(), "max_health_multiplier", DEFAULT_CHRONOS_HEALTH_MULTIPLIER);
                 double scalar = Math.min(0.0D, multiplier - 1.0D);
                 attributeLease.apply(player, Attribute.GENERIC_MAX_HEALTH, maxHealthLeaseKey, scalar,
@@ -242,7 +242,7 @@ public final class CurseService implements Listener {
             return;
         }
 
-        double waterDamagePerSecond = Math.max(0.0D, configManager.getWeaponCurseDouble(
+        double waterDamagePerSecond = Math.max(0.0D, configManager.getItemCurseDouble(
             ExclusiveItemId.CHAOS_MACE.id(), "water_damage_per_second", DEFAULT_CHAOS_WATER_DAMAGE));
         if (waterDamagePerSecond <= 0.0D) {
             return;

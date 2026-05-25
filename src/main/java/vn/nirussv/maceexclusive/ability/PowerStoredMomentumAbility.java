@@ -45,8 +45,8 @@ public final class PowerStoredMomentumAbility implements PassiveAbility {
             return;
         }
 
-        double multiplier = configManager.getWeaponEffectDouble("power_mace", "stored-momentum.damage-multiplier", 1.15D);
-        double knockback = configManager.getWeaponEffectDouble("power_mace", "stored-momentum.knockback", 0.35D);
+        double multiplier = configManager.getItemEffectDouble("power_mace", "stored-momentum.damage-multiplier", 1.15D);
+        double knockback = configManager.getItemEffectDouble("power_mace", "stored-momentum.knockback", 0.35D);
         event.setDamage(event.getDamage() * Math.max(1.0D, multiplier));
 
         Vector direction = target.getLocation().toVector().subtract(context.player().getLocation().toVector());

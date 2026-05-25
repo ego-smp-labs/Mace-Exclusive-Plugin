@@ -5,7 +5,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import vn.nirussv.maceexclusive.config.ConfigManager;
-import vn.nirussv.maceexclusive.config.WeaponConfig;
+import vn.nirussv.maceexclusive.config.ItemConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public final class ExclusiveItemFactory {
     }
 
     public ItemStack create(ExclusiveItemId id) {
-        WeaponConfig weaponConfig = configManager.getWeaponConfig(id);
+        ItemConfig weaponConfig = configManager.getItemConfig(id);
 
         ItemStack item = new ItemStack(weaponConfig == null ? id.material() : weaponConfig.material());
         ItemMeta meta = item.getItemMeta();

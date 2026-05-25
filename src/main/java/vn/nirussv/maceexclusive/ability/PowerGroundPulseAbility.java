@@ -47,10 +47,10 @@ public final class PowerGroundPulseAbility implements ActiveAbility {
             return;
         }
 
-        double radius = configManager.getWeaponEffectDouble("power_mace", "ground-pulse.radius", 4.0D);
-        double damage = configManager.getWeaponEffectDouble("power_mace", "ground-pulse.damage", 4.0D);
-        double upward = configManager.getWeaponEffectDouble("power_mace", "ground-pulse.upward-velocity", 0.55D);
-        long cooldownMillis = configManager.getWeaponEffectInt("power_mace", "ground-pulse.cooldown-seconds", 12) * 1000L;
+        double radius = configManager.getItemEffectDouble("power_mace", "ground-pulse.radius", 4.0D);
+        double damage = configManager.getItemEffectDouble("power_mace", "ground-pulse.damage", 4.0D);
+        double upward = configManager.getItemEffectDouble("power_mace", "ground-pulse.upward-velocity", 0.55D);
+        long cooldownMillis = configManager.getItemEffectInt("power_mace", "ground-pulse.cooldown-seconds", 12) * 1000L;
 
         Location origin = player.getLocation();
         for (LivingEntity entity : origin.getNearbyLivingEntities(radius, candidate -> !candidate.getUniqueId().equals(player.getUniqueId()))) {

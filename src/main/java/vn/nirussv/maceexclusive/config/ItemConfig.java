@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public record WeaponConfig(
+public record ItemConfig(
     String id,
     boolean enabled,
     Material material,
@@ -22,7 +22,7 @@ public record WeaponConfig(
     public record RecipeConfig(boolean enabled, List<String> shape, Map<Character, Material> ingredients) {
     }
 
-    static WeaponConfig fromSection(String id, ConfigurationSection section, Material fallbackMaterial, String fallbackName) {
+    static ItemConfig fromSection(String id, ConfigurationSection section, Material fallbackMaterial, String fallbackName) {
         boolean enabled = section == null || section.getBoolean("enabled", true);
         Material material = resolveMaterial(section, fallbackMaterial);
         String name = section == null ? fallbackName : section.getString("name", fallbackName);
@@ -32,7 +32,7 @@ public record WeaponConfig(
             : null;
         RecipeConfig recipe = readRecipe(section == null ? null : section.getConfigurationSection("recipe"));
         ConfigurationSection effects = section == null ? null : section.getConfigurationSection("effects");
-        return new WeaponConfig(id, enabled, material, name, lore, customModelData, recipe, effects);
+        return new ItemConfig(id, enabled, material, name, lore, customModelData, recipe, effects);
     }
 
     private static Material resolveMaterial(ConfigurationSection section, Material fallbackMaterial) {

@@ -34,7 +34,7 @@ public final class ItemMatcher {
         String itemId = pdc.get(keys.itemId(), PersistentDataType.STRING);
         Optional<ExclusiveItemId> rootMatch = ExclusiveItemId.fromId(itemId)
             .filter(id -> {
-                vn.nirussv.maceexclusive.config.WeaponConfig wc = configManager.getWeaponConfig(id);
+                vn.nirussv.maceexclusive.config.ItemConfig wc = configManager.getItemConfig(id);
                 Material expected = wc != null ? wc.material() : id.material();
                 return item.getType() == expected;
             });
@@ -46,7 +46,7 @@ public final class ItemMatcher {
             if (pdc.has(keys.legacyMaceKey(legacyType), PersistentDataType.BYTE)) {
                 return ExclusiveItemId.fromMaceType(legacyType)
                     .filter(id -> {
-                        vn.nirussv.maceexclusive.config.WeaponConfig wc = configManager.getWeaponConfig(id);
+                        vn.nirussv.maceexclusive.config.ItemConfig wc = configManager.getItemConfig(id);
                         Material expected = wc != null ? wc.material() : id.material();
                         return item.getType() == expected;
                     });

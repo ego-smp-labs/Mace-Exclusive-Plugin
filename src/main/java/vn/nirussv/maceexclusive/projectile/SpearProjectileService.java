@@ -70,7 +70,7 @@ public final class SpearProjectileService {
             return;
         }
 
-        if (!configManager.isWeaponEnabled(ExclusiveItemId.CHRONOS_ANCHOR_SPEAR)) {
+        if (!configManager.isItemEnabled(ExclusiveItemId.CHRONOS_ANCHOR_SPEAR)) {
             return;
         }
 

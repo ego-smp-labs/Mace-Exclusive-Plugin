@@ -1,4 +1,5 @@
 enabled: true
+singleton: true
 name: "&5&lMACE OF CHAOS &k|&r &5&lGLITCH"
 material: MACE
 custom-model-data: 2002
@@ -18,6 +19,11 @@ recipe:
     H: HEAVY_CORE
     M: MACE
     W: WITHER_ROSE
+cooldowns:
+  rift_reversal: 32
+curse:
+  max_health_penalty: 4.0
+  water_damage_per_second: 1.5
 effects:
   # Glitch name when killing
   glitch-kill-name: true

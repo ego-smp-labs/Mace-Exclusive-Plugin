@@ -1,4 +1,5 @@
 enabled: true
+singleton: true
 name: "&b&lMACE OF POWER"
 material: MACE
 custom-model-data: 2001
@@ -16,6 +17,13 @@ recipe:
     H: HEAVY_CORE
     I: NETHERITE_INGOT
     B: BREEZE_ROD
+cooldowns:
+  ground_pulse: 22
+curse:
+  hold:
+    speed_penalty: 0.1
+  backfire:
+    mining_fatigue_duration: 100
 effects:
   combat:
-    blindness-duration: 60 # ticks
+    blindness-duration: 60

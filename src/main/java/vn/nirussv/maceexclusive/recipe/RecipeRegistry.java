@@ -7,7 +7,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
-import vn.nirussv.maceexclusive.config.WeaponConfig;
+import vn.nirussv.maceexclusive.config.ItemConfig;
 import vn.nirussv.maceexclusive.item.ExclusiveItemId;
 import vn.nirussv.maceexclusive.mace.MaceFactory;
 import vn.nirussv.maceexclusive.mace.MaceType;
@@ -48,7 +48,7 @@ public final class RecipeRegistry {
 
     private void registerMaceRecipe(MaceType type, String recipeKey) {
         ExclusiveItemId itemId = type.getExclusiveItemId();
-        WeaponConfig weaponConfig = configManager.getWeaponConfig(itemId);
+        ItemConfig weaponConfig = configManager.getItemConfig(itemId);
         if (weaponConfig == null || !weaponConfig.enabled() || !weaponConfig.recipe().enabled()) {
             return;
         }

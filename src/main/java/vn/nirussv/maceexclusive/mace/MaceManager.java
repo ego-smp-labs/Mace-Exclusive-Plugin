@@ -66,7 +66,7 @@ public class MaceManager {
     }
 
     public boolean canCreate(ExclusiveItemId id) {
-        return !configManager.isSingletonWeapon(id) || !repository.isRegistered(id);
+        return !configManager.isSingletonItem(id) || !repository.isRegistered(id);
     }
 
     public boolean register(ItemStack item, UUID owner, MaceType type) {
@@ -80,7 +80,7 @@ public class MaceManager {
         if (item == null || item.getType() != id.material()) {
             return false;
         }
-        if (configManager.isSingletonWeapon(id) && repository.isRegistered(id)) {
+        if (configManager.isSingletonItem(id) && repository.isRegistered(id)) {
             return false;
         }
 
@@ -99,7 +99,7 @@ public class MaceManager {
         });
         
         item.setItemMeta(meta);
-        if (configManager.isSingletonWeapon(id)) {
+        if (configManager.isSingletonItem(id)) {
             repository.setHolder(id, owner);
         }
         return true;
@@ -111,7 +111,7 @@ public class MaceManager {
             return true;
         }
         ExclusiveItemId id = matched.get();
-        if (!configManager.isSingletonWeapon(id)) {
+        if (!configManager.isSingletonItem(id)) {
             return true;
         }
 
@@ -128,7 +128,7 @@ public class MaceManager {
             return false;
         }
         ExclusiveItemId id = matched.get();
-        if (!configManager.isSingletonWeapon(id)) {
+        if (!configManager.isSingletonItem(id)) {
             return false;
         }
         UUID holder = repository.getHolder(id);

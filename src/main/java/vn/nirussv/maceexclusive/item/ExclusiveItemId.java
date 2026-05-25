@@ -39,7 +39,7 @@ public enum ExclusiveItemId {
     }
 
     public String legacyConfigPath() {
-        return configPath;
+        return "items." + id;
     }
 
     public String fallbackName() {

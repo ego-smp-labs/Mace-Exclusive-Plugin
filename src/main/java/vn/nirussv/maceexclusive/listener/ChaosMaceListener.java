@@ -148,10 +148,10 @@ public class ChaosMaceListener implements Listener {
 
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
         if (maceManager.isChaosMace(weapon)) {
-            double chance = configManager.getWeaponEffectDouble("chaos_mace", "shuffle-inventory.chance", 0.2);
+            double chance = configManager.getItemEffectDouble("chaos_mace", "shuffle-inventory.chance", 0.2);
             if (random.nextDouble() < chance) {
-                int duration = configManager.getWeaponEffectInt("chaos_mace", "shuffle-inventory.duration", 5);
-                int interval = configManager.getWeaponEffectInt("chaos_mace", "shuffle-inventory.interval", 5);
+                int duration = configManager.getItemEffectInt("chaos_mace", "shuffle-inventory.duration", 5);
+                int interval = configManager.getItemEffectInt("chaos_mace", "shuffle-inventory.interval", 5);
                 
                 victim.sendMessage(configManager.getMessage("chaos.inventory-corruption"));
                 new InventoryShuffleTask(victim, duration, interval, configManager).runTaskTimer(plugin, 0L, 1L);
@@ -167,7 +167,7 @@ public class ChaosMaceListener implements Listener {
         if (killer != null) {
             ItemStack weapon = killer.getInventory().getItemInMainHand();
             if (maceManager.isChaosMace(weapon)) {
-                if (configManager.getWeaponEffectBoolean("chaos_mace", "glitch-kill-name", true)) {
+                if (configManager.getItemEffectBoolean("chaos_mace", "glitch-kill-name", true)) {
                     event.deathMessage(
                         Component.text(victim.getName(), NamedTextColor.RED)
                         .append(Component.text(" was OBLITERATED by ", NamedTextColor.GRAY))
@@ -179,10 +179,10 @@ public class ChaosMaceListener implements Listener {
     }
 
     private void applySelfCurse(Player player) {
-        if (!configManager.getWeaponEffectBoolean("chaos_mace", "self-curse.enabled", true)) return;
+        if (!configManager.getItemEffectBoolean("chaos_mace", "self-curse.enabled", true)) return;
         
-        int witherDur = configManager.getWeaponEffectInt("chaos_mace", "self-curse.wither-duration", 10) * 20;
-        int shuffleDur = configManager.getWeaponEffectInt("chaos_mace", "self-curse.shuffle-duration", 10);
+        int witherDur = configManager.getItemEffectInt("chaos_mace", "self-curse.wither-duration", 10) * 20;
+        int shuffleDur = configManager.getItemEffectInt("chaos_mace", "self-curse.shuffle-duration", 10);
         
         player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, witherDur, 1));
         
