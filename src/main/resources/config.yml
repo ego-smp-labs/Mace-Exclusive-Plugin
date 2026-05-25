@@ -12,19 +12,106 @@ settings:
   strict-mode-drop: false
   # If true: Prevents hoppers and droppers from moving registered maces.
   prevent-hopper-pickup: true
+  # Enables extra diagnostic logs.
+  verbose: false
 
-effects:
-  # Effects when crafting the Mace for the first time
+weapons:
+  power_mace:
+    enabled: true
+    name: "&b&lMACE OF POWER"
+    material: MACE
+    custom-model-data: 2001
+    lore:
+      - "&7An ancient weapon."
+      - "&7Hold to charge power."
+      - "&7&oOnly one can exist."
+    recipe:
+      enabled: true
+      shape:
+        - " H "
+        - " I "
+        - " B "
+      ingredients:
+        H: HEAVY_CORE
+        I: NETHERITE_INGOT
+        B: BREEZE_ROD
+    effects:
+      combat:
+        blindness-duration: 60 # ticks
+
+  chaos_mace:
+    enabled: true
+    name: "&5&lMACE OF CHAOS &k|&r &5&lGLITCH"
+    material: MACE
+    custom-model-data: 2002
+    lore:
+      - "&7A corrupted weapon from the void."
+      - "&cError: Unknown Power Detected"
+      - "&kUnknown Properties"
+    recipe:
+      enabled: true
+      shape:
+        - "NHN"
+        - "HMH"
+        - "NWN"
+      ingredients:
+        # N = Dark Ego (NETHER_STAR with egosmp:dark_ego PDC tag)
+        N: NETHER_STAR
+        H: HEAVY_CORE
+        M: MACE
+        W: WITHER_ROSE
+    effects:
+      # Glitch name when killing
+      glitch-kill-name: true
+      # Inventory Shuffle on hit
+      shuffle-inventory:
+        chance: 0.10 # 10%
+        duration: 10 # seconds
+        interval: 5 # ticks
+      # Self-effect on first craft/pickup
+      self-curse:
+        enabled: true
+        wither-duration: 10 # seconds
+        shuffle-duration: 10 # seconds
+      # Combat/Usage
+      glowing: true
+      announce-on-chat: true
+
+  chronos_anchor_spear:
+    enabled: false
+    name: "&6&lCHRONOS ANCHOR SPEAR"
+    material: TRIDENT
+    custom-model-data: 2003
+    lore:
+      - "&7A time-anchored spear."
+    recipe:
+      enabled: false
+      shape:
+        - " E "
+        - " T "
+        - " S "
+      ingredients:
+        E: ENDER_PEARL
+        T: TRIDENT
+        S: AMETHYST_SHARD
+
+performance:
+  # Repeating task rate for passive held-item effects.
+  holding-effect-tick-rate: 5
+  # Effects when crafting the Mace for the first time.
   first-craft:
     glowing: true
     duration: 300 # seconds
-
-  # Passive effects when holding the Mace
+  # Passive effects when holding the Mace.
   holding:
     glowing: false # Default false
     soul-particles: false # Default false
-
-  # Active effects during combat/usage
+    particle-count: 5
+    particle-offset-x: 0.3
+    particle-offset-y: 0.1
+    particle-offset-z: 0.3
+    particle-extra: 0.05
+  # Active effects during combat/usage.
   combat:
     # Custom message when killing a player with the Mace
     custom-kill-message: true
@@ -32,66 +119,15 @@ effects:
     ground-slam:
       enabled: false
       radius: 3
+      max-blocks: 64
 
-mace:
-  name: "&b&lMACE OF POWER"
-  material: MACE
-  custom-model-data: 2001
-  lore:
-    - "&7An ancient weapon."
-    - "&7Hold to charge power."
-    - "&7&oOnly one can exist."
-  
-  # Recipe for the Power Mace
-  recipe:
-    enabled: true
-    shape:
-      - " H "
-      - " I "
-      - " B "
-    ingredients:
-      H: HEAVY_CORE
-      I: NETHERITE_INGOT
-      B: BREEZE_ROD
+crafting:
+  remove-vanilla-mace-recipe: true
+  prevent-shift-click: true
 
-mace-chaos:
-  enabled: true
-  name: "&5&lMACE OF CHAOS &k|&r &5&lGLITCH"
-  material: MACE
-  custom-model-data: 2002
-  lore:
-    - "&7A corrupted weapon from the void."
-    - "&cError: Unknown Power Detected"
-    - "&kUnknown Properties"
-  
-  recipe:
-    shape:
-      - "NHN"
-      - "HMH"
-      - "NWN"
-    ingredients:
-      # N = Dark Ego (NETHER_STAR with egosmp:dark_ego PDC tag)
-      N: NETHER_STAR
-      H: HEAVY_CORE
-      M: MACE
-      W: WITHER_ROSE
-      
-  effects:
-    # Glitch name when killing
-    glitch-kill-name: true
-    
-    # Inventory Shuffle on hit
-    shuffle-inventory:
-      chance: 0.10 # 10%
-      duration: 10 # seconds
-      interval: 5 # ticks
-      
-    # Self-effect on first craft/pickup
-    self-curse:
-      enabled: true
-      wither-duration: 10 # seconds
-      shuffle-duration: 10 # seconds
-      
-    # Combat/Usage
-    glowing: true
-    announce-on-chat: true
+forge:
+  # Block used as awakening forge base. Examples: LODESTONE, REDSTONE_BLOCK.
+  block: LODESTONE
+  # Default awakening duration: 5 minutes.
+  duration-seconds: 300
+  abort-explosion-power: 1.5
