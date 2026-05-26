@@ -36,9 +36,19 @@ public final class ContainerGuardListener implements Listener {
             return;
         }
         ItemStack item = event.getItem().getItemStack();
+        java.util.Optional<vn.nirussv.maceexclusive.item.ExclusiveItemId> optId = maceManager.getExclusiveItemId(item);
+        if (optId.isEmpty()) {
+            return;
+        }
+        
         if (!maceManager.claimIfAllowed(item, player)) {
             event.setCancelled(true);
-            player.sendMessage(configManager.getPrefixedMessage("mace.cannot-move"));
+            vn.nirussv.maceexclusive.item.ExclusiveItemId id = optId.get();
+            String holderName = maceManager.getHolderName(id);
+            if (holderName == null) holderName = "Unknown";
+            
+            String msgPath = id.id().contains("chaos") ? "chaos.already-exists" : "mace.already-exists";
+            player.sendMessage(configManager.getMessage(msgPath, java.util.Map.of("player", holderName)));
         }
     }
 
@@ -154,8 +164,7 @@ public final class ContainerGuardListener implements Listener {
             java.util.Optional<vn.nirussv.maceexclusive.item.ExclusiveItemId> id = maceManager.getExclusiveItemId(item.getItemStack());
             if (id.isPresent()) {
                 if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
-                    maceManager.reset(id.get());
-                    return;
+                    return; // Let the item be destroyed by the void. Admins will reset it manually if needed.
                 }
                 event.setCancelled(true);
             }
