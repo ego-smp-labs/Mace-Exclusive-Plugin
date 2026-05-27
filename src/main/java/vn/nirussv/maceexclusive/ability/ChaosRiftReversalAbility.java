@@ -9,7 +9,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.effect.ParticleProfile;
 import vn.nirussv.maceexclusive.effect.SoundProfile;
-import vn.nirussv.maceexclusive.item.ExclusiveItemId;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +35,8 @@ public final class ChaosRiftReversalAbility implements ActiveAbility, PassiveAbi
     }
 
     @Override
-    public ExclusiveItemId weaponId() {
-        return ExclusiveItemId.CHAOS_MACE;
+    public String weaponId() {
+        return "chaos_mace";
     }
 
     @Override

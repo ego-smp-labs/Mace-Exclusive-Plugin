@@ -1,0 +1,15 @@
+enabled: true
+name: "&6Ego Core"
+material: HEAVY_CORE
+custom-model-data: 3001
+xp-cost: 40
+failure-chance: 0.30
+lore:
+  - "&7A condensed ego core."
+recipe:
+  enabled: true
+  shape: ["NRN", "RHR", "NRN"]
+  ingredients:
+    N: NETHERITE_INGOT
+    R: WITHER_ROSE
+    H: HEAVY_CORE

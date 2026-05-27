@@ -7,7 +7,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
-import vn.nirussv.maceexclusive.mace.MaceType;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,31 +27,20 @@ public final class ForgeSessionStore {
     }
 
     public List<StoredForgeSession> load() {
-        if (!dataFile.exists()) {
-            return List.of();
-        }
-
+        if (!dataFile.exists()) return List.of();
         FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
         ConfigurationSection section = config.getConfigurationSection("sessions");
-        if (section == null) {
-            return List.of();
-        }
-
+        if (section == null) return List.of();
         List<StoredForgeSession> sessions = new ArrayList<>();
         for (String key : section.getKeys(false)) {
             ConfigurationSection node = section.getConfigurationSection(key);
-            if (node == null) {
-                continue;
-            }
-            StoredForgeSession stored = readSession(node);
-            if (stored != null) {
-                sessions.add(stored);
-            }
+            StoredForgeSession stored = node == null ? null : readSession(node);
+            if (stored != null) sessions.add(stored);
         }
         return sessions;
     }
 
-    public void save(Collection<StoredForgeSession> sessions) {
+    public boolean save(Collection<StoredForgeSession> sessions) {
         FileConfiguration config = new YamlConfiguration();
         int index = 0;
         for (StoredForgeSession session : sessions) {
@@ -62,49 +50,44 @@ public final class ForgeSessionStore {
             config.set(path + ".x", session.location().getBlockX());
             config.set(path + ".y", session.location().getBlockY());
             config.set(path + ".z", session.location().getBlockZ());
-            config.set(path + ".type", session.type().name());
+            config.set(path + ".item-id", session.itemId());
             config.set(path + ".owner", session.owner() == null ? null : session.owner().toString());
             config.set(path + ".started-at", session.startedAtMillis());
+            config.set(path + ".charge-ends-at", session.chargeEndsAtMillis());
             config.set(path + ".ends-at", session.endsAtMillis());
         }
-
         try {
+            // TODO Phase 2.2: write to a temp file then atomic move to harden restart-at-completion semantics.
             config.save(dataFile);
+            return true;
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to save forge sessions", e);
+            return false;
         }
     }
 
     private StoredForgeSession readSession(ConfigurationSection node) {
         World world = resolveWorld(node);
-        if (world == null) {
-            return null;
-        }
+        if (world == null) return null;
+        String itemId = node.getString("item-id", node.getString("type", "")).toLowerCase();
+        if (itemId.isBlank()) return null;
+        if (itemId.equals("power")) itemId = "power_mace";
+        if (itemId.equals("chaos")) itemId = "chaos_mace";
+        UUID owner = readOwner(node);
+        long startedAt = node.getLong("started-at");
+        long legacyEndsAt = node.getLong("ends-at");
+        long chargeEndsAt = node.getLong("charge-ends-at", startedAt + 3000L);
+        return new StoredForgeSession(new Location(world, node.getInt("x"), node.getInt("y"), node.getInt("z")), itemId, owner, startedAt, chargeEndsAt, legacyEndsAt);
+    }
 
-        MaceType type;
-        try {
-            type = MaceType.valueOf(node.getString("type", ""));
-        } catch (IllegalArgumentException ex) {
-            return null;
-        }
-
-        UUID owner = null;
+    private UUID readOwner(ConfigurationSection node) {
         String ownerRaw = node.getString("owner");
-        if (ownerRaw != null && !ownerRaw.isBlank()) {
-            try {
-                owner = UUID.fromString(ownerRaw);
-            } catch (IllegalArgumentException ignored) {
-            }
+        if (ownerRaw == null || ownerRaw.isBlank()) return null;
+        try {
+            return UUID.fromString(ownerRaw);
+        } catch (IllegalArgumentException ignored) {
+            return null;
         }
-
-        Location location = new Location(world, node.getInt("x"), node.getInt("y"), node.getInt("z"));
-        return new StoredForgeSession(
-            location,
-            type,
-            owner,
-            node.getLong("started-at"),
-            node.getLong("ends-at")
-        );
     }
 
     private World resolveWorld(ConfigurationSection node) {
@@ -112,21 +95,12 @@ public final class ForgeSessionStore {
         if (worldId != null) {
             try {
                 World world = Bukkit.getWorld(UUID.fromString(worldId));
-                if (world != null) {
-                    return world;
-                }
+                if (world != null) return world;
             } catch (IllegalArgumentException ignored) {
             }
         }
         return Bukkit.getWorld(node.getString("world-name", ""));
     }
 
-    public record StoredForgeSession(
-        Location location,
-        MaceType type,
-        UUID owner,
-        long startedAtMillis,
-        long endsAtMillis
-    ) {
-    }
+    public record StoredForgeSession(Location location, String itemId, UUID owner, long startedAtMillis, long chargeEndsAtMillis, long endsAtMillis) { }
 }

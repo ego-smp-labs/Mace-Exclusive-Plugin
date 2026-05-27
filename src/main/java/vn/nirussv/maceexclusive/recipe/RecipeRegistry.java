@@ -1,89 +1,89 @@
 package vn.nirussv.maceexclusive.recipe;
 
+import org.bukkit.Keyed;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.config.ItemConfig;
-import vn.nirussv.maceexclusive.item.ExclusiveItemId;
-import vn.nirussv.maceexclusive.mace.MaceFactory;
-import vn.nirussv.maceexclusive.mace.MaceType;
+import vn.nirussv.maceexclusive.core.CoreConfig;
+import vn.nirussv.maceexclusive.core.CoreItemFactory;
+import vn.nirussv.maceexclusive.core.CoreRegistry;
+import vn.nirussv.maceexclusive.item.ExclusiveItemFactory;
+import vn.nirussv.maceexclusive.item.ItemDefinition;
+import vn.nirussv.maceexclusive.item.ItemRegistry;
 
 import java.util.Iterator;
-import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public final class RecipeRegistry {
 
     private final MaceExclusivePlugin plugin;
     private final ConfigManager configManager;
-    private final MaceFactory maceFactory;
+    private final ItemRegistry itemRegistry;
+    private final ExclusiveItemFactory itemFactory;
+    private final CoreRegistry coreRegistry;
+    private final CoreItemFactory coreItemFactory;
 
-    public RecipeRegistry(MaceExclusivePlugin plugin, ConfigManager configManager, MaceFactory maceFactory) {
+    public RecipeRegistry(MaceExclusivePlugin plugin, ConfigManager configManager, ItemRegistry itemRegistry, ExclusiveItemFactory itemFactory, CoreRegistry coreRegistry, CoreItemFactory coreItemFactory) {
         this.plugin = plugin;
         this.configManager = configManager;
-        this.maceFactory = maceFactory;
+        this.itemRegistry = itemRegistry;
+        this.itemFactory = itemFactory;
+        this.coreRegistry = coreRegistry;
+        this.coreItemFactory = coreItemFactory;
     }
 
     public void registerAll() {
-        registerMaceRecipe(MaceType.POWER, "exclusive_mace_recipe");
-        registerMaceRecipe(MaceType.CHAOS, "chaos_mace_recipe");
+        removeManagedRecipes();
+        for (ItemDefinition definition : itemRegistry.all()) registerWeaponRecipe(definition);
+        for (CoreConfig core : coreRegistry.all()) registerCoreRecipe(core);
+    }
+
+    public void removeManagedRecipes() {
+        String namespace = plugin.getName().toLowerCase(Locale.ROOT);
+        Iterator<Recipe> iterator = plugin.getServer().recipeIterator();
+        while (iterator.hasNext()) {
+            Recipe recipe = iterator.next();
+            if (!(recipe instanceof Keyed keyed)) continue;
+            if (keyed.getKey().getNamespace().equals(namespace)) iterator.remove();
+        }
     }
 
     public void removeVanillaMaceRecipe() {
         Iterator<Recipe> iterator = plugin.getServer().recipeIterator();
         while (iterator.hasNext()) {
             Recipe recipe = iterator.next();
-            if (recipe.getResult().getType() == Material.MACE
-                && recipe instanceof ShapedRecipe shapedRecipe
-                && shapedRecipe.getKey().getNamespace().equals("minecraft")) {
-                iterator.remove();
-                plugin.getLogger().info("Removed vanilla Mace recipe.");
-            }
+            if (recipe.getResult().getType() == Material.MACE && recipe instanceof ShapedRecipe shapedRecipe && shapedRecipe.getKey().getNamespace().equals("minecraft")) iterator.remove();
         }
     }
 
-    private void registerMaceRecipe(MaceType type, String recipeKey) {
-        ExclusiveItemId itemId = type.getExclusiveItemId();
-        ItemConfig weaponConfig = configManager.getItemConfig(itemId);
-        if (weaponConfig == null || !weaponConfig.enabled() || !weaponConfig.recipe().enabled()) {
-            return;
-        }
-
-        NamespacedKey key = new NamespacedKey(plugin, recipeKey);
-        ItemStack result = maceFactory.createUnawakenedWeapon(type);
-        ShapedRecipe recipe = new ShapedRecipe(key, result);
-
-        List<String> shape = weaponConfig.recipe().shape();
-        if (shape.size() != 3) {
-            applyFallbackRecipe(type, recipe);
-        } else {
-            recipe.shape(shape.toArray(new String[0]));
-            for (Map.Entry<Character, Material> ingredient : weaponConfig.recipe().ingredients().entrySet()) {
-                recipe.setIngredient(ingredient.getKey(), ingredient.getValue());
-            }
-        }
-
+    private void registerWeaponRecipe(ItemDefinition definition) {
+        ItemConfig itemConfig = configManager.getItemConfig(definition.id());
+        if (itemConfig == null || !itemConfig.enabled() || !itemConfig.recipe().enabled() || itemConfig.recipe().shape().size() != 3) return;
+        ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(plugin, definition.id() + "_recipe"), itemFactory.create(definition.id()));
+        recipe.shape(itemConfig.recipe().shape().toArray(new String[0]));
+        for (Map.Entry<Character, Material> ingredient : itemConfig.recipe().ingredients().entrySet()) recipe.setIngredient(ingredient.getKey(), ingredient.getValue());
         plugin.getServer().addRecipe(recipe);
-        plugin.getLogger().info("Registered " + type.name() + " awakening recipe: " + key);
     }
 
-    private void applyFallbackRecipe(MaceType type, ShapedRecipe recipe) {
-        if (type == MaceType.POWER) {
-            recipe.shape(" H ", " I ", " B ");
-            recipe.setIngredient('H', Material.HEAVY_CORE);
-            recipe.setIngredient('I', Material.NETHERITE_INGOT);
-            recipe.setIngredient('B', Material.BREEZE_ROD);
-            return;
+    private void registerCoreRecipe(CoreConfig core) {
+        if (!core.enabled() || !core.craftable() || core.shape().size() != 3) return;
+        ItemStack result = "ruined_core".equals(core.id()) ? new ItemStack(Material.HEAVY_CORE) : coreItemFactory.create(core.id());
+        ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(plugin, core.id() + "_recipe"), result);
+        recipe.shape(core.shape().toArray(new String[0]));
+        for (Map.Entry<Character, Material> ingredient : core.ingredients().entrySet()) {
+            if ("ruined_core".equals(core.id()) && ingredient.getKey() == 'R') {
+                recipe.setIngredient('R', new RecipeChoice.ExactChoice(coreItemFactory.create("ruined_core")));
+                continue;
+            }
+            recipe.setIngredient(ingredient.getKey(), ingredient.getValue());
         }
-
-        recipe.shape("NHN", "HMH", "NWN");
-        recipe.setIngredient('N', Material.NETHER_STAR);
-        recipe.setIngredient('H', Material.HEAVY_CORE);
-        recipe.setIngredient('M', Material.MACE);
-        recipe.setIngredient('W', Material.WITHER_ROSE);
+        plugin.getServer().addRecipe(recipe);
     }
 }

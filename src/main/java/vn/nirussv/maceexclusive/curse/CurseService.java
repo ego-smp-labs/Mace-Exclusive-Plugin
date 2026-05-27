@@ -26,7 +26,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.config.PerformanceConfig;
-import vn.nirussv.maceexclusive.item.ExclusiveItemId;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
 
 import java.util.HashSet;
@@ -160,7 +159,7 @@ public final class CurseService implements Listener {
             return;
         }
 
-        Optional<ExclusiveItemId> heldItem = heldExclusiveItem(player);
+        Optional<String> heldItem = heldExclusiveItem(player);
         UUID uuid = player.getUniqueId();
 
         if (heldItem.isEmpty()) {
@@ -170,22 +169,22 @@ public final class CurseService implements Listener {
             return;
         }
 
-        ExclusiveItemId itemId = heldItem.get();
+        String itemId = heldItem.get();
         applyHoldCurse(player, itemId);
         refreshEventDrivenHoldingEffects(player);
 
         heldCursePlayers.add(uuid);
-        if (itemId == ExclusiveItemId.CHAOS_MACE) {
+        if (itemId.equals("chaos_mace")) {
             waterBackfirePlayers.add(uuid);
         } else {
             waterBackfirePlayers.remove(uuid);
         }
     }
 
-    private Optional<ExclusiveItemId> heldExclusiveItem(Player player) {
+    private Optional<String> heldExclusiveItem(Player player) {
         ItemStack mainHand = player.getInventory().getItemInMainHand();
-        Optional<ExclusiveItemId> mainMatch = itemMatcher.match(mainHand);
-        Optional<ExclusiveItemId> offHandMatch = itemMatcher.match(player.getInventory().getItemInOffHand());
+        Optional<String> mainMatch = itemMatcher.match(mainHand);
+        Optional<String> offHandMatch = itemMatcher.match(player.getInventory().getItemInOffHand());
 
         if (mainMatch.filter(this::hasHoldCurse).isPresent()) {
             return mainMatch;
@@ -196,27 +195,23 @@ public final class CurseService implements Listener {
         return mainMatch.or(() -> offHandMatch);
     }
 
-    private boolean hasHoldCurse(ExclusiveItemId itemId) {
-        return itemId == ExclusiveItemId.CHAOS_MACE || itemId == ExclusiveItemId.CHRONOS_ANCHOR_SPEAR;
+    private boolean hasHoldCurse(String itemId) {
+        return itemId.equals("chaos_mace") || itemId.equals("chronos_anchor_spear");
     }
 
-    private void applyHoldCurse(Player player, ExclusiveItemId itemId) {
-        switch (itemId) {
-            case CHAOS_MACE -> {
-                double amount = -Math.abs(configManager.getItemCurseDouble(
-                    itemId.id(), "max_health_penalty", DEFAULT_CHAOS_HEALTH_PENALTY));
-                attributeLease.apply(player, Attribute.GENERIC_MAX_HEALTH, maxHealthLeaseKey, amount,
-                    AttributeModifier.Operation.ADD_NUMBER);
-            }
-            case CHRONOS_ANCHOR_SPEAR -> {
-                double multiplier = configManager.getItemCurseDouble(
-                    itemId.id(), "max_health_multiplier", DEFAULT_CHRONOS_HEALTH_MULTIPLIER);
-                double scalar = Math.min(0.0D, multiplier - 1.0D);
-                attributeLease.apply(player, Attribute.GENERIC_MAX_HEALTH, maxHealthLeaseKey, scalar,
-                    AttributeModifier.Operation.ADD_SCALAR);
-            }
-            case POWER_MACE -> attributeLease.revoke(player, Attribute.GENERIC_MAX_HEALTH);
+    private void applyHoldCurse(Player player, String itemId) {
+        if (itemId.equals("chaos_mace")) {
+            double amount = -Math.abs(configManager.getItemCurseDouble(itemId, "max_health_penalty", DEFAULT_CHAOS_HEALTH_PENALTY));
+            attributeLease.apply(player, Attribute.GENERIC_MAX_HEALTH, maxHealthLeaseKey, amount, AttributeModifier.Operation.ADD_NUMBER);
+            return;
         }
+        if (itemId.equals("chronos_anchor_spear")) {
+            double multiplier = configManager.getItemCurseDouble(itemId, "max_health_multiplier", DEFAULT_CHRONOS_HEALTH_MULTIPLIER);
+            double scalar = Math.min(0.0D, multiplier - 1.0D);
+            attributeLease.apply(player, Attribute.GENERIC_MAX_HEALTH, maxHealthLeaseKey, scalar, AttributeModifier.Operation.ADD_SCALAR);
+            return;
+        }
+        attributeLease.revoke(player, Attribute.GENERIC_MAX_HEALTH);
     }
 
     private void refreshEventDrivenHoldingEffects(Player player) {
@@ -243,7 +238,7 @@ public final class CurseService implements Listener {
         }
 
         double waterDamagePerSecond = Math.max(0.0D, configManager.getItemCurseDouble(
-            ExclusiveItemId.CHAOS_MACE.id(), "water_damage_per_second", DEFAULT_CHAOS_WATER_DAMAGE));
+            "chaos_mace", "water_damage_per_second", DEFAULT_CHAOS_WATER_DAMAGE));
         if (waterDamagePerSecond <= 0.0D) {
             return;
         }
@@ -257,8 +252,8 @@ public final class CurseService implements Listener {
                 continue;
             }
 
-            Optional<ExclusiveItemId> heldItem = heldExclusiveItem(player);
-            if (heldItem.filter(id -> id == ExclusiveItemId.CHAOS_MACE).isEmpty()) {
+            Optional<String> heldItem = heldExclusiveItem(player);
+            if (heldItem.filter(id -> id.equals("chaos_mace")).isEmpty()) {
                 refresh(player);
                 continue;
             }

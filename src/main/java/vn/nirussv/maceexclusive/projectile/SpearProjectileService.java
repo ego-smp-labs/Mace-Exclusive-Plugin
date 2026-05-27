@@ -21,7 +21,6 @@ import org.bukkit.scheduler.BukkitTask;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.effect.FreezeService;
-import vn.nirussv.maceexclusive.item.ExclusiveItemId;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
 
 import java.util.HashMap;
@@ -70,7 +69,7 @@ public final class SpearProjectileService {
             return;
         }
 
-        if (!configManager.isItemEnabled(ExclusiveItemId.CHRONOS_ANCHOR_SPEAR)) {
+        if (!configManager.isItemEnabled("chronos_anchor_spear")) {
             return;
         }
 
@@ -168,17 +167,17 @@ public final class SpearProjectileService {
 
     private Optional<ItemStack> findChronosSpearItem(Trident trident, Player shooter) {
         ItemStack projectileItem = trident.getItemStack();
-        if (itemMatcher.is(projectileItem, ExclusiveItemId.CHRONOS_ANCHOR_SPEAR)) {
+        if (itemMatcher.is(projectileItem, "chronos_anchor_spear")) {
             return Optional.of(projectileItem);
         }
 
         ItemStack mainHand = shooter.getInventory().getItemInMainHand();
-        if (itemMatcher.is(mainHand, ExclusiveItemId.CHRONOS_ANCHOR_SPEAR)) {
+        if (itemMatcher.is(mainHand, "chronos_anchor_spear")) {
             return Optional.of(mainHand);
         }
 
         ItemStack offHand = shooter.getInventory().getItemInOffHand();
-        if (itemMatcher.is(offHand, ExclusiveItemId.CHRONOS_ANCHOR_SPEAR)) {
+        if (itemMatcher.is(offHand, "chronos_anchor_spear")) {
             return Optional.of(offHand);
         }
         return Optional.empty();

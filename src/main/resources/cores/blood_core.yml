@@ -1,0 +1,8 @@
+enabled: true
+name: "&cBlood Core"
+material: HEAVY_CORE
+custom-model-data: 3003
+lore:
+  - "&7Created by a Nether blood ritual."
+recipe:
+  enabled: false

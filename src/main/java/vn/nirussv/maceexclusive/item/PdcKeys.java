@@ -1,38 +1,27 @@
 package vn.nirussv.maceexclusive.item;
 
 import org.bukkit.NamespacedKey;
-import org.bukkit.plugin.Plugin;
-import vn.nirussv.maceexclusive.mace.MaceType;
-
-import java.util.EnumMap;
-import java.util.Map;
 
 public final class PdcKeys {
 
     public static final String ROOT_NAMESPACE = "mace_exclusive";
     public static final String ITEM_ID_KEY = "item_id";
+    public static final String CORE_ID_KEY = "core_id";
+    public static final String OWNER_KEY = "owner";
 
-    private final NamespacedKey itemId;
-    private final Map<MaceType, NamespacedKey> legacyMaceKeys = new EnumMap<>(MaceType.class);
-    private final Map<MaceType, NamespacedKey> legacyOwnerKeys = new EnumMap<>(MaceType.class);
-
-    public PdcKeys(Plugin plugin) {
-        this.itemId = new NamespacedKey(ROOT_NAMESPACE, ITEM_ID_KEY);
-        for (MaceType type : MaceType.values()) {
-            legacyMaceKeys.put(type, new NamespacedKey(plugin, type.getPdcKey()));
-            legacyOwnerKeys.put(type, new NamespacedKey(plugin, type.getPdcKey() + "_owner"));
-        }
-    }
+    private final NamespacedKey itemId = new NamespacedKey(ROOT_NAMESPACE, ITEM_ID_KEY);
+    private final NamespacedKey coreId = new NamespacedKey(ROOT_NAMESPACE, CORE_ID_KEY);
+    private final NamespacedKey owner = new NamespacedKey(ROOT_NAMESPACE, OWNER_KEY);
 
     public NamespacedKey itemId() {
         return itemId;
     }
 
-    public NamespacedKey legacyMaceKey(MaceType type) {
-        return legacyMaceKeys.get(type);
+    public NamespacedKey coreId() {
+        return coreId;
     }
 
-    public NamespacedKey legacyOwnerKey(MaceType type) {
-        return legacyOwnerKeys.get(type);
+    public NamespacedKey owner() {
+        return owner;
     }
 }

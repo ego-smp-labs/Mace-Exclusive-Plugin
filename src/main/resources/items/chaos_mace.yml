@@ -14,7 +14,7 @@ recipe:
     - "HMH"
     - "NWN"
   ingredients:
-    # N = Dark Ego (NETHER_STAR with egosmp:dark_ego PDC tag)
+    # N = Nether Star catalyst, no external namespace tag required.
     N: NETHER_STAR
     H: HEAVY_CORE
     M: MACE

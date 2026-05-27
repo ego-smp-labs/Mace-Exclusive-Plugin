@@ -2,13 +2,12 @@ package vn.nirussv.maceexclusive.ability;
 
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import vn.nirussv.maceexclusive.item.ExclusiveItemId;
 
 public interface PassiveAbility {
 
     String id();
 
-    ExclusiveItemId weaponId();
+    String weaponId();
 
     default void onAttack(AbilityContext context, EntityDamageByEntityEvent event) {
     }

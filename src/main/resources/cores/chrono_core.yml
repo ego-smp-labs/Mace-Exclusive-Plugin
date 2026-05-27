@@ -1,0 +1,8 @@
+enabled: true
+name: "&dChrono Core"
+material: HEAVY_CORE
+custom-model-data: 3005
+lore:
+  - "&7Distorted by an End Portal."
+recipe:
+  enabled: false

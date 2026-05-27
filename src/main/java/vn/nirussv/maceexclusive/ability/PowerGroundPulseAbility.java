@@ -9,7 +9,6 @@ import org.bukkit.util.Vector;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.effect.ParticleProfile;
 import vn.nirussv.maceexclusive.effect.SoundProfile;
-import vn.nirussv.maceexclusive.item.ExclusiveItemId;
 
 public final class PowerGroundPulseAbility implements ActiveAbility {
 
@@ -31,8 +30,8 @@ public final class PowerGroundPulseAbility implements ActiveAbility {
     }
 
     @Override
-    public ExclusiveItemId weaponId() {
-        return ExclusiveItemId.POWER_MACE;
+    public String weaponId() {
+        return "power_mace";
     }
 
     @Override

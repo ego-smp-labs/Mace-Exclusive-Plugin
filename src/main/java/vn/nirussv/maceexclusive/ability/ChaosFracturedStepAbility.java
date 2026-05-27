@@ -10,7 +10,6 @@ import org.bukkit.util.Vector;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.effect.ParticleProfile;
 import vn.nirussv.maceexclusive.effect.SoundProfile;
-import vn.nirussv.maceexclusive.item.ExclusiveItemId;
 
 public final class ChaosFracturedStepAbility implements PassiveAbility {
 
@@ -32,8 +31,8 @@ public final class ChaosFracturedStepAbility implements PassiveAbility {
     }
 
     @Override
-    public ExclusiveItemId weaponId() {
-        return ExclusiveItemId.CHAOS_MACE;
+    public String weaponId() {
+        return "chaos_mace";
     }
 
     @Override

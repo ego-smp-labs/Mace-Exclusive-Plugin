@@ -45,7 +45,7 @@ public class EffectMaceListener implements Listener {
         ItemStack result = event.getRecipe().getResult();
         if (result.getType() != Material.MACE) return;
 
-        // Ensure it is our Mace (should be restricted by MaceFactory/Manager logic already, but safe check)
+        // Ensure it is our Mace (should be restricted by item identity/manager logic already, but safe check)
         if (event.isCancelled()) return;
 
         if (event.getWhoClicked() instanceof Player player) {

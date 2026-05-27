@@ -1,0 +1,8 @@
+enabled: true
+name: "&3Sculk Core"
+material: HEAVY_CORE
+custom-model-data: 3004
+lore:
+  - "&7Awakened by a Warden near a catalyst."
+recipe:
+  enabled: false

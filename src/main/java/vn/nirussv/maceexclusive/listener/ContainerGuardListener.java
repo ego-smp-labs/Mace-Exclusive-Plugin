@@ -36,18 +36,18 @@ public final class ContainerGuardListener implements Listener {
             return;
         }
         ItemStack item = event.getItem().getItemStack();
-        java.util.Optional<vn.nirussv.maceexclusive.item.ExclusiveItemId> optId = maceManager.getExclusiveItemId(item);
+        java.util.Optional<String> optId = maceManager.getExclusiveItemKey(item);
         if (optId.isEmpty()) {
             return;
         }
         
         if (!maceManager.claimIfAllowed(item, player)) {
             event.setCancelled(true);
-            vn.nirussv.maceexclusive.item.ExclusiveItemId id = optId.get();
+            String id = optId.get();
             String holderName = maceManager.getHolderName(id);
             if (holderName == null) holderName = "Unknown";
             
-            String msgPath = id.id().contains("chaos") ? "chaos.already-exists" : "mace.already-exists";
+            String msgPath = id.contains("chaos") ? "chaos.already-exists" : "mace.already-exists";
             player.sendMessage(configManager.getMessage(msgPath, java.util.Map.of("player", holderName)));
         }
     }
@@ -161,7 +161,7 @@ public final class ContainerGuardListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof org.bukkit.entity.Item item) {
-            java.util.Optional<vn.nirussv.maceexclusive.item.ExclusiveItemId> id = maceManager.getExclusiveItemId(item.getItemStack());
+            java.util.Optional<String> id = maceManager.getExclusiveItemKey(item.getItemStack());
             if (id.isPresent()) {
                 if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
                     return; // Let the item be destroyed by the void. Admins will reset it manually if needed.

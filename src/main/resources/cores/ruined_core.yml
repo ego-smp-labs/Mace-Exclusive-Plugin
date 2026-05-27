@@ -1,0 +1,13 @@
+enabled: true
+name: "&8Ruined Core"
+material: HEAVY_CORE
+custom-model-data: 3006
+lore:
+  - "&7A failed core, recyclable to Heavy Core."
+recipe:
+  enabled: true
+  shape: ["DKD", "KRK", "DKD"]
+  ingredients:
+    D: DIAMOND_BLOCK
+    K: OMINOUS_TRIAL_KEY
+    R: HEAVY_CORE

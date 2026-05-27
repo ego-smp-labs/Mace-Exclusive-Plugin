@@ -14,40 +14,30 @@ public final class ExclusiveItemFactory {
 
     private final PdcKeys keys;
     private final ConfigManager configManager;
+    private final ItemRegistry itemRegistry;
 
-    public ExclusiveItemFactory(ConfigManager configManager, PdcKeys keys) {
+    public ExclusiveItemFactory(ConfigManager configManager, PdcKeys keys, ItemRegistry itemRegistry) {
         this.configManager = configManager;
         this.keys = keys;
+        this.itemRegistry = itemRegistry;
     }
 
-    public ItemStack create(ExclusiveItemId id) {
-        ItemConfig weaponConfig = configManager.getItemConfig(id);
-
-        ItemStack item = new ItemStack(weaponConfig == null ? id.material() : weaponConfig.material());
+    public ItemStack create(String id) {
+        ItemDefinition definition = itemRegistry.find(id).orElseThrow(() -> new IllegalArgumentException("Unknown item id: " + id));
+        ItemConfig itemConfig = configManager.getItemConfig(definition.id());
+        ItemStack item = new ItemStack(itemConfig == null ? definition.material() : itemConfig.material());
         ItemMeta meta = item.getItemMeta();
-        if (meta == null) {
-            return item;
-        }
-
-        String name = weaponConfig == null ? id.fallbackName() : weaponConfig.name();
+        if (meta == null) return item;
+        String name = itemConfig == null ? definition.name() : itemConfig.name();
         meta.displayName(configManager.deserialize(name));
-
-        List<String> lore = weaponConfig == null ? List.of() : weaponConfig.lore();
+        List<String> lore = itemConfig == null ? List.of() : itemConfig.lore();
         if (!lore.isEmpty()) {
             List<Component> componentLore = new ArrayList<>();
-            for (String line : lore) {
-                componentLore.add(configManager.deserialize(line));
-            }
+            for (String line : lore) componentLore.add(configManager.deserialize(line));
             meta.lore(componentLore);
-        } else if (id == ExclusiveItemId.CHRONOS_ANCHOR_SPEAR) {
-            meta.lore(List.of(configManager.deserialize("&7A time-anchored spear.")));
         }
-
-        if (weaponConfig != null && weaponConfig.customModelData() != null) {
-            meta.setCustomModelData(weaponConfig.customModelData());
-        }
-
-        meta.getPersistentDataContainer().set(keys.itemId(), PersistentDataType.STRING, id.id());
+        if (itemConfig != null && itemConfig.customModelData() != null) meta.setCustomModelData(itemConfig.customModelData());
+        meta.getPersistentDataContainer().set(keys.itemId(), PersistentDataType.STRING, definition.id());
         item.setItemMeta(meta);
         return item;
     }

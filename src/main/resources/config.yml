@@ -46,8 +46,12 @@ crafting:
   prevent-shift-click: true
 
 forge:
-  # Block used as awakening forge base. Examples: LODESTONE, REDSTONE_BLOCK.
+  # Block used as the direct craft forge base.
   block: LODESTONE
-  # Default awakening duration: 5 minutes.
+  # 3s visual charge before the long forge countdown.
+  preforge-charge-seconds: 3
+  preforge-explosion-power: 2.0
+  # Default forge duration: 5 minutes.
   duration-seconds: 300
+  completion-explosion-power: 4.0
   abort-explosion-power: 1.5
