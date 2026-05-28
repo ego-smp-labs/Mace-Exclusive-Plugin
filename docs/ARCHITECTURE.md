@@ -115,7 +115,7 @@ classDiagram
    - Event-driven. The "Water Backfire" logic tracks only players currently holding a cursed weapon, avoiding sweeping the entire server with a `runTaskTimer`.
 
 5. **Ability Engine (`ability/`)**:
-   - Manages custom logic for `Stored Momentum`, `Rift Reversal`, and other skills.
+   - Manages custom logic for exclusive skills: `Stored Momentum`, `Ground Pulse` (Power Mace); `Rage State`, `Lunatic Buff` (Chaos Mace); `Void Devourer`, `Abyss Resurrection` (Void Mace); `Siphon Boost` (Vampiric Mace); `Gravity Well` (Gravity Mace); `Sonic Boom` (Sonic Mace); `Fire Storm` (Soulfire Mace).
    - Powered by `CooldownService` mapped to `UUID + ability_id`.
 
 6. **Projectile System (`projectile/`)**:

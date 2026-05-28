@@ -1,0 +1,37 @@
+enabled: true
+singleton: true
+name: "&5&lSINGULARITY GRAVITY MACE"
+material: MACE
+custom-model-data: 10004
+lore:
+  - "&7Controls time and space around it."
+  - "&7Passive: Reduces fall damage by 70%."
+  - "&7Sneak + Left-Click to trigger Gravity Well."
+recipe:
+  enabled: true
+  shape:
+    - "OCO"
+    - "GBG"
+    - "ONO"
+  ingredients:
+    C: end_core
+    B: BREEZE_ROD
+    G: CRYING_OBSIDIAN
+    O: obsidian_chaos
+    N: NETHERITE_BLOCK
+cooldowns:
+  gravity_well: 60
+effects:
+  fall_reduction: 0.70
+  pull_range: 2.5
+  active:
+    pull_radius: 8.0
+    duration: 3 # seconds
+    base_damage: 2.0
+    damage_per_entity: 1.5
+    max_damage: 15.0
+  curses:
+    slowness_amplifier: 0
+    hunger_multiplier: 2.0
+messages:
+  skill-gravity-well: "&5[Gravity Mace] &fĐã kích hoạt &dGiếng Trọng Lực&f!"

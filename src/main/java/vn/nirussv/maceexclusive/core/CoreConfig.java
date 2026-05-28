@@ -19,7 +19,7 @@ public record CoreConfig(
     double failureChance,
     int xpCost,
     List<String> shape,
-    Map<Character, Material> ingredients
+    Map<Character, String> ingredients
 ) {
     public static CoreConfig fromSection(String id, ConfigurationSection section) {
         Material material = resolveMaterial(section == null ? null : section.getString("material"));
@@ -44,13 +44,13 @@ public record CoreConfig(
         return configured == null ? Material.HEAVY_CORE : configured;
     }
 
-    private static Map<Character, Material> readIngredients(ConfigurationSection section) {
+    private static Map<Character, String> readIngredients(ConfigurationSection section) {
         if (section == null) return Collections.emptyMap();
-        Map<Character, Material> ingredients = new LinkedHashMap<>();
+        Map<Character, String> ingredients = new LinkedHashMap<>();
         for (String key : section.getKeys(false)) {
             if (key.isBlank()) continue;
-            Material material = Material.matchMaterial(section.getString(key, ""));
-            if (material != null) ingredients.put(key.charAt(0), material);
+            String val = section.getString(key, "");
+            if (!val.isBlank()) ingredients.put(key.charAt(0), val);
         }
         return Collections.unmodifiableMap(ingredients);
     }

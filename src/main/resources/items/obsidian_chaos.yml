@@ -1,0 +1,9 @@
+enabled: true
+singleton: false
+name: "&5Obsidian Chaos"
+material: OBSIDIAN
+custom-model-data: 4001
+lore:
+  - "&7Crystalline obsidian infused with creeper explosion residue."
+recipe:
+  enabled: false

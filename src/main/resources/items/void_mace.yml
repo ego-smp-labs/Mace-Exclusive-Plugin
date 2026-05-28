@@ -1,0 +1,40 @@
+enabled: true
+singleton: true
+name: "&d&lABYSSAL VOID MACE"
+material: MACE
+custom-model-data: 2003
+lore:
+  - "&7Forged in the deepest abyss."
+  - "&7Passive: 10% chance to Devour Matter."
+  - "&7Emergency: 5% chance to resurrect upon fatal damage."
+  - "&7Holding in water causes withering."
+recipe:
+  enabled: true
+  shape:
+    - "AEA"
+    - "ACA"
+    - "AWA"
+  ingredients:
+    E: end_core
+    A: ENCHANTED_GOLDEN_APPLE
+    C: challenger_eye
+    W: WITHER_ROSE
+cooldowns:
+  resurrection: 600 # 10 minutes
+effects:
+  devour:
+    chance: 0.10
+    duration: 5
+  resurrect:
+    chance: 0.05
+    duration: 30
+    absorption_hearts: 10
+    mind_detachment_chance: 0.50
+    mind_detachment_duration: 5
+  curses:
+    water_wither_duration: 3
+    water_wither_amplifier: 1
+    light_level_threshold: 7
+messages:
+  skill-resurrect: "&d[Void Mace] &fBạn đã được &eHồi Sinh từ Vực Thẳm&f! Nhận 10 tim vàng trong 30s."
+  skill-mind-detached: "&d[Void Mace] &fKỹ năng &eTách Rời Tâm Trí&f đã đóng băng đối phương!"

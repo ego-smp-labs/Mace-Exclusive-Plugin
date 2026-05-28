@@ -1,0 +1,39 @@
+enabled: true
+singleton: true
+name: "&c&lMACE OF VAMPIRISM"
+material: MACE
+custom-model-data: 10002
+lore:
+  - "&7A cursed weapon that hungers for blood."
+  - "&7Passive: Lifesteals on melee attacks."
+  - "&7Sneak + Left-Click to siphon Max HP."
+recipe:
+  enabled: true
+  shape:
+    - "NCN"
+    - "MBM"
+    - "NSN"
+  ingredients:
+    C: blood_core
+    B: BREEZE_ROD
+    S: SKELETON_SKULL
+    N: NETHER_WART
+    M: MAGMA_BLOCK
+cooldowns:
+  siphon: 75
+effects:
+  lifesteal:
+    percent: 0.12
+    max_heal: 2.0
+  siphon:
+    duration: 90
+    max_increase: 4.0
+    immediate_heal: 6.0
+  curses:
+    max_health_penalty: 4.0
+    damage_multipliers:
+      fire: 1.10
+      fall: 1.10
+      projectile: 1.10
+messages:
+  skill-siphon: "&c[Vampiric Mace] &fĐã cưỡng đoạt sinh mệnh của đối thủ!"

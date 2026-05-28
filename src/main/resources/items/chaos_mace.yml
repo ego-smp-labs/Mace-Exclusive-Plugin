@@ -5,8 +5,9 @@ material: MACE
 custom-model-data: 2002
 lore:
   - "&7A corrupted weapon from the void."
-  - "&cError: Unknown Power Detected"
-  - "&kUnknown Properties"
+  - "&7Sneak + Left-Click to release Chaos Rage."
+  - "&7Hits randomly teleport target."
+  - "&7Holding in water causes withering."
 recipe:
   enabled: true
   shape:
@@ -14,32 +15,28 @@ recipe:
     - "HMH"
     - "NWN"
   ingredients:
-    # N = Nether Star catalyst, no external namespace tag required.
     N: NETHER_STAR
-    H: HEAVY_CORE
+    H: chaos_core
     M: MACE
     W: WITHER_ROSE
 cooldowns:
-  rift_reversal: 32
-curse:
-  max_health_penalty: 4.0
-  water_damage_per_second: 1.5
+  rage: 300 # 5 minutes cooldown
 effects:
-  # Glitch name when killing
-  glitch-kill-name: true
-  # Inventory Shuffle on hit
-  shuffle-inventory:
-    chance: 0.10 # 10%
-    duration: 10 # seconds
-    interval: 5 # ticks
-  # Self-effect on first craft/pickup
-  self-curse:
-    enabled: true
-    wither-duration: 10 # seconds
-    shuffle-duration: 10 # seconds
-  # Combat/Usage
-  glowing: true
-  announce-on-chat: true
+  teleport:
+    range: 5.0
+  rage:
+    duration: 120 # 2 minutes
+    cooldown: 300 # 5 minutes
+    skill_duration: 10 # 10s chaos and lunatic buff
+  passive:
+    chaos_chance: 0.10
+    chaos_duration: 1
+  curses:
+    first_hold_duration: 10
+    fail_kill_duration: 30
+    water_wither_duration: 3
+    water_wither_amplifier: 1
 messages:
-  skill-fractured-step: "&5[Chaos Mace] &fKỹ năng &dFractured Step&f đã kích hoạt! Né tránh đòn đánh."
-  skill-rift-reversal: "&5[Chaos Mace] &fKỹ năng &dRift Reversal&f đã kích hoạt! Hoán đổi vị trí."
+  skill-rage-activate: "&5[Chaos Mace] &fTrạng thái &dNộ&f đã kích hoạt! Tăng HP, sát thương và kích hoạt kỹ năng trong 2 phút."
+  skill-chaos-inflicted: "&5[Chaos Mace] &fĐối phương bị trúng trạng thái &dChaos&f!"
+  skill-lunatic-buff: "&5[Chaos Mace] &fKích hoạt buff &dKẻ Điên Loạn&f!"

@@ -12,6 +12,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.RayTraceResult;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
+import vn.nirussv.maceexclusive.MaceExclusivePlugin;
+import vn.nirussv.maceexclusive.effect.FreezeService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,15 +23,17 @@ import java.util.Optional;
 
 public final class AbilityService {
 
+    private final MaceExclusivePlugin plugin;
     private final ItemMatcher itemMatcher;
     private final CooldownService cooldownService;
     private final Map<String, List<ActiveAbility>> activeAbilities = new HashMap<>();
     private final Map<String, List<PassiveAbility>> passiveAbilities = new HashMap<>();
 
-    public AbilityService(ConfigManager configManager, ItemMatcher itemMatcher) {
+    public AbilityService(MaceExclusivePlugin plugin, ConfigManager configManager, ItemMatcher itemMatcher, FreezeService freezeService) {
+        this.plugin = plugin;
         this.itemMatcher = itemMatcher;
         this.cooldownService = new CooldownService(configManager);
-        registerDefaults(configManager);
+        registerDefaults(configManager, freezeService);
     }
 
     public CooldownService cooldownService() { return cooldownService; }
@@ -38,8 +42,9 @@ public final class AbilityService {
 
     public void handleInteract(PlayerInteractEvent event) {
         Action action = event.getAction();
-        if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK) return;
+        if (action != Action.LEFT_CLICK_AIR && action != Action.LEFT_CLICK_BLOCK) return;
         Player player = event.getPlayer();
+        if (!player.isSneaking()) return;
         ItemStack weapon = event.getItem();
         Optional<String> weaponId = itemMatcher.match(weapon);
         if (weaponId.isEmpty()) return;
@@ -58,6 +63,18 @@ public final class AbilityService {
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
         Optional<String> weaponId = itemMatcher.match(weapon);
         if (weaponId.isEmpty()) return;
+
+        if (attacker.isSneaking()) {
+            AbilityContext context = new AbilityContext(attacker, attacker.getLocation(), weapon, weaponId.get(), target, null);
+            for (ActiveAbility ability : activeAbilities.getOrDefault(weaponId.get(), List.of())) {
+                if (ability.canActivate(context)) {
+                    ability.activate(context);
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
+
         AbilityContext context = new AbilityContext(attacker, attacker.getLocation(), weapon, weaponId.get(), target, target);
         for (PassiveAbility ability : passiveAbilities.getOrDefault(weaponId.get(), List.of())) ability.onAttack(context, event);
     }
@@ -76,13 +93,45 @@ public final class AbilityService {
         for (List<PassiveAbility> abilities : passiveAbilities.values()) for (PassiveAbility ability : abilities) ability.onDeath(context, event);
     }
 
-    private void registerDefaults(ConfigManager configManager) {
+    private void registerDefaults(ConfigManager configManager, FreezeService freezeService) {
+        // Power Mace
         registerPassive(new PowerStoredMomentumAbility(configManager));
         registerActive(new PowerGroundPulseAbility(configManager, cooldownService));
-        registerPassive(new ChaosFracturedStepAbility(configManager, cooldownService));
-        ChaosRiftReversalAbility riftReversal = new ChaosRiftReversalAbility(configManager, cooldownService);
-        registerActive(riftReversal);
-        registerPassive(riftReversal);
+
+        // Chaos Mace
+        ChaosMaceAbility chaosMaceAbility = new ChaosMaceAbility(plugin, configManager, cooldownService);
+        registerActive(chaosMaceAbility);
+        registerPassive(chaosMaceAbility);
+
+        // Void Mace
+        VoidMaceAbility voidMaceAbility = new VoidMaceAbility(plugin, configManager, cooldownService, freezeService);
+        registerActive(voidMaceAbility);
+        registerPassive(voidMaceAbility);
+        plugin.getServer().getPluginManager().registerEvents(voidMaceAbility, plugin);
+
+        // Vampiric Mace
+        VampiricMaceAbility vampiricMaceAbility = new VampiricMaceAbility(plugin, configManager, cooldownService);
+        registerActive(vampiricMaceAbility);
+        registerPassive(vampiricMaceAbility);
+        plugin.getServer().getPluginManager().registerEvents(vampiricMaceAbility, plugin);
+
+        // Gravity Mace
+        GravityMaceAbility gravityMaceAbility = new GravityMaceAbility(plugin, configManager, cooldownService);
+        registerActive(gravityMaceAbility);
+        registerPassive(gravityMaceAbility);
+        plugin.getServer().getPluginManager().registerEvents(gravityMaceAbility, plugin);
+
+        // Sonic Mace
+        SonicWardenMaceAbility sonicMaceAbility = new SonicWardenMaceAbility(plugin, configManager, cooldownService);
+        registerActive(sonicMaceAbility);
+        registerPassive(sonicMaceAbility);
+        plugin.getServer().getPluginManager().registerEvents(sonicMaceAbility, plugin);
+
+        // Soulfire Mace
+        SoulfirePyreMaceAbility soulfireMaceAbility = new SoulfirePyreMaceAbility(plugin, configManager, cooldownService);
+        registerActive(soulfireMaceAbility);
+        registerPassive(soulfireMaceAbility);
+        plugin.getServer().getPluginManager().registerEvents(soulfireMaceAbility, plugin);
     }
 
     private LivingEntity findLookTarget(Player player, double range) {

@@ -181,6 +181,13 @@ public final class CurseService implements Listener {
         }
     }
 
+    private boolean hasItemInInventory(Player player, String id) {
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && itemMatcher.is(item, id)) return true;
+        }
+        return false;
+    }
+
     private Optional<String> heldExclusiveItem(Player player) {
         ItemStack mainHand = player.getInventory().getItemInMainHand();
         Optional<String> mainMatch = itemMatcher.match(mainHand);
@@ -196,12 +203,15 @@ public final class CurseService implements Listener {
     }
 
     private boolean hasHoldCurse(String itemId) {
-        return itemId.equals("chaos_mace") || itemId.equals("chronos_anchor_spear");
+        if (itemId.equals("chronos_anchor_spear")) return true;
+        double penalty = configManager.getItemCurseDouble(itemId, "max_health_penalty", 0.0D);
+        return penalty > 0.0D;
     }
 
     private void applyHoldCurse(Player player, String itemId) {
-        if (itemId.equals("chaos_mace")) {
-            double amount = -Math.abs(configManager.getItemCurseDouble(itemId, "max_health_penalty", DEFAULT_CHAOS_HEALTH_PENALTY));
+        double penalty = configManager.getItemCurseDouble(itemId, "max_health_penalty", 0.0D);
+        if (penalty > 0.0D) {
+            double amount = -Math.abs(penalty);
             attributeLease.apply(player, Attribute.GENERIC_MAX_HEALTH, maxHealthLeaseKey, amount, AttributeModifier.Operation.ADD_NUMBER);
             return;
         }
@@ -233,34 +243,27 @@ public final class CurseService implements Listener {
     }
 
     private void tickEnvironmentCurses() {
-        if (waterBackfirePlayers.isEmpty()) {
-            return;
-        }
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            if (!player.isOnline() || player.isDead()) continue;
 
-        double waterDamagePerSecond = Math.max(0.0D, configManager.getItemCurseDouble(
-            "chaos_mace", "water_damage_per_second", DEFAULT_CHAOS_WATER_DAMAGE));
-        if (waterDamagePerSecond <= 0.0D) {
-            return;
-        }
-        double tickDamage = waterDamagePerSecond * Math.max(1L, environmentIntervalTicks) / 20.0D;
-
-        for (UUID uuid : new HashSet<>(waterBackfirePlayers)) {
-            Player player = plugin.getServer().getPlayer(uuid);
-            if (player == null || !player.isOnline() || player.isDead()) {
-                waterBackfirePlayers.remove(uuid);
-                heldCursePlayers.remove(uuid);
-                continue;
+            // 1. Water contact check (Wither II for 3s)
+            if (player.isInWater() || player.getLocation().getBlock().getType() == org.bukkit.Material.WATER) {
+                boolean hasChaos = hasItemInInventory(player, "chaos_mace");
+                boolean hasVoid = hasItemInInventory(player, "void_mace");
+                if (hasChaos || hasVoid) {
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 60, 1, false, false, true));
+                }
             }
 
-            Optional<String> heldItem = heldExclusiveItem(player);
-            if (heldItem.filter(id -> id.equals("chaos_mace")).isEmpty()) {
-                refresh(player);
-                continue;
-            }
-
-            if (player.isInWater()) {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 60, 0, false, false, false));
-                player.setHealth(Math.max(0.0D, player.getHealth() - tickDamage));
+            // 2. Void Mace Devoid of Light check (Blindness in light level < 7)
+            ItemStack mainHand = player.getInventory().getItemInMainHand();
+            ItemStack offHand = player.getInventory().getItemInOffHand();
+            boolean holdingVoid = itemMatcher.is(mainHand, "void_mace") || itemMatcher.is(offHand, "void_mace");
+            if (holdingVoid) {
+                int threshold = configManager.getItemEffectInt("void_mace", "effects.curses.light_level_threshold", 7);
+                if (player.getLocation().getBlock().getLightLevel() < threshold) {
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 0, false, false, false));
+                }
             }
         }
     }

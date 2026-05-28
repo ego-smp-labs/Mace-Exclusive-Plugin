@@ -5,7 +5,7 @@ material: MACE
 custom-model-data: 2001
 lore:
   - "&7An ancient weapon."
-  - "&7Hold to charge power."
+  - "&7Sneak + Left-Click to release Ground Pulse."
   - "&7&oOnly one can exist."
 recipe:
   enabled: true

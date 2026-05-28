@@ -1,0 +1,9 @@
+enabled: true
+singleton: false
+name: "&dChallenger's Eye"
+material: ENDER_EYE
+custom-model-data: 4002
+lore:
+  - "&7An enderman's gaze frozen in time at the moment of a totem activation."
+recipe:
+  enabled: false

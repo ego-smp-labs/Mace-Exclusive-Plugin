@@ -1,0 +1,31 @@
+enabled: true
+singleton: true
+name: "&b&lSOULFIRE PYRE MACE"
+material: MACE
+custom-model-data: 10011
+lore:
+  - "&7Forged in the blue flames of souls."
+  - "&7Passive: Fire Immunity & Soul Fire on Hit."
+  - "&7Sneak + Left-Click to summon Soulfire Pyre."
+recipe:
+  enabled: true
+  shape:
+    - " C "
+    - " B "
+    - " F "
+  ingredients:
+    C: soulfire_core
+    B: BREEZE_ROD
+    F: SOUL_CAMPFIRE
+cooldowns:
+  fire_storm: 40
+effects:
+  active:
+    radius: 5.0
+    duration: 5 # seconds
+    damage_per_second: 3.0
+    hp_cost: 4.0
+  curses:
+    hunger_multiplier: 2.0
+messages:
+  skill-fire-storm: "&b[Soulfire Mace] &fTriệu hồi &dCơn Bão Lửa Linh Hồn&f!"

@@ -20,6 +20,7 @@ import vn.nirussv.maceexclusive.item.ItemRegistry;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 public final class RecipeRegistry {
 
@@ -68,7 +69,14 @@ public final class RecipeRegistry {
         if (itemConfig == null || !itemConfig.enabled() || !itemConfig.recipe().enabled() || itemConfig.recipe().shape().size() != 3) return;
         ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(plugin, definition.id() + "_recipe"), itemFactory.create(definition.id()));
         recipe.shape(itemConfig.recipe().shape().toArray(new String[0]));
-        for (Map.Entry<Character, Material> ingredient : itemConfig.recipe().ingredients().entrySet()) recipe.setIngredient(ingredient.getKey(), ingredient.getValue());
+        for (Map.Entry<Character, String> ingredient : itemConfig.recipe().ingredients().entrySet()) {
+            RecipeChoice choice = resolveIngredientChoice(ingredient.getValue());
+            if (choice != null) {
+                recipe.setIngredient(ingredient.getKey(), choice);
+            } else {
+                plugin.getLogger().warning("Failed to resolve recipe ingredient for " + definition.id() + ": " + ingredient.getValue());
+            }
+        }
         plugin.getServer().addRecipe(recipe);
     }
 
@@ -77,13 +85,34 @@ public final class RecipeRegistry {
         ItemStack result = "ruined_core".equals(core.id()) ? new ItemStack(Material.HEAVY_CORE) : coreItemFactory.create(core.id());
         ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(plugin, core.id() + "_recipe"), result);
         recipe.shape(core.shape().toArray(new String[0]));
-        for (Map.Entry<Character, Material> ingredient : core.ingredients().entrySet()) {
+        for (Map.Entry<Character, String> ingredient : core.ingredients().entrySet()) {
             if ("ruined_core".equals(core.id()) && ingredient.getKey() == 'R') {
                 recipe.setIngredient('R', new RecipeChoice.ExactChoice(coreItemFactory.create("ruined_core")));
                 continue;
             }
-            recipe.setIngredient(ingredient.getKey(), ingredient.getValue());
+            RecipeChoice choice = resolveIngredientChoice(ingredient.getValue());
+            if (choice != null) {
+                recipe.setIngredient(ingredient.getKey(), choice);
+            } else {
+                plugin.getLogger().warning("Failed to resolve recipe ingredient for core " + core.id() + ": " + ingredient.getValue());
+            }
         }
         plugin.getServer().addRecipe(recipe);
+    }
+
+    private RecipeChoice resolveIngredientChoice(String value) {
+        Optional<CoreConfig> coreOpt = coreRegistry.find(value);
+        if (coreOpt.isPresent()) {
+            return new RecipeChoice.ExactChoice(coreItemFactory.create(coreOpt.get().id()));
+        }
+        Optional<ItemDefinition> itemOpt = itemRegistry.find(value);
+        if (itemOpt.isPresent()) {
+            return new RecipeChoice.ExactChoice(itemFactory.create(itemOpt.get().id()));
+        }
+        Material material = Material.matchMaterial(value);
+        if (material != null) {
+            return new RecipeChoice.MaterialChoice(material);
+        }
+        return null;
     }
 }

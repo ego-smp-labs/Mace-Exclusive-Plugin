@@ -22,6 +22,7 @@ import vn.nirussv.maceexclusive.listener.ContainerGuardListener;
 import vn.nirussv.maceexclusive.listener.EffectMaceListener;
 import vn.nirussv.maceexclusive.listener.MaceListener;
 import vn.nirussv.maceexclusive.listener.SpearListener;
+import vn.nirussv.maceexclusive.listener.SpecialItemListener;
 import vn.nirussv.maceexclusive.mace.MaceManager;
 import vn.nirussv.maceexclusive.mace.MaceRepository;
 import vn.nirussv.maceexclusive.persistence.ForgeSessionStore;
@@ -63,8 +64,8 @@ public class MaceExclusivePlugin extends JavaPlugin {
             this.maceRepository = new MaceRepository(this);
             this.maceManager = new MaceManager(maceRepository, configManager, itemMatcher, itemRegistry, pdcKeys);
             this.curseService = new CurseService(this, configManager, itemMatcher);
-            this.abilityService = new AbilityService(configManager, itemMatcher);
             this.freezeService = new FreezeService(this);
+            this.abilityService = new AbilityService(this, configManager, itemMatcher, freezeService);
             this.spearProjectileService = new SpearProjectileService(this, configManager, itemMatcher, freezeService);
             this.recipeRegistry = new RecipeRegistry(this, configManager, itemRegistry, itemFactory, coreRegistry, coreItemFactory);
             this.forgeService = new ForgeService(this, configManager, itemFactory, itemRegistry, maceManager, new ForgeSessionStore(this), new ForgeVisualService());
@@ -86,6 +87,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new ForgeListener(forgeService, maceManager), this);
             getServer().getPluginManager().registerEvents(new CoreCraftListener(configManager, coreRegistry, coreItemFactory, itemMatcher, freezeService), this);
             getServer().getPluginManager().registerEvents(new RitualService(coreItemFactory, itemMatcher), this);
+            getServer().getPluginManager().registerEvents(new SpecialItemListener(itemFactory), this);
 
             try {
                 getServer().getPluginManager().registerEvents(curseService, this);

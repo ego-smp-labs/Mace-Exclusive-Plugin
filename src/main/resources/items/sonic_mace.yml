@@ -1,0 +1,36 @@
+enabled: true
+singleton: true
+name: "&9&lECHOING WARDEN MACE"
+material: MACE
+custom-model-data: 10005
+lore:
+  - "&7Infused with deep dark resonance."
+  - "&7Passive: Seismic Resonance & Silence on Sculk."
+  - "&7Sneak + Left-Click to release Sonic Boom."
+recipe:
+  enabled: true
+  shape:
+    - " C "
+    - " B "
+    - " E "
+  ingredients:
+    C: sculk_core
+    B: BREEZE_ROD
+    E: ECHO_SHARD
+cooldowns:
+  sonic_boom: 35
+effects:
+  passive:
+    damage_per_4_blocks: 1.5
+    max_bonus_damage: 6.0
+  active:
+    range: 12.0
+    damage: 14.0
+    knockback: 2.0
+    hp_cost: 4.0
+  curses:
+    blindness_duration: 30 # 1.5s
+    slowness_duration: 40 # 2s
+    slowness_amplifier: 1
+messages:
+  skill-sonic-boom: "&9[Sonic Mace] &fGiải phóng &bSóng Âm Hủy Diệt&f!"

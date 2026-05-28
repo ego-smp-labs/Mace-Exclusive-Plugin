@@ -50,12 +50,12 @@ public final class RitualService implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onChronoPortal(EntityPortalEvent event) {
+    public void onEndCoreRitual(EntityPortalEvent event) {
         if (!(event.getEntity() instanceof Item item)) return;
         if (item.getItemStack().getType() != Material.HEAVY_CORE) return;
         if (event.getTo() == null || event.getTo().getWorld() == null) return;
         if (event.getTo().getWorld().getEnvironment() != World.Environment.THE_END) return;
-        String result = random.nextBoolean() ? "chrono_core" : "ruined_core";
+        String result = random.nextBoolean() ? "end_core" : "ruined_core";
         if (transformOne(item, result)) event.setCancelled(true);
     }
 

@@ -19,7 +19,7 @@ public record ItemConfig(
     ConfigurationSection effects
 ) {
 
-    public record RecipeConfig(boolean enabled, List<String> shape, Map<Character, Material> ingredients) {
+    public record RecipeConfig(boolean enabled, List<String> shape, Map<Character, String> ingredients) {
     }
 
     static ItemConfig fromSection(String id, ConfigurationSection section, Material fallbackMaterial, String fallbackName) {
@@ -49,17 +49,16 @@ public record ItemConfig(
             return new RecipeConfig(true, List.of(), Collections.emptyMap());
         }
 
-        Map<Character, Material> ingredients = new LinkedHashMap<>();
+        Map<Character, String> ingredients = new LinkedHashMap<>();
         ConfigurationSection ingredientSection = section.getConfigurationSection("ingredients");
         if (ingredientSection != null) {
             for (String key : ingredientSection.getKeys(false)) {
                 if (key.isBlank()) {
                     continue;
                 }
-                String materialName = ingredientSection.getString(key);
-                Material material = materialName == null ? null : Material.matchMaterial(materialName);
-                if (material != null) {
-                    ingredients.put(key.charAt(0), material);
+                String ingredientName = ingredientSection.getString(key);
+                if (ingredientName != null && !ingredientName.isBlank()) {
+                    ingredients.put(key.charAt(0), ingredientName);
                 }
             }
         }
