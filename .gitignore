@@ -6,6 +6,7 @@ build/
 *.bin
 
 # Gradle
-.gradle/
+.gradle/*
 **/build/
 !gradle-wrapper.jar
+docs/archive/*
