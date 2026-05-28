@@ -4,30 +4,30 @@ name: "&5&lMACE OF CHAOS &k|&r &5&lGLITCH"
 material: MACE
 custom-model-data: 2002
 lore:
-  - "&7A corrupted weapon from the void."
-  - "&7Sneak + Left-Click to release Chaos Rage."
-  - "&7Hits randomly teleport target."
-  - "&7Holding in water causes withering."
+  - "&7A late-game void weapon crafted directly from unstable chaos ingredients."
+  - "&eActive: &fAt 10 rage, Sneak + Left-Click releases Madness for 2 minutes and 3 empowered hits."
+  - "&aPassive: &fKills build rage; hits and counters can teleport or chaos the enemy."
+  - "&cCurse: &fFirst hold and failed rage inflict Chaos; water in inventory applies Wither."
 recipe:
   enabled: true
   shape:
-    - "NHN"
-    - "HMH"
-    - "NWN"
+    - "OOO"
+    - "BVO"
+    - "OWO"
   ingredients:
-    N: NETHER_STAR
-    H: chaos_core
-    M: MACE
+    O: obsidian_chaos
+    B: blood_core
+    V: void_mace
     W: WITHER_ROSE
 cooldowns:
-  rage: 300 # 5 minutes cooldown
+  rage: 300
 effects:
   teleport:
     range: 5.0
   rage:
-    duration: 120 # 2 minutes
-    cooldown: 300 # 5 minutes
-    skill_duration: 10 # 10s chaos and lunatic buff
+    duration: 120
+    cooldown: 300
+    skill_duration: 10
   passive:
     chaos_chance: 0.10
     chaos_duration: 1
@@ -37,6 +37,6 @@ effects:
     water_wither_duration: 3
     water_wither_amplifier: 1
 messages:
-  skill-rage-activate: "&5[Chaos Mace] &fTrạng thái &dNộ&f đã kích hoạt! Tăng HP, sát thương và kích hoạt kỹ năng trong 2 phút."
-  skill-chaos-inflicted: "&5[Chaos Mace] &fĐối phương bị trúng trạng thái &dChaos&f!"
-  skill-lunatic-buff: "&5[Chaos Mace] &fKích hoạt buff &dKẻ Điên Loạn&f!"
+  skill-rage-activate: "&5[Chaos Mace] &fA three-layer portal fractal opens: Madness lasts 2 minutes or 3 empowered hits."
+  skill-chaos-inflicted: "&5[Chaos Mace] &fDragon-breath distortion and hotbar shimmer mark the target's Chaos effect."
+  skill-lunatic-buff: "&5[Chaos Mace] &fGold-purple runes orbit you: Lunatic buff active for 10 seconds."

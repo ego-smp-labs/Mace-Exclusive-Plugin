@@ -9,6 +9,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.RayTraceResult;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
@@ -48,13 +50,28 @@ public final class AbilityService {
         ItemStack weapon = event.getItem();
         Optional<String> weaponId = itemMatcher.match(weapon);
         if (weaponId.isEmpty()) return;
-        LivingEntity target = findLookTarget(player, 8.0D);
+        LivingEntity target = action == Action.LEFT_CLICK_AIR ? findLookTarget(player, 8.0D) : null;
+        if (target == null) {
+            applyMissCurse(player, weaponId.get());
+            return;
+        }
         AbilityContext context = new AbilityContext(player, player.getLocation(), weapon, weaponId.get(), target, null);
         for (ActiveAbility ability : activeAbilities.getOrDefault(weaponId.get(), List.of())) {
             if (!ability.canActivate(context)) continue;
+            if (!cooldownService.checkAndNotify(player, ability.id())) return;
             ability.activate(context);
             event.setCancelled(true);
             return;
+        }
+    }
+
+    private void applyMissCurse(Player player, String weaponId) {
+        if ("power_mace".equals(weaponId)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 20 * 60, 0, false, true, true));
+            return;
+        }
+        if ("vampiric_mace".equals(weaponId)) {
+            player.damage(6.0D);
         }
     }
 
@@ -68,6 +85,7 @@ public final class AbilityService {
             AbilityContext context = new AbilityContext(attacker, attacker.getLocation(), weapon, weaponId.get(), target, null);
             for (ActiveAbility ability : activeAbilities.getOrDefault(weaponId.get(), List.of())) {
                 if (ability.canActivate(context)) {
+                    if (!cooldownService.checkAndNotify(attacker, ability.id())) return;
                     ability.activate(context);
                     event.setCancelled(true);
                     return;
@@ -95,8 +113,9 @@ public final class AbilityService {
 
     private void registerDefaults(ConfigManager configManager, FreezeService freezeService) {
         // Power Mace
-        registerPassive(new PowerStoredMomentumAbility(configManager));
-        registerActive(new PowerGroundPulseAbility(configManager, cooldownService));
+        PowerGroundPulseAbility powerAbility = new PowerGroundPulseAbility(plugin, configManager, cooldownService);
+        registerPassive(new PowerStoredMomentumAbility(configManager, powerAbility));
+        registerActive(powerAbility);
 
         // Chaos Mace
         ChaosMaceAbility chaosMaceAbility = new ChaosMaceAbility(plugin, configManager, cooldownService);

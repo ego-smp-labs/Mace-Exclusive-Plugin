@@ -4,10 +4,10 @@ name: "&d&lABYSSAL VOID MACE"
 material: MACE
 custom-model-data: 2003
 lore:
-  - "&7Forged in the deepest abyss."
-  - "&7Passive: 10% chance to Devour Matter."
-  - "&7Emergency: 5% chance to resurrect upon fatal damage."
-  - "&7Holding in water causes withering."
+  - "&7An abyssal mace that devours matter and bargains with fatal End damage."
+  - "&eActive: &fSneak + Left-Click uses the current Void ability path; Abyss hits can detach minds."
+  - "&aPassive: &f10% melee chance locks 2 hotbar slots for 5s; fatal damage has 5% abyss resurrection."
+  - "&cCurse: &fHealing is weakened, water in inventory withers you, and post-abyss leaves weakness."
 recipe:
   enabled: true
   shape:
@@ -20,7 +20,7 @@ recipe:
     C: challenger_eye
     W: WITHER_ROSE
 cooldowns:
-  resurrection: 600 # 10 minutes
+  resurrection: 600
 effects:
   devour:
     chance: 0.10
@@ -36,5 +36,5 @@ effects:
     water_wither_amplifier: 1
     light_level_threshold: 7
 messages:
-  skill-resurrect: "&d[Void Mace] &fBạn đã được &eHồi Sinh từ Vực Thẳm&f! Nhận 10 tim vàng trong 30s."
-  skill-mind-detached: "&d[Void Mace] &fKỹ năng &eTách Rời Tâm Trí&f đã đóng băng đối phương!"
+  skill-resurrect: "&d[Void Mace] &fPurple totem particles and dragon breath pull you back from the Abyss."
+  skill-mind-detached: "&d[Void Mace] &fA violet ring splits from the target's head: Darkness and freeze applied."

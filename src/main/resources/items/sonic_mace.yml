@@ -4,9 +4,10 @@ name: "&9&lECHOING WARDEN MACE"
 material: MACE
 custom-model-data: 10005
 lore:
-  - "&7Infused with deep dark resonance."
-  - "&7Passive: Seismic Resonance & Silence on Sculk."
-  - "&7Sneak + Left-Click to release Sonic Boom."
+  - "&7A deep-dark mace resonating with Warden pressure waves."
+  - "&eActive: &fSneak + Left-Click fires a 12-block Sonic Boom for 14 true damage at 4 HP cost."
+  - "&aPassive: &fSculk movement is quieter and falling smash damage scales up to +6."
+  - "&cCurse: &fAfter active, Blindness for 1.5s and Slowness II for 2s mark sensory overload."
 recipe:
   enabled: true
   shape:
@@ -29,8 +30,8 @@ effects:
     knockback: 2.0
     hp_cost: 4.0
   curses:
-    blindness_duration: 30 # 1.5s
-    slowness_duration: 40 # 2s
+    blindness_duration: 30
+    slowness_duration: 40
     slowness_amplifier: 1
 messages:
-  skill-sonic-boom: "&9[Sonic Mace] &fGiải phóng &bSóng Âm Hủy Diệt&f!"
+  skill-sonic-boom: "&9[Sonic Mace] &fCyan SONIC_BOOM segments travel every 0.5 block with Warden impact sound."

@@ -1,17 +1,9 @@
-enabled: true
+enabled: false
 name: "&5Chaos Core"
 material: HEAVY_CORE
 custom-model-data: 3006
 lore:
-  - "&7Infused with volatile chaos energy."
+  - "&7Historical disabled core; Chaos Mace now crafts directly from its ingredients."
+  - "&cInstability: &fNo active recipe or registry requirement in Phase 3."
 recipe:
-  enabled: true
-  shape:
-    - "OCO"
-    - "OVO"
-    - "OWO"
-  ingredients:
-    O: obsidian_chaos
-    C: blood_core
-    V: void_mace
-    W: WITHER_ROSE
+  enabled: false

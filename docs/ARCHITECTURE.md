@@ -21,8 +21,8 @@ Mace-Exclusive/
 │   ├── listener/     # Specialized event listeners bridging to services
 │   ├── mace/         # Legacy mace components / Core generic managers
 │   ├── persistence/  # Flat-file data stores (Forge sessions, Ownership)
-│   ├── projectile/   # Spear projectile entity tracking and logic
-│   ├── recipe/       # Recipe registration and Unawakened item handling
+│   ├── projectile/   # Spear projectile tracking reserved for Phase 4; gameplay disabled in Phase 3
+│   ├── recipe/       # Recipe registration and direct Lodestone Forge trigger
 │   └── MaceExclusivePlugin.java # Plugin entry point & dependency injection hub
 └── src/main/resources/
     ├── config.yml    # Global performance and mechanic settings
@@ -36,12 +36,14 @@ Mace-Exclusive/
 Thư mục `docs/` chứa toàn bộ tài liệu thiết kế kiến trúc, kế hoạch và báo cáo tiến độ của dự án. Hệ thống được tổ chức thành hai nhóm tài liệu chính nhằm tối ưu hóa tính ngắn gọn cho phiên làm việc hiện tại, đồng thời bảo tồn toàn bộ lịch sử phát triển:
 
 #### 1. Giao diện gốc (Root Folder - Bản mới nhất)
-Các tệp HTML ở gốc đóng vai trò là giao diện xem nhanh gọn, tập trung duy nhất vào Phase hoạt động hiện tại (Phase 2.1 - đúc Lodestone trực tiếp):
-*   [plan.html](file:///b:/__JAVA__/Mace-Exclusive/docs/plan.html): Bản thiết kế tổng thể (Master Plan) trình bày chi tiết về thông số vũ khí, lõi biến dị, công thức chế tạo và các hiệu ứng kỹ năng của phiên bản mới nhất.
-*   [scratch_base_todo.html](file:///b:/__JAVA__/Mace-Exclusive/docs/scratch_base_todo.html): Danh sách việc cần làm (TodoList) và Manual Test Checklist hiện tại của Phase 2.1 để kiểm tra chất lượng trước khi bàn giao.
-*   [implementation_tickets.html](file:///b:/__JAVA__/Mace-Exclusive/docs/implementation_tickets.html): Vé triển khai kỹ thuật (Technical Tickets) đang hoạt động trong Phase 2.1 (gồm Ticket 3 - Forge Pipeline và Ticket 7 - Atomic Reservation & Abuse Tests).
-*   [implementation_report.html](file:///b:/__JAVA__/Mace-Exclusive/docs/implementation_report.html): Báo cáo tóm tắt các tính năng đã được kiểm tra và triển khai thành công cho Phase 2.1.
-*   [ARCHITECTURE.md](file:///b:/__JAVA__/Mace-Exclusive/docs/ARCHITECTURE.md): (Chính là tài liệu này) Bản đặc tả kiến trúc kỹ thuật mới nhất của hệ thống, được lưu trực tiếp tại thư mục gốc.
+Các tệp ở gốc là tài liệu hiện hành cho Phase 3 Mace-first:
+*   [README.md](file:///b:/__JAVA__/Mace-Exclusive/docs/README.md): Chỉ mục tài liệu và quy tắc source-of-truth.
+*   [plan.html](file:///b:/__JAVA__/Mace-Exclusive/docs/plan.html): Master Wiki tổng thể của project: gameplay design, kiến trúc, core/material, forge, từng Mace, particle/sound, QA matrix và roadmap.
+*   [scratch_base_todo.html](file:///b:/__JAVA__/Mace-Exclusive/docs/scratch_base_todo.html): Checklist Phase 3 Mace-first.
+*   [implementation_tickets.html](file:///b:/__JAVA__/Mace-Exclusive/docs/implementation_tickets.html): Vé triển khai kỹ thuật đang hoạt động cho Phase 3.
+*   [implementation_report.html](file:///b:/__JAVA__/Mace-Exclusive/docs/implementation_report.html): Snapshot hiện trạng implementation và known gaps.
+*   [agent_phase3_prompt.md](file:///b:/__JAVA__/Mace-Exclusive/docs/agent_phase3_prompt.md): Prompt/rules cho opencode-cli backend/reviewer agents.
+*   [ARCHITECTURE.md](file:///b:/__JAVA__/Mace-Exclusive/docs/ARCHITECTURE.md): (Chính là tài liệu này) Bản đặc tả kiến trúc kỹ thuật.
 
 #### 2. Tài liệu lưu trữ (Archive Folder - Toàn bộ lịch sử)
 Các tệp Markdown (`.md`) nằm trong thư mục `docs/archive/` đóng vai trò là kho lưu trữ lịch sử sửa đổi (historical logs) tích lũy qua tất cả các Phase từ đầu đến nay:
@@ -119,12 +121,12 @@ classDiagram
    - Powered by `CooldownService` mapped to `UUID + ability_id`.
 
 6. **Projectile System (`projectile/`)**:
-   - Integrates `TrackedSpear` onto Vanilla tridents. Hits trigger `FreezeService`, completely immobilizing victims via event-cancellation (`PlayerMoveEvent`, `PlayerInteractEvent`) without utilizing hacky NMS or blocking chat.
+   - Reserved for Phase 4. Spear gameplay is disabled during Phase 3 Mace-first work.
 
 7. **Forge & Awakening Pipeline (`forge/`)**:
-   - Crafting creates an "Unawakened Weapon".
-   - Players must drop the item on a designated block to start an `AwakeningSession` (a 5-minute countdown utilizing `TextDisplay`).
-   - Sessions are persistent across server restarts via `ForgeSessionStore`.
+   - Crafting a final weapon directly triggers a Lodestone Forge session on the crafting table block.
+   - The block charges for 3 seconds with themed particles, explodes once, then starts a 5-minute countdown via `TextDisplay`.
+   - Completion triggers a second explosion and drops the final weapon. Sessions are persistent across server restarts via `ForgeSessionStore`.
 
 ---
 

@@ -1,163 +1,36 @@
-﻿<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Implementation Report: Base Refactor Phase</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-dark: #0b0f19;
-            --bg-card: rgba(22, 28, 45, 0.6);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --color-success: #10b981;
-            --color-info: #3b82f6;
-        }
+<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>Implementation Report — Current Architecture Snapshot</title><style>body{font-family:Inter,Arial,sans-serif;background:#0b0f19;color:#e5e7eb;line-height:1.6;padding:32px}main{max-width:950px;margin:auto}section{background:#111827;border:1px solid #273244;border-radius:14px;padding:22px;margin:18px 0}h1,h2{color:#fff}code{background:#0b1220;padding:2px 5px;border-radius:5px}.warn{border-left:4px solid #f59e0b}.ok{border-left:4px solid #10b981}</style></head><body><main>
+<h1>Implementation Report — Current Snapshot & Phase 3 Reset</h1>
+<section class="ok"><h2>Đã có trong codebase</h2><ul>
+<li>Dynamic item/core registry bằng String ID và PDC chuẩn <code>mace_exclusive:item_id</code>/<code>core_id</code>.</li>
+<li>Direct craft -> Lodestone Forge pipeline: charge 3s, forge 5 phút, nổ lần 1/lần 2, reservation theo item_id.</li>
+<li>Một số ability class đã tồn tại: Power, Chaos, Void, Vampiric, Gravity, Sonic, Soulfire.</li>
+<li>Special materials/core files đã xuất hiện: End Core, disabled historical Chaos Core, Obsidian Chaos, Challenger's Eye.</li>
+<li>Build gần nhất trước Phase 3 docs reset đã pass.</li>
+<li>Post-review cleanup removed active Chronos/Spear hold-curse logic from <code>CurseService</code>; remaining spear projectile classes/resources are disabled/unregistered Phase 4 historical code only.</li>
+</ul></section>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<section class="warn"><h2>Audit gaps cần xử lý trước khi gọi done</h2><ul>
+<li>Docs cũ còn mâu thuẫn nên đã được reset thành Phase 3 Mace-First.</li>
+<li>Spear gameplay vẫn có dấu hiệu tồn tại trong code/plugin registration; Phase 3 yêu cầu disable để tập trung mace.</li>
+<li>Cần xác minh mọi reference <code>chrono_core</code> đã đổi thành <code>end_core</code>.</li>
+<li>Particle/sound chưa được chuẩn hóa thành profile đầy đủ cho mọi mace; một số class có visual riêng nhưng chưa đồng đều.</li>
+<li>Chưa có automated tests đủ mạnh cho forge race, chaos hotbar shuffle/no item loss, void resurrection.</li>
+</ul></section>
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            line-height: 1.6;
-            display: flex;
-            justify-content: center;
-            padding: 40px 20px;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.03) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.03) 0px, transparent 50%);
-            background-attachment: fixed;
-        }
-
-        .container {
-            max-width: 900px;
-            width: 100%;
-        }
-
-        header {
-            margin-bottom: 32px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 24px;
-        }
-
-        h1 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 2.3rem;
-            font-weight: 800;
-            margin-bottom: 12px;
-            background: linear-gradient(to right, #f8fafc, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .subtitle {
-            color: var(--text-secondary);
-            font-size: 1.05rem;
-        }
-
-        section {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 32px;
-            margin-bottom: 24px;
-            backdrop-filter: blur(8px);
-        }
-
-        h2 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-            color: var(--text-primary);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-        }
-
-        h3 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.15rem;
-            font-weight: 600;
-            margin: 20px 0 10px 0;
-            color: var(--text-primary);
-        }
-
-        p {
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-            font-size: 0.95rem;
-        }
-
-        ul {
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-            padding-left: 20px;
-            font-size: 0.95rem;
-        }
-
-        li {
-            margin-bottom: 6px;
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            margin-bottom: 24px;
-            transition: color 0.2s;
-        }
-
-        .back-link:hover {
-            color: var(--text-primary);
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <a href="plan.html" class="back-link">← Quay lại Bản kế hoạch chính</a>
-        <header>
-            <h1>Implementation Report: Base Refactor Phase</h1>
-            <div class="subtitle">Báo cáo triển khai thành công giai đoạn tái cấu trúc nền tảng cho plugin Mace-Exclusive.</div>
-        </header>
-
-        <section>
-            <h2>Tổng quan</h2>
-            <p>Báo cáo này chi tiết việc thực thi thành công giai đoạn "Base Refactor Phase" cho Mace-Exclusive, nhắm vào Paper/Minecraft 1.21.1+ sử dụng Java 21.</p>
-            <p>Mục tiêu chính là chuyển đổi từ một plugin mẫu búa singleton cũ thành một khung vũ khí độc quyền (Exclusive Weapon Framework) mạnh mẽ, dựa trên sự kiện, hỗ trợ vật phẩm tùy chỉnh, lời nguyền, kỹ năng, đạn ném và quy trình đúc/đánh thức (forge) đắm chìm.</p>
-        </section>
-
-        <!-- [Phase 1 Completed & Archived] Phase 1 architectural report details have been archived in docs/archive/IMPLEMENTATION_REPORT.md -->
-            <h2>Phase 2.1 Implementation Report — Direct Craft to Lodestone Forge</h2>
-            <ul>
-                <li>Bỏ hướng <code>unawakened_*</code> / Dormant Weapon / Awakening Stone riêng.</li>
-                <li>Khi craft vũ khí độc quyền, bàn chế tạo sẽ biến trực tiếp thành <code>LODESTONE</code>, reserve owner/session và bắt đầu quy trình forge.</li>
-                <li>Trước khi countdown 5 phút, forge có giai đoạn charge 3 giây và nổ lần 1: Mace dùng vòng particle tụ vào tâm; Spear dùng sấm sét visual liên tục đánh vào Lodestone.</li>
-                <li>Target version cập nhật là Paper/Minecraft 1.21.11; Spear dùng đúng item <code>NETHERITE_SPEAR</code>, không thay bằng Trident.</li>
-                <li>Yêu cầu QA mới: craft đồng thời 2 player, lệch tick/millisecond, shift-click, restart ở charge/countdown/completion tick, phá Lodestone giữa phiên.</li>
-            </ul>
-        </section>
-
-        <section>
-            <h2>Các vũ khí hiện tại đang hỗ trợ</h2>
-            <ol style="color: var(--text-secondary); padding-left: 20px; font-size: 0.95rem;">
-                <li style="margin-bottom: 8px;"><strong>Power Mace:</strong> Kỹ năng chủ động Ground Pulse, bị động Stored Momentum.</li>
-                <li style="margin-bottom: 8px;"><strong>Chaos Mace:</strong> Kỹ năng chủ động Rift Reversal, bị động Fractured Step, Lời nguyền giảm máu max, Lời nguyền sát thương nước.</li>
-                <li style="margin-bottom: 8px;"><strong>Chronos Anchor Spear:</strong> Theo dõi đường bay giáo ném, Đóng băng khi trúng, Phản phệ đóng băng bản thân khi ném hụt.</li>
-            </ol>
-        </section>
-    </div>
-</body>
-</html>
+<section><h2>Phase 3 source of truth</h2><ul>
+<li><code>docs/plan.html</code>: gameplay design, recipes, skill/curse/particle details.</li>
+<li><code>docs/implementation_tickets.html</code>: tickets implementation-ready cho backend agents.</li>
+<li><code>docs/scratch_base_todo.html</code>: checklist trạng thái.</li>
+<li><code>docs/agent_phase3_prompt.md</code>: prompt giao việc cho opencode-cli backend/reviewer.</li>
+</ul></section>
+<section class="ok"><h2>2026-05-28 Backend pass — user correction tickets</h2><ul>
+<li>Input: <code>AbilityService</code> keeps active abilities on Sneak + Left Click only. <code>LEFT_CLICK_BLOCK</code> no longer ray-traces entity-target abilities as a false success; <code>LEFT_CLICK_AIR</code> may target by look ray; entity attacks activate only on actual hit and cancel normal damage only after success.</li>
+<li>Power Mace: miss/block Sneak+LeftClick applies 60s Slowness; entity active grants non-stacking +5% speed for 10s and retains 10% radius-10 upward blast path.</li>
+<li>Vampiric Mace: miss/block Sneak+LeftClick deals 6 temporary damage; active damages target, heals caster, applies tracked temporary max-health lease to caster/victim, and cleans leases on expiry, death, quit, and restore.</li>
+<li>Special materials: Obsidian Chaos success now kills the holder after preserving consume/drop behavior; Challenger's Eye is only added to death drops after actual Enderman fatal damage plus Totem resurrection event path.</li>
+<li>Docs synced: Chaos Core documented as disabled historical only; Chaos Mace direct-crafts from previous Chaos Core ingredients; Ruined Core recycle recipe remains disabled; End Core chance documented as 20% success / 80% Ruined.</li>
+<li>Master wiki expanded after review: every Phase 3 Mace now has detailed developer-facing trigger/chance/duration/radius/cooldown/cleanup notes plus particle animation paths; placeholder lore text was removed.</li>
+<li>Verification: active src/resources grep for <code>MaceType|MaceFactory|ExclusiveItemId|egosmp|dark_ego|chrono_core|devourer_mace|phoenix_mace|aegis_mace</code> returned no files. Build command <code>if (Test-Path -LiteralPath ".\\gradlew.bat") { .\\gradlew.bat build } else { gradle build }</code> passed in 2s with timeout 120000ms.</li>
+<li>Manual-test TODO: no MockBukkit/test harness exists; verify in server: Power/Vampiric miss curses, left-click block does not activate target abilities, Right Click does not cast, Obsidian Chaos death despite Totem/armor, Challenger Eye only on Enderman+Totem death path, timed Vampiric modifiers clean after repeated casts, and disabled spear resources cannot be acquired by normal recipe/forge flow.</li>
+</ul></section>
+</main></body></html>

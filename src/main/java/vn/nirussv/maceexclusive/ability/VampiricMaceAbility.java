@@ -10,6 +10,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.NamespacedKey;
@@ -33,6 +35,7 @@ public final class VampiricMaceAbility implements ActiveAbility, PassiveAbility,
 
     // Track active siphon boosts: Caster UUID -> modifier
     private final Map<UUID, AttributeModifier> siphonModifiers = new HashMap<>();
+    private final Map<String, Long> siphonExpiries = new HashMap<>();
 
     public VampiricMaceAbility(MaceExclusivePlugin plugin, ConfigManager configManager, CooldownService cooldownService) {
         this.plugin = plugin;
@@ -71,8 +74,9 @@ public final class VampiricMaceAbility implements ActiveAbility, PassiveAbility,
             return;
         }
 
-        long durationSeconds = configManager.getItemEffectInt("vampiric_mace", "effects.siphon.duration", 90);
+        long durationSeconds = configManager.getItemEffectInt("vampiric_mace", "siphon.duration", 90);
         long cooldownSeconds = configManager.getItemEffectInt("vampiric_mace", "cooldowns.siphon", 75);
+        long expiresAt = System.currentTimeMillis() + durationSeconds * 1000L;
 
         // Max HP siphon: decrease victim, increase caster
         // Cap caster gain: +4.0 Max HP (2 hearts)
@@ -90,36 +94,47 @@ public final class VampiricMaceAbility implements ActiveAbility, PassiveAbility,
         double gain = 2.0D; // 1 heart
         double newModifierAmount = Math.min(4.0D, currentModifier + gain);
 
-        NamespacedKey modifierKey = new NamespacedKey(plugin, "vampiric_siphon_" + uuid.toString());
+        NamespacedKey modifierKey = new NamespacedKey(plugin, "vampiric_siphon");
         AttributeModifier modifier = new AttributeModifier(modifierKey, newModifierAmount, AttributeModifier.Operation.ADD_NUMBER);
         
         if (maxHealthAttr != null) {
             maxHealthAttr.addModifier(modifier);
             siphonModifiers.put(uuid, modifier);
+            siphonExpiries.put(casterExpiryKey(uuid), expiresAt);
         }
 
-        // Apply penalty to victim
+        // Apply direct siphon damage and penalty to victim.
+        target.damage(configManager.getItemEffectDouble("vampiric_mace", "siphon.damage", 6.0D), player);
         if (target instanceof Player victim) {
             AttributeInstance victimMaxHealth = victim.getAttribute(Attribute.GENERIC_MAX_HEALTH);
             if (victimMaxHealth != null) {
                 NamespacedKey victimKey = new NamespacedKey(plugin, "vampiric_siphoned_" + uuid.toString());
                 AttributeModifier penaltyMod = new AttributeModifier(victimKey, -2.0D, AttributeModifier.Operation.ADD_NUMBER);
+                for (AttributeModifier existing : java.util.List.copyOf(victimMaxHealth.getModifiers())) {
+                    if (victimKey.equals(existing.getKey())) victimMaxHealth.removeModifier(existing);
+                }
                 victimMaxHealth.addModifier(penaltyMod);
-                
+                String expiryKey = victimExpiryKey(victim.getUniqueId(), uuid);
+                siphonExpiries.put(expiryKey, expiresAt);
+                 
                 // Restore victim HP later
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                    if (siphonExpiries.getOrDefault(expiryKey, 0L) > System.currentTimeMillis()) return;
+                    siphonExpiries.remove(expiryKey);
                     if (victim.isOnline()) {
                         AttributeInstance attr = victim.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-                        if (attr != null) attr.removeModifier(penaltyMod);
+                        if (attr != null) {
+                            for (AttributeModifier existing : java.util.List.copyOf(attr.getModifiers())) {
+                                if (victimKey.equals(existing.getKey())) attr.removeModifier(existing);
+                            }
+                        }
                     }
                 }, durationSeconds * 20L);
             }
-        } else {
-            target.damage(6.0D, player);
         }
 
         // Heal caster
-        double healAmount = configManager.getItemEffectDouble("vampiric_mace", "effects.siphon.immediate_heal", 6.0D);
+        double healAmount = configManager.getItemEffectDouble("vampiric_mace", "siphon.immediate_heal", 6.0D);
         player.setHealth(Math.min(player.getMaxHealth(), player.getHealth() + healAmount));
 
         cooldownService.setCooldown(player, id(), cooldownSeconds * 1000L);
@@ -130,6 +145,8 @@ public final class VampiricMaceAbility implements ActiveAbility, PassiveAbility,
 
         // Schedule remove caster boost
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            if (siphonExpiries.getOrDefault(casterExpiryKey(uuid), 0L) > System.currentTimeMillis()) return;
+            siphonExpiries.remove(casterExpiryKey(uuid));
             if (player.isOnline()) {
                 AttributeInstance attr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
                 if (attr != null) {
@@ -142,6 +159,14 @@ public final class VampiricMaceAbility implements ActiveAbility, PassiveAbility,
         }, durationSeconds * 20L);
     }
 
+    private String casterExpiryKey(UUID caster) {
+        return "caster:" + caster;
+    }
+
+    private String victimExpiryKey(UUID victim, UUID caster) {
+        return "victim:" + victim + ":" + caster;
+    }
+
     @Override
     public void onAttack(AbilityContext context, EntityDamageByEntityEvent event) {
         Player attacker = context.player();
@@ -149,8 +174,8 @@ public final class VampiricMaceAbility implements ActiveAbility, PassiveAbility,
         if (target == null) return;
 
         // Lifesteal: 12% damage
-        double percent = configManager.getItemEffectDouble("vampiric_mace", "effects.lifesteal.percent", 0.12D);
-        double maxHeal = configManager.getItemEffectDouble("vampiric_mace", "effects.lifesteal.max_heal", 2.0D);
+        double percent = configManager.getItemEffectDouble("vampiric_mace", "lifesteal.percent", 0.12D);
+        double maxHeal = configManager.getItemEffectDouble("vampiric_mace", "lifesteal.max_heal", 2.0D);
         double damage = event.getFinalDamage();
         double heal = Math.min(maxHeal, damage * percent);
         
@@ -191,5 +216,32 @@ public final class VampiricMaceAbility implements ActiveAbility, PassiveAbility,
             }
         }
         siphonModifiers.clear();
+        siphonExpiries.clear();
+        for (Player player : plugin.getServer().getOnlinePlayers()) cleanupVampiricModifiers(player);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onQuit(PlayerQuitEvent event) {
+        cleanupVampiricModifiers(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onDeath(PlayerDeathEvent event) {
+        cleanupVampiricModifiers(event.getEntity());
+    }
+
+    private void cleanupVampiricModifiers(Player player) {
+        AttributeInstance attr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        if (attr == null) return;
+        for (AttributeModifier existing : java.util.List.copyOf(attr.getModifiers())) {
+            NamespacedKey key = existing.getKey();
+            if (!key.getNamespace().equals(plugin.getName().toLowerCase(java.util.Locale.ROOT))) continue;
+            if (key.getKey().equals("vampiric_siphon") || key.getKey().startsWith("vampiric_siphoned_")) {
+                attr.removeModifier(existing);
+            }
+        }
+        UUID uuid = player.getUniqueId();
+        siphonModifiers.remove(uuid);
+        siphonExpiries.entrySet().removeIf(entry -> entry.getKey().contains(uuid.toString()));
     }
 }

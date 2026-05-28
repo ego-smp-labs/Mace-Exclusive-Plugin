@@ -2,13 +2,15 @@ enabled: true
 name: "&bSoulfire Core"
 material: HEAVY_CORE
 custom-model-data: 3002
-xp-cost: 35
-failure-chance: 0.30
 lore:
-  - "&7A soulfire infused core."
+  - "&7A blue-flame core built from lanterns, magma, and soul heat."
+  - "&cInstability: &fSoul fire surges are handled by weapon curses and future core hooks."
 recipe:
   enabled: true
-  shape: ["LML", "MHM", "LML"]
+  shape:
+    - "LML"
+    - "MHM"
+    - "LML"
   ingredients:
     L: SOUL_LANTERN
     M: MAGMA_BLOCK

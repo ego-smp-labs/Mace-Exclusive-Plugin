@@ -55,7 +55,7 @@ public final class RitualService implements Listener {
         if (item.getItemStack().getType() != Material.HEAVY_CORE) return;
         if (event.getTo() == null || event.getTo().getWorld() == null) return;
         if (event.getTo().getWorld().getEnvironment() != World.Environment.THE_END) return;
-        String result = random.nextBoolean() ? "end_core" : "ruined_core";
+        String result = random.nextDouble() < 0.20D ? "end_core" : "ruined_core";
         if (transformOne(item, result)) event.setCancelled(true);
     }
 

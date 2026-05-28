@@ -3,6 +3,7 @@ name: "&dEnd Core"
 material: HEAVY_CORE
 custom-model-data: 3005
 lore:
-  - "&7Distorted by an End Portal."
+  - "&7A Heavy Core distorted by the End Portal with only a 20% successful transformation chance."
+  - "&cInstability: &fWhile in inventory, every minute has 10% chance to teleport the holder nearby safely."
 recipe:
   enabled: false

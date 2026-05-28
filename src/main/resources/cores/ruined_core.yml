@@ -3,11 +3,7 @@ name: "&8Ruined Core"
 material: HEAVY_CORE
 custom-model-data: 3006
 lore:
-  - "&7A failed core, recyclable to Heavy Core."
+  - "&7A collapsed ritual core left behind when core creation fails."
+  - "&cInstability: &fIt has no active recycle recipe yet and cannot be used for weapons."
 recipe:
-  enabled: true
-  shape: ["DKD", "KRK", "DKD"]
-  ingredients:
-    D: DIAMOND_BLOCK
-    K: OMINOUS_TRIAL_KEY
-    R: HEAVY_CORE
+  enabled: false

@@ -4,29 +4,35 @@ name: "&b&lMACE OF POWER"
 material: MACE
 custom-model-data: 2001
 lore:
-  - "&7An ancient weapon."
-  - "&7Sneak + Left-Click to release Ground Pulse."
-  - "&7&oOnly one can exist."
+  - "&7A heavy storm-forged mace that turns clean hits into upward force."
+  - "&eActive: &fSneak + Left-Click an entity to strike it and roll a 10% radius-10 upward blast."
+  - "&aPassive: &fEvery entity hit grants +5% movement speed for 10s; falling hits still add momentum damage."
+  - "&cCurse: &fLeft-clicking air or blocks without a target gives Slowness for 60s."
 recipe:
   enabled: true
   shape:
     - " H "
-    - " I "
     - " B "
+    - " N "
   ingredients:
     H: HEAVY_CORE
-    I: NETHERITE_INGOT
     B: BREEZE_ROD
+    N: NETHERITE_INGOT
 cooldowns:
-  ground_pulse: 22
+  ground_pulse: 8
 curse:
   hold:
     speed_penalty: 0.1
-  backfire:
-    mining_fatigue_duration: 100
 effects:
-  combat:
-    blindness-duration: 60
+  hit:
+    damage: 4.0
+    cooldown-seconds: 8
+    blast-chance: 0.10
+    blast-radius: 10.0
+    upward-velocity: 1.25
+  stored-momentum:
+    damage-multiplier: 1.10
+    knockback: 0.35
 messages:
-  skill-ground-pulse: "&b[Power Mace] &fKỹ năng &eGround Pulse&f đã được kích hoạt!"
-  skill-momentum: "&b[Power Mace] &fĐã tích tụ &eStored Momentum&f!"
+  skill-ground-pulse: "&b[Power Mace] &fGold-white crack rings burst outward and launch nearby entities upward."
+  skill-momentum: "&b[Power Mace] &fStored Momentum detonates in gold-white sparks and a ground-crack ring."

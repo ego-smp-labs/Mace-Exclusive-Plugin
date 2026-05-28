@@ -1,14 +1,16 @@
 enabled: true
-name: "&6Ego Core"
+name: "&fEgo Core"
 material: HEAVY_CORE
 custom-model-data: 3001
-xp-cost: 40
-failure-chance: 0.30
 lore:
-  - "&7A condensed ego core."
+  - "&7A self-aware core forged from netherite, wither roses, and a Heavy Core."
+  - "&cInstability: &fIts pride rejects easy growth and remains a future weapon-control hook."
 recipe:
   enabled: true
-  shape: ["NRN", "RHR", "NRN"]
+  shape:
+    - "NRN"
+    - "RHR"
+    - "NRN"
   ingredients:
     N: NETHERITE_INGOT
     R: WITHER_ROSE

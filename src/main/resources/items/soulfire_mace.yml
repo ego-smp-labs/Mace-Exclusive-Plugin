@@ -4,9 +4,10 @@ name: "&b&lSOULFIRE PYRE MACE"
 material: MACE
 custom-model-data: 10011
 lore:
-  - "&7Forged in the blue flames of souls."
-  - "&7Passive: Fire Immunity & Soul Fire on Hit."
-  - "&7Sneak + Left-Click to summon Soulfire Pyre."
+  - "&7A soul-forged mace wreathed in blue flame and rising spirits."
+  - "&eActive: &fSneak + Left-Click summons a 5s Soulfire Storm radius 5 at 4 HP cost."
+  - "&aPassive: &fGrants fire/lava protection and sets enemies ablaze with soul fire on melee."
+  - "&cCurse: &fSoul fire doubles hunger pressure and the active always charges current health."
 recipe:
   enabled: true
   shape:
@@ -22,10 +23,10 @@ cooldowns:
 effects:
   active:
     radius: 5.0
-    duration: 5 # seconds
+    duration: 5
     damage_per_second: 3.0
     hp_cost: 4.0
   curses:
     hunger_multiplier: 2.0
 messages:
-  skill-fire-storm: "&b[Soulfire Mace] &fTriệu hồi &dCơn Bão Lửa Linh Hồn&f!"
+  skill-fire-storm: "&b[Soulfire Mace] &fFive pulses of blue flame expand outward while soul particles rise and crackle."

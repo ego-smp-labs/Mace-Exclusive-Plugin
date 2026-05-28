@@ -214,9 +214,14 @@ public class ConfigManager {
     public boolean isSingletonItem(String id) { if (!isSingletonItemsEnabled()) return false; ConfigurationSection section = getItemSection(id, "items." + id); return section == null || section.getBoolean("singleton", true); }
     public boolean isStrictContainerBlock() { return plugin.getConfig().getBoolean("settings.strict-container-block", true); }
 
-    public boolean getItemEffectBoolean(String itemId, String path, boolean fallback) { ConfigurationSection effects = getItemConfig(itemId) == null ? null : getItemConfig(itemId).effects(); return effects == null ? fallback : effects.getBoolean(path, fallback); }
-    public int getItemEffectInt(String itemId, String path, int fallback) { ConfigurationSection effects = getItemConfig(itemId) == null ? null : getItemConfig(itemId).effects(); return effects == null ? fallback : effects.getInt(path, fallback); }
-    public double getItemEffectDouble(String itemId, String path, double fallback) { ConfigurationSection effects = getItemConfig(itemId) == null ? null : getItemConfig(itemId).effects(); return effects == null ? fallback : effects.getDouble(path, fallback); }
+    public boolean getItemEffectBoolean(String itemId, String path, boolean fallback) { ConfigurationSection effects = getItemConfig(itemId) == null ? null : getItemConfig(itemId).effects(); return effects == null ? fallback : effects.getBoolean(normalizeEffectPath(path), fallback); }
+    public int getItemEffectInt(String itemId, String path, int fallback) { ConfigurationSection effects = getItemConfig(itemId) == null ? null : getItemConfig(itemId).effects(); return effects == null ? fallback : effects.getInt(normalizeEffectPath(path), fallback); }
+    public double getItemEffectDouble(String itemId, String path, double fallback) { ConfigurationSection effects = getItemConfig(itemId) == null ? null : getItemConfig(itemId).effects(); return effects == null ? fallback : effects.getDouble(normalizeEffectPath(path), fallback); }
+
+    private String normalizeEffectPath(String path) {
+        if (path == null) return "";
+        return path.startsWith("effects.") ? path.substring("effects.".length()) : path;
+    }
 
     public double getItemCurseDouble(String itemId, String path, double fallback) {
         ConfigurationSection itemSection = getItemSection(itemId, "items." + itemId);

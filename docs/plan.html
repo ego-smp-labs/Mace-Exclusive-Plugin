@@ -1,2032 +1,275 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mace Exclusive - Gameplay Design Plan</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-dark: #0b0f19;
-            --bg-sidebar: #0f172a;
-            --bg-card: rgba(22, 28, 45, 0.6);
-            --bg-card-hover: rgba(30, 41, 69, 0.8);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            
-            /* Theme Accent Colors */
-            --color-power: #f59e0b; /* Amber */
-            --color-chaos: #a855f7; /* Purple */
-            --color-blood: #ef4444; /* Crimson */
-            --color-sculk: #06b6d4; /* Cyan */
-            --color-chrono: #ec4899; /* Pink */
-            --color-ruined: #64748b; /* Gray */
-            --color-green: #10b981; /* Green */
-            
-            --transition-speed: 0.25s;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(168, 85, 247, 0.04) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.04) 0px, transparent 50%);
-            background-attachment: fixed;
-        }
-
-        /* Top Navigation Header */
-        .top-header {
-            background-color: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            z-index: 1000;
-        }
-
-        .brand {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #a855f7, #06b6d4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .brand::before {
-            content: '⚔️';
-        }
-
-        .top-tabs {
-            display: flex;
-            gap: 12px;
-            height: 100%;
-            align-items: center;
-        }
-
-        .tab-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-family: 'Outfit', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 600;
-            padding: 10px 18px;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all var(--transition-speed);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tab-btn:hover {
-            color: var(--text-primary);
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        .tab-btn.active {
-            color: #fff;
-            background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(6, 182, 212, 0.2));
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-            border-bottom: 2px solid #a855f7;
-            border-radius: 8px 8px 0 0;
-            height: 100%;
-        }
-
-        /* Layout Container */
-        .wrapper {
-            margin-top: 70px;
-            display: flex;
-            min-height: calc(100vh - 70px);
-        }
-
-        /* Sidebar Sub-navigation for Weapon lists */
-        .sub-sidebar {
-            width: 320px;
-            background-color: var(--bg-sidebar);
-            border-right: 1px solid var(--border-color);
-            padding: 24px;
-            overflow-y: auto;
-            position: fixed;
-            top: 70px;
-            bottom: 0;
-            left: 0;
-            display: none; /* Only show when Weapons/Spears tab is active */
-        }
-
-        .search-box {
-            width: 100%;
-            padding: 10px 16px;
-            background-color: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            margin-bottom: 20px;
-            outline: none;
-        }
-
-        .search-box:focus {
-            border-color: #a855f7;
-        }
-
-        .weapon-list-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .weapon-list-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all var(--transition-speed);
-            border: 1px solid transparent;
-            background-color: rgba(255, 255, 255, 0.01);
-        }
-
-        .weapon-list-item:hover {
-            background-color: rgba(255, 255, 255, 0.04);
-        }
-
-        .weapon-list-item.active {
-            background-color: rgba(168, 85, 247, 0.1);
-            border-color: rgba(168, 85, 247, 0.3);
-        }
-
-        .w-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .w-name {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: var(--text-primary);
-        }
-
-        .w-id {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-family: 'Fira Code', monospace;
-        }
-
-        .w-cmd {
-            font-size: 0.7rem;
-            background-color: rgba(255, 255, 255, 0.08);
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-            color: var(--text-secondary);
-        }
-
-        /* Main Content Container */
-        .content-body {
-            flex-grow: 1;
-            padding: 40px 48px;
-            margin-left: 0;
-            max-width: 1200px;
-            transition: margin-left var(--transition-speed);
-        }
-
-        .content-body.has-sidebar {
-            margin-left: 320px;
-        }
-
-        /* Tab Content Panel styling */
-        .tab-panel {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .tab-panel.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Heading elements */
-        h2 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 24px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
-            background: linear-gradient(to right, #f8fafc, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        h3 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin: 28px 0 16px 0;
-            color: var(--text-primary);
-        }
-
-        p {
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-            font-size: 1rem;
-        }
-
-        ul, ol {
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-            padding-left: 24px;
-        }
-
-        li {
-            margin-bottom: 8px;
-        }
-
-        /* Minecraft Grid CSS */
-        .crafting-container {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 16px;
-            border-radius: 12px;
-            width: fit-content;
-            border: 1px solid var(--border-color);
-            margin: 12px 0 20px 0;
-        }
-
-        .crafting-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 44px);
-            grid-template-rows: repeat(3, 44px);
-            gap: 4px;
-            background-color: #8f8f8f;
-            padding: 4px;
-            border-radius: 4px;
-            border: 2px solid #373737;
-        }
-
-        .grid-cell {
-            background-color: #8b8b8b;
-            border: 2px solid;
-            border-color: #373737 #dbdbdb #dbdbdb #373737;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            font-weight: bold;
-            color: #1e293b;
-            cursor: help;
-            position: relative;
-            width: 40px;
-            height: 40px;
-        }
-
-        .grid-cell:empty {
-            cursor: default;
-        }
-
-        .grid-cell[data-tooltip]::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 125%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #111;
-            color: #fff;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s;
-            z-index: 10;
-            border: 1px solid #555;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-
-        .grid-cell:hover::after {
-            opacity: 1;
-        }
-
-        .craft-arrow {
-            font-size: 1.5rem;
-            color: var(--text-muted);
-        }
-
-        .craft-result {
-            width: 48px;
-            height: 48px;
-            background-color: #8b8b8b;
-            border: 2px solid;
-            border-color: #373737 #dbdbdb #dbdbdb #373737;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.8rem;
-        }
-
-        /* Detail section styling for Weapons/Cores */
-        .detail-panel {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 32px;
-            backdrop-filter: blur(8px);
-            margin-bottom: 24px;
-            display: none; /* Managed by JS */
-        }
-
-        .detail-panel.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .detail-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 16px;
-            margin-bottom: 24px;
-        }
-
-        .detail-title-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .detail-name {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 800;
-        }
-
-        .detail-id-tag {
-            font-family: 'Fira Code', monospace;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .detail-badges {
-            display: flex;
-            gap: 8px;
-        }
-
-        .badge {
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            background-color: rgba(255, 255, 255, 0.08);
-            border: 1px solid var(--border-color);
-        }
-
-        .badge-power { color: var(--color-power); border-color: rgba(245, 158, 11, 0.3); }
-        .badge-chaos { color: var(--color-chaos); border-color: rgba(168, 85, 247, 0.3); }
-        .badge-blood { color: var(--color-blood); border-color: rgba(239, 68, 68, 0.3); }
-        .badge-sculk { color: var(--color-sculk); border-color: rgba(6, 182, 212, 0.3); }
-        .badge-chrono { color: var(--color-chrono); border-color: rgba(236, 72, 153, 0.3); }
-
-        .feature-block {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
-        }
-
-        .feature-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.05rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .feature-title.passive::before { content: '🛡️'; }
-        .feature-title.active-skill::before { content: '⚡'; }
-        .feature-title.curse::before { content: '💀'; }
-        .feature-title.visuals::before { content: '✨'; }
-
-        /* Tables styling */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 24px 0;
-            font-size: 0.95rem;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-
-        th {
-            background-color: rgba(255, 255, 255, 0.03);
-            color: var(--text-primary);
-            text-align: left;
-            padding: 14px 16px;
-            font-weight: 600;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        td {
-            padding: 12px 16px;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        tr:hover td {
-            background-color: rgba(255, 255, 255, 0.01);
-            color: var(--text-primary);
-        }
-
-        /* Callout */
-        .callout {
-            background-color: rgba(30, 41, 59, 0.4);
-            border-left: 4px solid #a855f7;
-            padding: 20px;
-            border-radius: 0 12px 12px 0;
-            margin-bottom: 24px;
-            backdrop-filter: blur(8px);
-        }
-
-        .callout-title {
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .callout-review { border-left-color: #f59e0b; background-color: rgba(245, 158, 11, 0.04); }
-
-        pre {
-            background-color: #07090e !important;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            overflow-x: auto;
-            margin-bottom: 24px;
-        }
-
-        code {
-            font-family: 'Fira Code', monospace;
-            font-size: 0.9rem;
-        }
-
-        .no-selection {
-            text-align: center;
-            padding: 80px 0;
-            color: var(--text-muted);
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.2rem;
-        }
-
-        /* Layout Grid for Cores */
-        .cores-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 24px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mace Exclusive — Master Wiki Plan</title>
+  <style>
+    :root{--bg:#0b0f19;--panel:#111827;--panel2:#0f172a;--line:#273244;--text:#e5e7eb;--muted:#94a3b8;--gold:#f59e0b;--purple:#a855f7;--red:#ef4444;--cyan:#06b6d4;--green:#10b981;--pink:#ec4899;--blue:#3b82f6;--gray:#64748b}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;line-height:1.65}a{color:#93c5fd}.layout{display:grid;grid-template-columns:280px 1fr;min-height:100vh}.nav{position:sticky;top:0;height:100vh;overflow:auto;background:#0f172a;border-right:1px solid var(--line);padding:22px}.nav h1{font-size:1.05rem;margin:0 0 14px}.nav a{display:block;text-decoration:none;color:#cbd5e1;padding:7px 8px;border-radius:8px;font-size:.9rem}.nav a:hover{background:#1e293b;color:#fff}.content{max-width:1180px;padding:32px 42px}.hero{background:linear-gradient(135deg,rgba(168,85,247,.16),rgba(6,182,212,.08));border:1px solid var(--line);border-radius:18px;padding:26px;margin-bottom:22px}section{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;margin:22px 0}h1,h2,h3,h4{color:#fff;line-height:1.25}h2{border-bottom:1px solid var(--line);padding-bottom:8px;margin-top:0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}.card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px}.warn{border-left:4px solid var(--gold)}.danger{border-left:4px solid var(--red)}.ok{border-left:4px solid var(--green)}.tag{display:inline-block;border:1px solid #475569;border-radius:999px;padding:2px 8px;margin:2px;color:#cbd5e1;font-size:.82rem}code,pre{font-family:Consolas,monospace;background:#0b1220;border-radius:6px}code{padding:2px 5px}pre{padding:12px;overflow:auto;border:1px solid var(--line)}table{width:100%;border-collapse:collapse;margin:12px 0}td,th{border:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}th{background:#172033}.muted{color:var(--muted)}.recipe{white-space:pre;text-align:center;font-family:Consolas,monospace;font-size:1.05rem}.toc-note{font-size:.85rem;color:var(--muted);margin-top:12px}
+  </style>
 </head>
 <body>
+<div class="layout">
+  <aside class="nav">
+    <h1>⚒ Mace Exclusive Wiki</h1>
+    <a href="#status">0. Trạng thái</a>
+    <a href="#vision">1. Tầm nhìn</a>
+    <a href="#scope">2. Scope Phase 3</a>
+    <a href="#architecture">3. Kiến trúc</a>
+    <a href="#identity">4. Item Identity</a>
+    <a href="#forge">5. Lodestone Forge</a>
+    <a href="#cores">6. Cores & Materials</a>
+    <a href="#input">7. Input chuẩn</a>
+    <a href="#balance">8. Luật cân bằng</a>
+    <a href="#weapons">9. Mace Wiki</a>
+    <a href="#particles">10. Particle/Sound</a>
+    <a href="#recipes">11. Recipe summary</a>
+    <a href="#qa">12. QA/Test Matrix</a>
+    <a href="#agent">13. Agent Rules</a>
+    <a href="#roadmap">14. Roadmap</a>
+    <p class="toc-note">Root docs là bản hiện hành. Archive chỉ để tham khảo lịch sử.</p>
+  </aside>
+  <main class="content">
+    <div class="hero">
+      <h1>Mace Exclusive — Master Project Plan / Wiki</h1>
+      <p>Đây là tài liệu tổng thể của project: gameplay design, architecture, recipes, skills, curses, particles, tests và quy tắc giao việc cho agents. Không rút gọn thành notes ngắn. Agent phải xem file này như wiki nguồn sự thật.</p>
+      <p class="muted">Target: Java 21, Paper/Spigot, Minecraft/Paper 1.21.11+. Phase hiện tại: <strong>Mace-first</strong>.</p>
+    </div>
 
-    <!-- Top Navigation Header -->
-    <header class="top-header">
-        <div class="brand">Mace Exclusive</div>
-        <div class="top-tabs">
-            <button class="tab-btn active" onclick="switchMainTab('overview', this)">📝 Tổng Quan</button>
-            <button class="tab-btn" onclick="switchMainTab('cores', this)">🔮 Hệ Thống Lõi</button>
-            <button class="tab-btn" onclick="switchMainTab('maces', this)">🔨 Kho Búa (Maces)</button>
-            <button class="tab-btn" onclick="switchMainTab('spears', this)">🔱 Kho Giáo (Spears)</button>
-            
-            <span style="width: 1px; height: 24px; background-color: var(--border-color); margin: 0 8px; display: inline-block;"></span>
-            
-            <a href="scratch_base_todo.html" class="tab-btn" style="text-decoration: none; color: var(--text-secondary);" target="_self">📋 Trình Todo</a>
-            <a href="implementation_tickets.html" class="tab-btn" style="text-decoration: none; color: var(--text-secondary);" target="_self">🎟️ Vé kỹ thuật</a>
-            <a href="implementation_report.html" class="tab-btn" style="text-decoration: none; color: var(--text-secondary);" target="_self">📄 Báo cáo P1</a>
-        </div>
-    </header>
+    <section id="status" class="warn">
+      <h2>0. Trạng thái hiện tại & cảnh báo đồng bộ</h2>
+      <ul>
+        <li>Phase 3 tập trung hoàn thiện <strong>Mace</strong> trước; Spear gameplay tạm dừng tới Phase 4.</li>
+        <li>Forge pipeline hiện hành: craft trực tiếp weapon final → bàn chế tạo biến thành <code>LODESTONE</code> → charge 3s → nổ lần 1 → forge 5 phút → nổ lần 2 → drop item.</li>
+        <li>Docs đã reset theo yêu cầu mới: active input = <strong>Sneak + Left Click</strong>, Chrono Core đổi thành End Core, bỏ Devourer/Phoenix/Aegis, gộp Gravity/Singularity.</li>
+        <li>Code đã disable spear registration ở plugin main theo cleanup gần nhất, nhưng vẫn cần reviewer kiểm tra sâu gameplay và particle coverage.</li>
+      </ul>
+      <p><strong>Liên kết docs:</strong> <a href="implementation_tickets.html">Implementation Tickets</a> · <a href="scratch_base_todo.html">Todo</a> · <a href="implementation_report.html">Report</a> · <a href="agent_phase3_prompt.md">Agent Prompt</a> · <a href="archive/README.md">Archive</a></p>
+    </section>
 
-    <div class="wrapper">
-        
-        <!-- Sidebar for Búa (Maces) -->
-        <aside class="sub-sidebar" id="sidebar-maces">
-            <input type="text" class="search-box" placeholder="Tìm kiếm búa..." oninput="filterList('sidebar-maces', this.value)">
-            <div class="weapon-list-group">
-                <div class="weapon-list-item active" onclick="switchWeapon('mace', 'power_mace', this)">
-                    <div class="w-info">
-                        <span class="w-name">Power Mace</span>
-                        <span class="w-id">power_mace</span>
-                    </div>
-                    <span class="w-cmd">2001</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('mace', 'chaos_mace', this)">
-                    <div class="w-info">
-                        <span class="w-name">Chaos Mace</span>
-                        <span class="w-id">chaos_mace</span>
-                    </div>
-                    <span class="w-cmd">2002</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('mace', 'vampiric_mace', this)">
-                    <div class="w-info">
-                        <span class="w-name">Vampiric Mace</span>
-                        <span class="w-id">vampiric_mace</span>
-                    </div>
-                    <span class="w-cmd">10002</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('mace', 'devourer_mace', this)">
-                    <div class="w-info">
-                        <span class="w-name">Devourer Mace</span>
-                        <span class="w-id">devourer_mace</span>
-                    </div>
-                    <span class="w-cmd">10003</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('mace', 'sonic_mace', this)">
-                    <div class="w-info">
-                        <span class="w-name">Echoing Warden Mace</span>
-                        <span class="w-id">sonic_mace</span>
-                    </div>
-                    <span class="w-cmd">10005</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('mace', 'gravity_mace', this)">
-                    <div class="w-info">
-                        <span class="w-name">Tectonic Gravity Mace</span>
-                        <span class="w-id">gravity_mace</span>
-                    </div>
-                    <span class="w-cmd">10004</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('mace', 'soulfire_mace', this)">
-                    <div class="w-info">
-                        <span class="w-name">Soulfire Pyre Mace</span>
-                        <span class="w-id">soulfire_mace</span>
-                    </div>
-                    <span class="w-cmd">10011</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('mace', 'void_mace', this)">
-                    <div class="w-info">
-                        <span class="w-name">Abyssal Void Mace</span>
-                        <span class="w-id">void_mace</span>
-                    </div>
-                    <span class="w-cmd">10012</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('mace', 'phoenix_mace', this)">
-                    <div class="w-info">
-                        <span class="w-name">Phoenix Rebirth Mace</span>
-                        <span class="w-id">phoenix_mace</span>
-                    </div>
-                    <span class="w-cmd">10013</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('mace', 'aegis_mace', this)">
-                    <div class="w-info">
-                        <span class="w-name">Aegis Sentinel Mace</span>
-                        <span class="w-id">aegis_mace</span>
-                    </div>
-                    <span class="w-cmd">10014</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('mace', 'singularity_mace', this)">
-                    <div class="w-info">
-                        <span class="w-name">Singularity Collapse Mace</span>
-                        <span class="w-id">singularity_mace</span>
-                    </div>
-                    <span class="w-cmd">10015</span>
-                </div>
-            </div>
-        </aside>
+    <section id="vision">
+      <h2>1. Tầm nhìn thiết kế</h2>
+      <p><strong>Mace Exclusive</strong> là plugin vũ khí độc quyền theo phong cách vanilla-plus. Mục tiêu không phải RPG hóa quá mức, mà tạo các vũ khí có cá tính mạnh, craft/ritual đáng nhớ, lời nguyền cân bằng, particle đẹp và code sạch.</p>
+      <h3>Nguyên tắc cốt lõi</h3>
+      <ul>
+        <li><strong>Vanilla-first:</strong> skill vẫn dựa trên Minecraft combat, potion, particles, sounds, attributes, cooldowns, events.</li>
+        <li><strong>Mỗi vũ khí có giá phải trả:</strong> sức mạnh càng “ảo” thì curse càng rõ, dễ hiểu và đúng theme.</li>
+        <li><strong>Không mất đồ/dupe:</strong> mọi hotbar shuffle, lock slot, forge session, singleton ownership phải có rollback/cleanup.</li>
+        <li><strong>OOP/SOLID:</strong> listener mỏng, service quản state, ability class giữ gameplay, effect profile giữ visual.</li>
+        <li><strong>Performance:</strong> particle có budget, task có TTL, không poll toàn server vô tội vạ.</li>
+      </ul>
+    </section>
 
-        <!-- Sidebar for Giáo (Spears) -->
-        <aside class="sub-sidebar" id="sidebar-spears">
-            <input type="text" class="search-box" placeholder="Tìm kiếm giáo..." oninput="filterList('sidebar-spears', this.value)">
-            <div class="weapon-list-group">
-                <div class="weapon-list-item active" onclick="switchWeapon('spear', 'chronos_spear', this)">
-                    <div class="w-info">
-                        <span class="w-name">Chronos Anchor Spear</span>
-                        <span class="w-id">chronos_spear</span>
-                    </div>
-                    <span class="w-cmd">2003</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('spear', 'void_spear', this)">
-                    <div class="w-info">
-                        <span class="w-name">Void-Piercer Spear</span>
-                        <span class="w-id">void_spear</span>
-                    </div>
-                    <span class="w-cmd">10006</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('spear', 'blood_spear', this)">
-                    <div class="w-info">
-                        <span class="w-name">Blood-drinker Spear</span>
-                        <span class="w-id">blood_spear</span>
-                    </div>
-                    <span class="w-cmd">10007</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('spear', 'storm_spear', this)">
-                    <div class="w-info">
-                        <span class="w-name">Storm-caller Spear</span>
-                        <span class="w-id">storm_spear</span>
-                    </div>
-                    <span class="w-cmd">10008</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('spear', 'decay_spear', this)">
-                    <div class="w-info">
-                        <span class="w-name">Decay-spreader Spear</span>
-                        <span class="w-id">decay_spear</span>
-                    </div>
-                    <span class="w-cmd">10009</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('spear', 'phantom_spear', this)">
-                    <div class="w-info">
-                        <span class="w-name">Spectral Phantom Spear</span>
-                        <span class="w-id">phantom_spear</span>
-                    </div>
-                    <span class="w-cmd">10016</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('spear', 'solar_spear', this)">
-                    <div class="w-info">
-                        <span class="w-name">Prismatic Solar Spear</span>
-                        <span class="w-id">solar_spear</span>
-                    </div>
-                    <span class="w-cmd">10017</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('spear', 'leviathan_spear', this)">
-                    <div class="w-info">
-                        <span class="w-name">Abyssal Leviathan Spear</span>
-                        <span class="w-id">leviathan_spear</span>
-                    </div>
-                    <span class="w-cmd">10018</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('spear', 'gluttonous_spear', this)">
-                    <div class="w-info">
-                        <span class="w-name">Gluttonous Star Spear</span>
-                        <span class="w-id">gluttonous_spear</span>
-                    </div>
-                    <span class="w-cmd">10019</span>
-                </div>
-                <div class="weapon-list-item" onclick="switchWeapon('spear', 'cataclysm_spear', this)">
-                    <div class="w-info">
-                        <span class="w-name">Cataclysm Overlord Spear</span>
-                        <span class="w-id">cataclysm_spear</span>
-                    </div>
-                    <span class="w-cmd">10020</span>
-                </div>
-            </div>
-        </aside>
+    <section id="scope">
+      <h2>2. Phase 3 Scope — Mace-first</h2>
+      <div class="grid">
+        <div class="card ok"><h3>Trong scope</h3><ul><li>Power Mace</li><li>Void Mace</li><li>Chaos Mace</li><li>Vampiric Mace</li><li>Singularity Gravity Mace</li><li>Echoing Warden/Sonic Mace</li><li>Soulfire Pyre Mace</li><li>End/Blood/Sculk/Soulfire/Ego/Ruined Cores; Chaos Core disabled historical only</li><li>Lodestone Forge</li><li>Particle/sound coverage cho mọi Mace</li></ul></div>
+        <div class="card danger"><h3>Ngoài scope Phase 3</h3><ul><li>Spear gameplay, projectile, spear skills.</li><li>Devourer Mace.</li><li>Phoenix Mace.</li><li>Aegis Mace.</li><li>Chrono Core ID cũ.</li><li>Dark Ego / egosmp namespace.</li></ul></div>
+      </div>
+      <h3>Quy tắc disable Spear</h3>
+      <p>Class spear có thể giữ để Phase 4, nhưng Phase 3 không register listener/service gameplay spear. Config spear nếu còn chỉ là historical/future data, không được active trong game.</p>
+    </section>
 
-        <!-- Main Content Area -->
-        <div class="content-body" id="main-content-body">
-            
-            <!-- PANEL: OVERVIEW -->
-            <div class="tab-panel active" id="panel-overview">
-                <h2>🔍 Tổng quan & Đánh giá Kiến trúc</h2>
-                
-                <div class="callout callout-review">
-                    <div class="callout-title">⚠️ Đánh giá tính Clean Code & SOLID của mã nguồn hiện tại</div>
-                    <p>Mã nguồn Java thực tế của dự án hiện tại đang bị <strong>hardcode cứng nhắc trong Enum ExclusiveItemId</strong>. Điều này vi phạm nghiêm trọng nguyên tắc Open/Closed Principle (OCP): Quản trị viên không thể nạp động vũ khí hoặc core mới từ file config.yml mà không phải viết lại code Java và biên dịch lại plugin.</p>
-                    <p style="margin-top: 8px;">Đồng thời, mã nguồn cũ <code>MaceType</code> đã deprecated vẫn tồn tại xen kẽ, gây nhiễu loạn luồng dữ liệu. Toàn bộ cơ chế <strong>Cores, Nghi lễ (Rituals) hoàn toàn chưa có trong mã nguồn Java</strong>.</p>
-                </div>
+    <section id="architecture">
+      <h2>3. Architecture Wiki</h2>
+      <table><thead><tr><th>Package</th><th>Vai trò</th><th>Rule</th></tr></thead><tbody>
+        <tr><td><code>item/</code></td><td>PDC keys, matcher, dynamic item registry, factory.</td><td>Không so lore/name để nhận diện item.</td></tr>
+        <tr><td><code>core/</code></td><td>CoreConfig, CoreRegistry, core craft, rituals, special material listeners.</td><td>Core identity bằng <code>core_id</code>.</td></tr>
+        <tr><td><code>recipe/</code></td><td>Register shaped recipes, exact custom ingredients, direct forge trigger.</td><td>Custom ingredients dùng ExactChoice/PDC.</td></tr>
+        <tr><td><code>forge/</code></td><td>Lodestone forge sessions, charge, hologram, explosions, drop final weapon.</td><td>Transaction-safe, rollback nếu commit fail.</td></tr>
+        <tr><td><code>ability/</code></td><td>Active/passive mace mechanics.</td><td>Mỗi ability class riêng, không nhét vào listener.</td></tr>
+        <tr><td><code>curse/</code></td><td>Curse state, attribute leases, water/inventory curses.</td><td>Không stack modifiers, cleanup on quit/death/drop.</td></tr>
+        <tr><td><code>effect/</code></td><td>Particle/sound/freeze profiles.</td><td>Particle budget + TTL cleanup.</td></tr>
+        <tr><td><code>mace/</code></td><td>Ownership/singleton repository.</td><td>Không resurrect legacy enum/factory.</td></tr>
+      </tbody></table>
+      <h3>Dependency direction</h3>
+      <pre>Listener -> Service -> Registry/Repository
+Ability -> Effect/Curse/Cooldown helpers
+RecipeRegistry -> Item/Core Registry -> ForgeService
+Main Plugin -> constructs dependencies via constructor injection</pre>
+    </section>
 
-                <h3>Đề xuất giải pháp kiến trúc mới</h3>
-                <ul>
-                    <li><strong>Dynamic Registry:</strong> Định vị vũ khí bằng khóa chuỗi (String ID) thay cho Enum, tự động nạp các tệp cấu hình YML trong thư mục <code>items/</code> và <code>cores/</code>.</li>
-                    <li><strong>Core & Ritual Services:</strong> Viết các Listener chuyên biệt để xử lý việc chế tạo core (tỉ lệ fail 30%, lockout 15 phút, freeze 3s) và nghi lễ thế giới (ví dụ: Warden hiến tế máu, End Portal transit).</li>
-                    <li><strong>Dọn dẹp Technical Debt:</strong> Gỡ bỏ hoàn toàn <code>MaceType</code> cũ, đồng nhất hóa việc so khớp vật phẩm bằng PDC <code>mace_exclusive:item_id</code>.</li>
-                </ul>
+    <section id="identity">
+      <h2>4. Item Identity & Registry</h2>
+      <ul>
+        <li>Weapon PDC: <code>mace_exclusive:item_id</code></li>
+        <li>Core PDC: <code>mace_exclusive:core_id</code></li>
+        <li>Owner PDC where needed: <code>mace_exclusive:owner</code></li>
+        <li>Không dùng legacy <code>MaceType</code>, <code>MaceFactory</code>, <code>ExclusiveItemId</code>.</li>
+        <li>Không namespace <code>egosmp</code>.</li>
+      </ul>
+      <h3>Dynamic configs</h3>
+      <p><code>items/*.yml</code> và <code>cores/*.yml</code> là nguồn data runtime. Thêm item/core mới nên ưu tiên config trước, code chỉ cần ability class nếu có gameplay riêng.</p>
+    </section>
 
-                <div class="callout" style="border-left-color: #3b82f6; background-color: rgba(59, 130, 246, 0.04);">
-                    <div class="callout-title">📂 Tài liệu liên quan trong dự án</div>
-                    <p>Để theo dõi và quản lý dự án tốt nhất, vui lòng tham khảo các tài liệu phụ trợ dưới đây:</p>
-                    <ul style="margin-top: 10px; margin-left: 20px; list-style-type: square; margin-bottom: 0;">
-                        <li><strong>Todo & Trạng thái Milestone:</strong> <a href="scratch_base_todo.html" style="color: #3b82f6; text-decoration: underline; font-weight: 600;">scratch_base_todo.html</a></li>
-                        <li><strong>Vé Kỹ thuật triển khai chi tiết:</strong> <a href="implementation_tickets.html" style="color: #a855f7; text-decoration: underline; font-weight: 600;">implementation_tickets.html</a></li>
-                        <li><strong>Báo cáo triển khai Phase 1:</strong> <a href="implementation_report.html" style="color: #10b981; text-decoration: underline; font-weight: 600;">implementation_report.html</a></li>
-                    </ul>
-                </div>
-
-                <h3>Tôn chỉ thiết kế & Cân bằng</h3>
-                <p>Mọi vũ khí phải được thiết kế trên tinh thần Vanilla-first: tận dụng cú đập smash của Mace hoặc cơ chế ném của Trident, không RPG hóa quá ảo mà chú trọng vào hiệu ứng hạt, âm thanh và lời nguyền cân bằng.</p>
-                
-                <h3>Quy chuẩn Visual & Particle</h3>
-                <p>Các hiệu ứng kỹ năng của búa/giáo được cấu tạo từ các hạt cơ bản (Primitives) để tối ưu hiệu năng: <code>RingBurst</code> (AoE chấn động), <code>SpiralTrail</code> (vệt đạn bay/gồng lực), <code>BeamLine</code> (đường thẳng nối hạt), <code>GroundCrack</code> (bụi tro bám đất).</p>
-
-                <h3>Cấu hình chung Skeleton (config.yml)</h3>
-                <pre><code class="language-yaml">settings:
-  language: vi  # Ngôn ngữ dịch (vi hoặc en)
-  allow-drop: true
-  strict-mode: false
-  strict-mode-drop: false
-  prevent-hopper-pickup: true
-  verbose: false
-
-performance:
-  max-particles-per-active: 180
-  holding-effect-tick-rate: 5
-  environment-curse-interval-ticks: 20
-
-crafting:
-  remove-vanilla-mace-recipe: true
-  prevent-shift-click: true
-
-forge:
+    <section id="forge">
+      <h2>5. Lodestone Forge Pipeline</h2>
+      <pre>Player lấy craft result
+  -> validate recipe/item_id/owner/session
+  -> atomic reserve item_id
+  -> transform Crafting Table thành LODESTONE
+  -> create ForgeSession + save store + hologram
+  -> consume ingredients
+  -> charge 3s + themed particles
+  -> explosion stage 1
+  -> countdown 5 phút
+  -> explosion stage 2
+  -> drop final weapon + register owner</pre>
+      <h3>Config skeleton</h3>
+      <pre>forge:
   block: LODESTONE
   duration-seconds: 300
   preforge-charge-seconds: 3
   preforge-explosion-power: 2.0
   completion-explosion-power: 4.0
   abort-explosion-power: 1.5
-  core-failure-chance: 0.30
-  craft-lockout-seconds: 900
-  require-owner-online-to-progress: false</code></pre>
-
-                <h3>Phase 2.1 — Luồng Craft trực tiếp -> Lodestone Forge</h3>
-                <div class="callout" style="border-left-color: #f59e0b; background-color: rgba(245, 158, 11, 0.05);">
-                    <div class="callout-title">🧱 Quyết định thiết kế chốt: bỏ Unawakened/Dormant Weapon</div>
-                    <p>Không còn item <code>unawakened_*</code> và không còn Awakening Stone riêng. Người chơi craft trực tiếp công thức vũ khí trên bàn chế tạo. Khi lấy kết quả thành công, bàn chế tạo đó biến thành <code>LODESTONE</code>, khóa phiên chế tạo, phát hiệu ứng charge theo loại vũ khí trong 3 giây rồi nổ lần 1. Sau đó mới bắt đầu countdown 5 phút để đúc vũ khí final.</p>
-                    <p>Trong Minecraft/Paper 1.21.11, <code>NETHERITE_SPEAR</code> là item riêng, không thay bằng Trident. Spear recipes và Spear item configs phải dùng đúng <code>NETHERITE_SPEAR</code> nếu vũ khí đó là spear.</p>
-                </div>
-
-                <h3>Quy trình sở hữu và chống craft trùng</h3>
-                <ul>
-                    <li>Khi player lấy result craft hợp lệ, hệ thống phải atomic reserve <code>item_id</code> trước khi consume nguyên liệu và trước khi biến bàn craft thành Lodestone.</li>
-                    <li>Nếu item đã có owner/reservation/session active, ô result bị xóa và player nhận message: <code>Vũ khí này đã có chủ sở hữu: %player%</code> hoặc <code>Vũ khí này đang được đúc</code>.</li>
-                    <li>Chống race condition: lock theo <code>item_id</code> trong cùng tick. Nếu hai player craft cùng lúc, chỉ transaction đầu tiên được reserve; transaction còn lại cancel, không consume nguyên liệu.</li>
-                    <li>Trong thời gian 3s charge + 5 phút forge, item được tính là đã bị giữ chỗ, không ai craft/give thêm nếu singleton bật.</li>
-                </ul>
-
-                <h3>Quy trình forge bằng Lodestone</h3>
-                <ol style="padding-left: 20px; color: var(--text-secondary);">
-                    <li>Player craft đúng recipe vũ khí. Không đưa item vào inventory ngay.</li>
-                    <li>Crafting table đang mở biến thành <code>LODESTONE</code>; spawn TextDisplay: <code>§cĐANG NẠP: &lt;tên&gt; §7- 03s</code>.</li>
-                    <li>Trong 3 giây đầu, phát hiệu ứng charge theo loại vũ khí, sau đó nổ lần 1 quanh Lodestone bằng <code>preforge-explosion-power</code>.</li>
-                    <li>Bắt đầu countdown 5 phút. Hologram đổi thành: <code>§cĐANG ĐÚC: &lt;tên&gt; §7- MM:SS</code>.</li>
-                    <li>Kết thúc: nổ lần 2 mạnh hơn bằng <code>completion-explosion-power</code>, drop đúng vũ khí final đã đăng ký owner.</li>
-                    <li>Nếu Lodestone bị phá/nổ/phiên mất hợp lệ trước khi xong: abort, nổ nhỏ, mất nguyên liệu vì đây là craft rủi ro cao.</li>
-                </ol>
-
-                <h3>Visual charge theo loại vũ khí</h3>
-                <ul>
-                    <li><strong>Mace:</strong> particle tụ nén hình vòng tròn quanh Lodestone, bán kính 2.5 -> 0.4 trong 3s. Dùng <code>DUST_COLOR_TRANSITION</code>, <code>CRIT</code>, <code>ELECTRIC_SPARK</code>. Hạt bay vào tâm rồi nổ <code>FLASH + EXPLOSION_EMITTER</code>.</li>
-                    <li><strong>Spear:</strong> sét đánh liên tục vào Lodestone trong 3s, 3-5 tia visual lightning, <code>ELECTRIC_SPARK</code>, <code>END_ROD</code>, <code>CLOUD</code>, sound thunder pitch cao. Sau đó nổ lần 1.</li>
-                    <li><strong>Themed override:</strong> từng weapon có thể override charge profile trong <code>items/*.yml</code>, ví dụ Blood dùng hạt đỏ hút vào, Sculk dùng sonic/cyan, Chaos dùng portal xoáy.</li>
-                </ul>
-            </div>
-
-            <!-- PANEL: CORES -->
-            <div class="tab-panel" id="panel-cores">
-                <h2>🔮 Hệ thống Lõi Biến Dị (Cores System)</h2>
-                <p>Các Lõi (Cores) làm nguyên liệu trung gian để chế tạo vũ khí. Quá trình lấy core từ bàn chế tạo có <strong>30% tỉ lệ thất bại</strong> (trừ XP, áp Slowness II 3s, tạo Ruined Core và cấm chế tạo trong 15 phút).</p>
-                <p>Dưới đây là chi tiết cách lấy và đặc tả của từng loại Core:</p>
-
-                <div class="cores-grid">
-                    <!-- Ego Core -->
-                    <div class="card" style="--card-accent: var(--color-power);">
-                        <div class="card-title">Ego Core <span class="badge badge-power">Chế tạo</span></div>
-                        <div class="card-desc">Lõi nén bản ngã, hấp thụ XP để duy trì cấu trúc vật lý.</div>
-                        <div class="crafting-section">
-                            <div class="meta-label">Công thức chế tạo (Cost: 40 XP):</div>
-                            <div class="crafting-container">
-                                <div class="crafting-grid">
-                                    <div class="grid-cell" data-tooltip="Netherite Ingot">N</div>
-                                    <div class="grid-cell" data-tooltip="Wither Rose">R</div>
-                                    <div class="grid-cell" data-tooltip="Netherite Ingot">N</div>
-                                    <div class="grid-cell" data-tooltip="Wither Rose">R</div>
-                                    <div class="grid-cell" data-tooltip="Heavy Core">H</div>
-                                    <div class="grid-cell" data-tooltip="Wither Rose">R</div>
-                                    <div class="grid-cell" data-tooltip="Netherite Ingot">N</div>
-                                    <div class="grid-cell" data-tooltip="Wither Rose">R</div>
-                                    <div class="grid-cell" data-tooltip="Netherite Ingot">N</div>
-                                </div>
-                                <div class="craft-arrow">➔</div>
-                                <div class="craft-result" style="color: var(--color-power);">EC</div>
-                            </div>
-                        </div>
-                        <div class="card-meta">
-                            <div class="meta-row"><span class="meta-label">ID</span><span class="meta-val">mace_exclusive:ego_core</span></div>
-                            <div class="meta-row"><span class="meta-label">Cách lấy</span><span class="meta-val">Chế tạo trên bàn craft</span></div>
-                            <div class="meta-row"><span class="meta-label">Curse cầm</span><span class="meta-val">Không nhận được XP; nhận +10% dmg từ người có max HP thấp hơn.</span></div>
-                        </div>
-                    </div>
-
-                    <!-- Soulfire Core -->
-                    <div class="card" style="--card-accent: var(--color-sculk);">
-                        <div class="card-title">Soulfire Core <span class="badge badge-sculk">Chế tạo</span></div>
-                        <div class="card-desc">Lõi chứa lửa linh hồn xanh lục bốc cháy bất ổn định.</div>
-                        <div class="crafting-section">
-                            <div class="meta-label">Công thức chế tạo (Cost: 35 XP):</div>
-                            <div class="crafting-container">
-                                <div class="crafting-grid">
-                                    <div class="grid-cell" data-tooltip="Soul Lantern">L</div>
-                                    <div class="grid-cell" data-tooltip="Magma Block">M</div>
-                                    <div class="grid-cell" data-tooltip="Soul Lantern">L</div>
-                                    <div class="grid-cell" data-tooltip="Magma Block">M</div>
-                                    <div class="grid-cell" data-tooltip="Heavy Core">H</div>
-                                    <div class="grid-cell" data-tooltip="Magma Block">M</div>
-                                    <div class="grid-cell" data-tooltip="Soul Lantern">L</div>
-                                    <div class="grid-cell" data-tooltip="Magma Block">M</div>
-                                    <div class="grid-cell" data-tooltip="Soul Lantern">L</div>
-                                </div>
-                                <div class="craft-arrow">➔</div>
-                                <div class="craft-result" style="color: var(--color-sculk);">SC</div>
-                            </div>
-                        </div>
-                        <div class="card-meta">
-                            <div class="meta-row"><span class="meta-label">ID</span><span class="meta-val">mace_exclusive:soulfire_core</span></div>
-                            <div class="meta-row"><span class="meta-label">Cách lấy</span><span class="meta-val">Chế tạo trên bàn craft</span></div>
-                            <div class="meta-row"><span class="meta-label">Curse cầm</span><span class="meta-val">Mỗi 30s có 12% tự bốc cháy 3s. Fire Resistance bị giảm 40% hiệu lực.</span></div>
-                        </div>
-                    </div>
-
-                    <!-- Blood Core -->
-                    <div class="card" style="--card-accent: var(--color-blood);">
-                        <div class="card-title">Blood Core <span class="badge badge-blood">Nghi lễ</span></div>
-                        <div class="card-desc">Lõi được nhuộm đỏ bởi máu tế tại địa ngục Nether.</div>
-                        <div style="height: 100px; display: flex; align-items: center; color: var(--text-secondary); font-size: 0.9rem;">
-                            Nghi lễ: Đặt khối Heavy Core lên trên block khóc Crying Obsidian tại Nether, tiêu diệt 15 quái vật xung quanh trong bán kính 6 block.
-                        </div>
-                        <div class="card-meta">
-                            <div class="meta-row"><span class="meta-label">ID</span><span class="meta-val">mace_exclusive:blood_core</span></div>
-                            <div class="meta-row"><span class="meta-label">Nghi lễ</span><span class="meta-val">Nether Sacrifice</span></div>
-                            <div class="meta-row"><span class="meta-label">Curse cầm</span><span class="meta-val">-2 Tim Max HP. Hiệu ứng thuốc hồi máu (Instant Health) giảm 50%.</span></div>
-                        </div>
-                    </div>
-
-                    <!-- Sculk Core -->
-                    <div class="card" style="--card-accent: #0f766e;">
-                        <div class="card-title">Sculk Core <span class="badge badge-sculk">Nghi lễ</span></div>
-                        <div class="card-desc">Lõi được thức tỉnh từ năng lượng đen tối dưới Deep Dark.</div>
-                        <div style="height: 100px; display: flex; align-items: center; color: var(--text-secondary); font-size: 0.9rem;">
-                            Nghi lễ: Đặt Heavy Core nằm trực tiếp trên Sculk Catalyst, dụ Warden tới tiêu diệt ngay cạnh bên (bán kính 5 block).
-                        </div>
-                        <div class="card-meta">
-                            <div class="meta-row"><span class="meta-label">ID</span><span class="meta-val">mace_exclusive:sculk_core</span></div>
-                            <div class="meta-row"><span class="meta-label">Nghi lễ</span><span class="meta-val">Warden Defeat Catalyst</span></div>
-                            <div class="meta-row"><span class="meta-label">Curse cầm</span><span class="meta-val">Áp Slowness I. Đào block trong bán kính 5 gây mù Darkness 3s.</span></div>
-                        </div>
-                    </div>
-
-                    <!-- Chrono Core -->
-                    <div class="card" style="--card-accent: var(--color-chrono);">
-                        <div class="card-title">Chrono Core <span class="badge badge-chrono">Nghi lễ</span></div>
-                        <div class="card-desc">Lõi bị biến dạng không gian khi đi xuyên kẽ hở vũ trụ.</div>
-                        <div style="height: 100px; display: flex; align-items: center; color: var(--text-secondary); font-size: 0.9rem;">
-                            Nghi lễ: Ném thực thể vật phẩm Heavy Core bay rơi trực tiếp xuyên qua End Portal để tới End. Tỉ lệ thất bại 50% (lõi nổ biến mất).
-                        </div>
-                        <div class="card-meta">
-                            <div class="meta-row"><span class="meta-label">ID</span><span class="meta-val">mace_exclusive:chrono_core</span></div>
-                            <div class="meta-row"><span class="meta-label">Nghi lễ</span><span class="meta-val">End Portal Transition</span></div>
-                            <div class="meta-row"><span class="meta-label">Curse cầm</span><span class="meta-val">Mỗi 60s ngẫu nhiên bị teleport lệch tối đa 6 block + Slowness 1.5s.</span></div>
-                        </div>
-                    </div>
-
-                    <!-- Ruined Core -->
-                    <div class="card" style="--card-accent: var(--color-ruined);">
-                        <div class="card-title">Ruined Core <span class="badge">Phế thải</span></div>
-                        <div class="card-desc">Lõi bị hỏng do chế tạo thất bại. Có thể tái chế về Heavy Core.</div>
-                        <div class="crafting-section">
-                            <div class="meta-label">Công thức tái chế (Thành công 100%):</div>
-                            <div class="crafting-container">
-                                <div class="crafting-grid">
-                                    <div class="grid-cell" data-tooltip="Diamond Block">D</div>
-                                    <div class="grid-cell" data-tooltip="Ominous Trial Key">K</div>
-                                    <div class="grid-cell" data-tooltip="Diamond Block">D</div>
-                                    <div class="grid-cell" data-tooltip="Ominous Trial Key">K</div>
-                                    <div class="grid-cell" data-tooltip="Ruined Core">X</div>
-                                    <div class="grid-cell" data-tooltip="Ominous Trial Key">K</div>
-                                    <div class="grid-cell" data-tooltip="Diamond Block">D</div>
-                                    <div class="grid-cell" data-tooltip="Ominous Trial Key">K</div>
-                                    <div class="grid-cell" data-tooltip="Diamond Block">D</div>
-                                </div>
-                                <div class="craft-arrow">➔</div>
-                                <div class="craft-result" style="color: #64748b;">HC</div>
-                            </div>
-                        </div>
-                        <div class="card-meta">
-                            <div class="meta-row"><span class="meta-label">ID</span><span class="meta-val">mace_exclusive:ruined_core</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PANEL: MACES -->
-            <div class="tab-panel" id="panel-maces">
-                
-                <!-- Power Mace -->
-                <div class="detail-panel active" id="detail-mace-power_mace">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: var(--color-power);">Power Mace - Búa Quyền Năng</span>
-                            <span class="detail-id-tag">mace_exclusive:power_mace</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge">Búa Thường</span>
-                            <span class="badge">CMD: 2001</span>
-                        </div>
-                    </div>
-                    <p style="margin-bottom: 24px;">Búa mặc định, dễ chế tạo nhất sử dụng khối Heavy Core nguyên bản. Rất phù hợp cho chiến binh mới bắt đầu tiếp cận dòng vũ khí độc quyền.</p>
-                    
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Quán Tính Nén</div>
-                        <div class="detail-block-content">Khi người chơi rơi tự do từ độ cao <code>>= 4 blocks</code>, đòn tấn công Smash kế tiếp được gia tăng thêm <code>+10% sát thương</code>. Lượng sát thương cộng thêm bị giới hạn (Cap) tối đa là <code>+4 HP (2 tim)</code> để tránh việc một phát chết luôn quá dễ dàng.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Power Slam (Hồi chiêu: 25s)</div>
-                        <div class="detail-block-content">Kích hoạt bằng cách nhấn <strong>Chuột phải (Right-click)</strong> trong vòng <code>1.5 giây</code> sau khi Smash trúng mục tiêu hoặc mặt đất. Tạo ra một vòng xung kích bán kính <code>4 blocks</code>, gây <code>6 sát thương</code> lên tất cả kẻ địch xung quanh và đẩy lùi nhẹ chúng (Knockback 1.2).</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền & Phản phệ: Dư Chấn Cơ Bắp</div>
-                        <div class="detail-block-content">Khi cầm búa trên tay, tốc độ đánh cận chiến giảm đi 10%. Nếu thực hiện cú đập Smash hụt từ độ cao <code>>= 5 blocks</code>, người dùng tự chịu hiệu ứng chậm chạp <code>Slowness II trong 2 giây</code>.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title visuals">Hiệu ứng Hạt & Âm thanh</div>
-                        <div class="detail-block-content">
-                            <ul>
-                                <li><strong>Khi cầm:</strong> Spawn các hạt điện <code>ELECTRIC_SPARK</code> thưa thớt quanh đầu búa (OrbitHalo) mỗi 2 giây.</li>
-                                <li><strong>Khi rơi đủ điều kiện:</strong> Kéo vệt hạt <code>CRIT</code> + <code>CLOUD</code> dưới chân.</li>
-                                <li><strong>Kích hoạt:</strong> Vòng nổ ngang <code>RingBurst</code> màu vàng trắng lan từ bán kính 2 đến 4 block, phát âm thanh sét đánh <code>ENTITY_LIGHTNING_BOLT_THUNDER</code> ở âm lượng 0.5.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo (Bắt đầu đúc Lodestone):</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Heavy Core">H</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Breeze Rod">B</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Lightning Rod">L</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                            <div class="craft-arrow">➔</div>
-                            <div class="craft-result" style="color: var(--color-power);">PM</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chaos Mace -->
-                <div class="detail-panel" id="detail-mace-chaos_mace">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: var(--color-chaos);">Chaos Mace - Búa Hỗn Loạn</span>
-                            <span class="detail-id-tag">mace_exclusive:chaos_mace</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge badge-chaos">Ego Core</span>
-                            <span class="badge">CMD: 2002</span>
-                        </div>
-                    </div>
-                    <p style="margin-bottom: 24px;">Búa ma thuật từ không gian kẽ nứt hư vô, bóp méo tọa độ và làm rối loạn hành trang của đối thủ.</p>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Giao Thoa Không Gian</div>
-                        <div class="detail-block-content">Người sử dụng được miễn nhiễm hoàn toàn với các hiệu ứng mù <code>Blindness</code> và chóng mặt <code>Nausea</code> từ bên ngoài. Đồng thời, khi rơi tự do, búa tăng tốc độ rơi thêm 15% (chỉ áp dụng nếu khoảng cách rơi chưa vượt quá 12 block).</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Rift Swap (Hồi chiêu: 30s)</div>
-                        <div class="detail-block-content">Kích hoạt khi đang rơi <code>> 3 blocks</code>, nhìn thẳng vào mục tiêu trong phạm vi 10 block và nhấn <strong>Chuột phải (Right-click)</strong>. Lập tức dịch chuyển mục tiêu ra trước mặt caster 2.5 block hướng nhìn xuống đất, đồng thời áp hiệu ứng rơi chậm <code>Slow Falling 1 giây</code> lên mục tiêu để tránh bug rơi chết tức thì.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền & Phản phệ: Tâm Trí Bất Định</div>
-                        <div class="detail-block-content">
-                            <ul>
-                                <li>Khi cầm búa: Tự chịu lời nguyền trừ thẳng <code>4.0 Max HP (2 tim)</code> và liên tục bị Glowing phát sáng. Vào nước chịu 1.5 sát thương/giây.</li>
-                                <li>Dùng hụt active (không tìm thấy target): Bị tráo đổi ngẫu nhiên 2 ô Hotbar và nhận <code>Slowness II trong 3 giây</code>.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title visuals">Hiệu ứng Hạt & Âm thanh</div>
-                        <div class="detail-block-content">Khi cầm búa, các hạt <code>PORTAL</code> nhỏ liên tục rơi ngược từ tay lên. Kích hoạt kéo target tạo vệt <code>SpiralTrail</code> tím đen, khi target đến vị trí mới tạo vụ nổ hạt hơi rồng <code>DRAGON_BREATH</code>.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo (Bắt đầu đúc Lodestone):</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell" data-tooltip="Dark Ego (Nether Star)">N</div>
-                                <div class="grid-cell" data-tooltip="Heavy Core">H</div>
-                                <div class="grid-cell" data-tooltip="Dark Ego (Nether Star)">N</div>
-                                <div class="grid-cell" data-tooltip="Heavy Core">H</div>
-                                <div class="grid-cell" data-tooltip="Mace">M</div>
-                                <div class="grid-cell" data-tooltip="Heavy Core">H</div>
-                                <div class="grid-cell" data-tooltip="Dark Ego (Nether Star)">N</div>
-                                <div class="grid-cell" data-tooltip="Wither Rose">W</div>
-                                <div class="grid-cell" data-tooltip="Dark Ego (Nether Star)">N</div>
-                            </div>
-                            <div class="craft-arrow">➔</div>
-                            <div class="craft-result" style="color: var(--color-chaos);">CM</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Vampiric Mace -->
-                <div class="detail-panel" id="detail-mace-vampiric_mace">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: var(--color-blood);">Vampiric Mace - Búa Huyết Ma</span>
-                            <span class="detail-id-tag">mace_exclusive:vampiric_mace</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge badge-blood">Blood Core</span>
-                            <span class="badge">CMD: 10002</span>
-                        </div>
-                    </div>
-                    
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Huyết Khát & Cơn Đói Sinh Mệnh</div>
-                        <div class="detail-block-content">Đòn đánh cận chiến hồi máu bằng 12% lượng sát thương gây ra (Cap tối đa 2 HP/hit). Khi lượng máu của caster tụt xuống dưới 30% HP, sát thương đòn đập Smash được gia tăng 20% (Cooldown nội bộ 10s).</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Cưỡng Đoạt Sinh Mệnh (Hồi chiêu: 75s)</div>
-                        <div class="detail-block-content">Đập Smash trúng kẻ địch từ độ cao <code>> 5 blocks</code>, right-click trong vòng 0.8 giây sẽ "hút" tạm thời 1 tim Max HP của nạn nhân trong 90 giây; caster nhận thêm tim tương ứng và hồi ngay 6 HP. Không cộng dồn trên cùng một nạn nhân, caster nhận tối đa +2 tim từ kỹ năng này.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Hao Tổn Sinh Lực</div>
-                        <div class="detail-block-content">Khi cầm búa trên tay, caster lập tức bị trừ 2 tim Max HP, đồng thời nhận thêm 10% sát thương từ các nguồn: lửa, rơi tự do, và mũi tên ném/bắn.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Blood Core">BC</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Breeze Rod">B</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Nether Star">S</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Devourer Mace -->
-                <div class="detail-panel" id="detail-mace-devourer_mace">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: var(--color-green);">Devourer Mace - Búa Phàm Ăn</span>
-                            <span class="detail-id-tag">mace_exclusive:devourer_mace</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge badge-power">Ego Core</span>
-                            <span class="badge">CMD: 10003</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Nuốt Nhanh</div>
-                        <div class="detail-block-content">Tốc độ ăn thức ăn và uống dược phẩm tăng thêm 35%. Sau khi ăn Táo vàng (Golden Apple), đòn đánh kế tiếp trong vòng 6 giây sẽ gây thêm +2 sát thương cận chiến.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Bóp Nghẹt Ma Thuật (Hồi chiêu: 35s)</div>
-                        <div class="detail-block-content">Nhìn thẳng vào mục tiêu trong phạm vi 5 block đang có hiệu ứng thuốc (potion effect) có lợi, nhấn right-click để xóa sạch tối đa 3 hiệu ứng có lợi của mục tiêu. Mỗi hiệu ứng bị xóa sẽ gây 2 sát thương chuẩn (true damage) lên mục tiêu (Tối đa 6 true damage).</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Vùng Chết Ma Thuật</div>
-                        <div class="detail-block-content">Tất cả hiệu ứng có lợi caster nhận vào từ thức ăn và thuốc bị giảm 50% thời gian tác dụng. Nếu kích hoạt active lên kẻ địch không có bất kỳ buff nào, caster chịu hiệu ứng Đói khát Hunger II trong 6 giây.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Ego Core">EC</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Breeze Rod">B</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Enchanted Golden Apple">EG</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Echoing Warden Mace -->
-                <div class="detail-panel" id="detail-mace-sonic_mace">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: var(--color-sculk);">Echoing Warden Mace - Búa Tiếng Vọng Warden</span>
-                            <span class="detail-id-tag">mace_exclusive:sonic_mace</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge badge-sculk">Sculk Core</span>
-                            <span class="badge">CMD: 10005</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Cộng Hưởng Địa Chấn</div>
-                        <div class="detail-block-content">Đòn Smash cộng thêm 1.5 sát thương mỗi 4 block rơi tự do (Cap tối đa +6 sát thương). Khi đứng trên các khối Sculk, bước đi không phát ra âm thanh báo động cho Sculk Sensor, nhận thêm Speed I.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Sóng Âm Hủy Diệt (Hồi chiêu: 35s)</div>
-                        <div class="detail-block-content">Right-click để giải phóng sóng siêu thanh dài 12 blocks theo đường nhìn thẳng, xuyên qua các block mỏng hoặc block không solid, gây 14 sát thương chuẩn (true damage) và hất văng địch 2.0. Kỹ năng tiêu hao của caster 4 HP hiện tại (Không gây tự tử).</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Dư Chấn Điếc Tai</div>
-                        <div class="detail-block-content">Khi cầm vũ khí liên tục bị Glowing phát sáng. Sau khi kích hoạt kỹ năng chủ động Sóng âm, caster chịu hiệu ứng mù <code>Blindness trong 1.5s</code> và chậm chạp <code>Slowness II trong 2s</code>.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Sculk Core">SkC</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Breeze Rod">B</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Echo Shard">E</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tectonic Gravity Mace -->
-                <div class="detail-panel" id="detail-mace-gravity_mace">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: #64748b;">Tectonic Gravity - Búa Trọng Lực Địa Chấn</span>
-                            <span class="detail-id-tag">mace_exclusive:gravity_mace</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge badge-sculk">Sculk Core</span>
-                            <span class="badge">CMD: 10004</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Từ Trường Trọng Lực</div>
-                        <div class="detail-block-content">Giảm 70% sát thương rơi tự do nhận vào (không miễn nhiễm hoàn toàn). Mỗi khi caster gây sát thương bằng búa, kẻ địch trong bán kính 2.5 block xung quanh sẽ bị kéo nhẹ về phía caster.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Hố Đen Sụp Đổ (Hồi chiêu: 50s)</div>
-                        <div class="detail-block-content">Smash trúng đất hoặc thực thể từ độ cao <code>> 4 blocks</code>, nhấn right-click trong vòng 1s để tạo ra một vùng hố đen bán kính 6 block tồn tại trong 3 giây. Hố đen liên tục kéo địch về tâm, áp Slowness III, chặn đứng ngọc Ender Pearl/quả Chorus và gây 2 HP sát thương mỗi giây.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Quá Tải Trọng Khối</div>
-                        <div class="detail-block-content">Khi cầm búa chịu hiệu ứng Slowness I, tốc độ tụt đói gấp đôi. Nếu kích hoạt active kéo hút từ 3 kẻ địch trở lên, caster nhận hiệu ứng Kiệt quệ Mining Fatigue II trong 10 giây.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Sculk Core">SkC</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Breeze Rod">B</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Netherite Block">N</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Soulfire Pyre Mace -->
-                <div class="detail-panel" id="detail-mace-soulfire_mace">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: #0284c7;">Soulfire Pyre - Búa Hỏa Thiêu Hồn</span>
-                            <span class="detail-id-tag">mace_exclusive:soulfire_mace</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge badge-sculk">Soulfire Core</span>
-                            <span class="badge">CMD: 10011</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Hỏa Hồn Tôi Luyện</div>
-                        <div class="detail-block-content">Miễn nhiễm hoàn toàn sát thương từ lửa và dung nham khi đang cầm búa. Đòn cận chiến thiêu đốt mục tiêu bằng lửa xanh Soul Fire trong 3 giây (gây 1 HP/giây).</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Bão Lửa Linh Hồn (Hồi chiêu: 40s)</div>
-                        <div class="detail-block-content">Smash thành công từ độ cao <code>> 4 blocks</code>, nhấn right-click tạo vòng bão lửa bán kính 5 block trong 5 giây. Kẻ địch đứng trong vùng chịu 3 HP/giây sát thương kèm Wither I trong 3 giây.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Nhiệt Lượng Phản Phệ</div>
-                        <div class="detail-block-content">Khi cầm búa trên tay, tốc độ tụt đói tăng gấp đôi. Sau khi kích hoạt kỹ năng chủ động Bão lửa, nhiệt lượng bùng phát làm caster mất ngay 4 HP hiện tại.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Soulfire Core">SFC</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Breeze Rod">B</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Soul Campfire">C</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Abyssal Void Mace -->
-                <div class="detail-panel" id="detail-mace-void_mace">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: #7c3aed;">Abyssal Void - Búa Vực Thẳm</span>
-                            <span class="detail-id-tag">mace_exclusive:void_mace</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge badge-chrono">Chrono Core</span>
-                            <span class="badge">CMD: 10012</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Áp Suất Vực Thẳm</div>
-                        <div class="detail-block-content">Khi đang rơi tự do, người sử dụng nhận thêm khả năng phòng ngự: rơi > 6 block nhận Kháng cự Resistance I, rơi > 14 block nhận Resistance II cho tới khi tiếp đất.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Nuốt Chửng Vật Chất (Hồi chiêu: 55s)</div>
-                        <div class="detail-block-content">Nhìn vào người chơi khác trong bán kính 6 block, right-click để tạm thời khóa cứng 2 ô Hotbar ngẫu nhiên của mục tiêu bằng vật phẩm giả lập hư không trong 5 giây, sau đó trả lại nguyên trạng (Tuyệt đối không lấy vật phẩm thật ra ngoài để tránh bug).</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Hư Vô Tịch Diệt</div>
-                        <div class="detail-block-content">Khi cầm búa, Totem of Undying khi kích hoạt chỉ hồi lại đúng 4 HP và không cấp hiệu ứng hấp thụ Absorption. Nếu active dùng trượt, caster bị khóa tay phụ (offhand) trong 3 giây.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Chrono Core">CC</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Breeze Rod">B</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Obsidian">O</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Phoenix Rebirth Mace -->
-                <div class="detail-panel" id="detail-mace-phoenix_mace">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: #f97316;">Phoenix Rebirth - Búa Phượng Hoàng Tái Sinh</span>
-                            <span class="detail-id-tag">mace_exclusive:phoenix_mace</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge badge-blood">Blood Core</span>
-                            <span class="badge">CMD: 10013</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Bảo Hộ Phượng Hoàng</div>
-                        <div class="detail-block-content">Khi nhận sát thương chí mạng (fatal damage) dẫn tới cái chết: Chặn đứng tử vong, hồi lập tức 40% lượng máu tối đa, hất văng mọi kẻ địch xung quanh trong bán kính 6 block, áp Kháng lửa Fire Resistance trong 6s. Tiêu hao 50% độ bền của búa (Hồi chiêu bị động: 10 Phút).</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Hỏa Điểu Xung Kích (Hồi chiêu: 45s)</div>
-                        <div class="detail-block-content">Right-click hướng nhìn để phóng đi một chú chim lửa dài 10 blocks. Gây 10 sát thương, hất mục tiêu trúng đòn lên cao 2.5 block và thiêu đốt trong 4 giây.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Khế Ước Tro Tàn</div>
-                        <div class="detail-block-content">Khi cầm búa nhận thêm 12% sát thương từ đòn đánh cận chiến của kẻ địch. Sau khi được cứu chết từ bị động, chịu hiệu ứng Yếu ớt Weakness II + Chậm chạp Slowness II kéo dài trong 60 giây.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Blood Core">BC</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Breeze Rod">B</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Totem of Undying">T</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Aegis Sentinel Mace -->
-                <div class="detail-panel" id="detail-mace-aegis_mace">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: #fbbf24;">Aegis Sentinel - Búa Khiên Vệ Thần</span>
-                            <span class="detail-id-tag">mace_exclusive:aegis_mace</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge badge-power">Ego Core</span>
-                            <span class="badge">CMD: 10014</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Pháo Đài Di Động</div>
-                        <div class="detail-block-content">Khi cầm búa ở tay chính hoặc tay phụ offhand: Cộng thêm 2 tim máu tối đa (+4 Max HP), giảm 25% sát thương nhận vào từ các loại đạn ném/mũi tên.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Pháo Đài Vệ Thần (Hồi chiêu: 50s)</div>
-                        <div class="detail-block-content">Đứng cố định dưới đất và không sprint, right-click tạo ra một dome bảo vệ bán kính 4 block trong 6 giây. Đồng minh đứng trong dome nhận Kháng cự Resistance I; kẻ địch bước vào bị đẩy lùi ra ngoài, chịu 4 sát thương (mỗi địch chỉ bị đẩy/gây sát thương tối đa 1 lần/giây).</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Sức Nặng Khổng Lồ</div>
-                        <div class="detail-block-content">Khi cầm búa chịu Slowness I, tầm nhảy cao bị giảm nhẹ. Nếu di chuyển ra khỏi vùng dome bảo vệ trước khi hết thời hạn 6s, lập tức mất mọi buff và chịu Weakness I trong 5 giây.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Ego Core">EC</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Breeze Rod">B</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Shield">S</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Singularity Collapse Mace -->
-                <div class="detail-panel" id="detail-mace-singularity_mace">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: #a78bfa;">Singularity Collapse - Búa Sụp Đổ Điểm Kỳ Dị</span>
-                            <span class="detail-id-tag">mace_exclusive:singularity_mace</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge badge-chrono">Chrono Core</span>
-                            <span class="badge">CMD: 10015</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Áp Lực Thời Không</div>
-                        <div class="detail-block-content">Gia tăng 10% tốc độ đánh cận chiến. Khi đang rơi tự do, mọi sát thương từ tên/đạn ném bắn vào giảm 25%.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Điểm Kỳ Dị Bùng Nổ (Hồi chiêu: 70s)</div>
-                        <div class="detail-block-content">Smash trúng mục tiêu, right-click trong vòng 0.8 giây để đóng băng cứng nạn nhân trong 2 giây. Sau khi hết 2 giây, điểm kỳ dị phát nổ gây thêm sát thương bằng 20% tổng lượng sát thương nạn nhân đã nhận trong lúc bị đóng băng (Giới hạn tối đa +6 HP sát thương cộng thêm).</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Nghịch Lý Sinh Mệnh</div>
-                        <div class="detail-block-content">Sau khi kích hoạt kỹ năng chủ động Kỳ dị, caster chịu hiệu ứng héo úa Wither II trong 8 giây. Trong vòng 20 giây tiếp theo, tất cả lượng máu hồi phục nhận vào bị giảm đi 50%.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Chrono Core">CC</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Breeze Rod">B</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Crying Obsidian">C</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- PANEL: SPEARS -->
-            <div class="tab-panel" id="panel-spears">
-                
-                <!-- Chronos Anchor Spear -->
-                <div class="detail-panel active" id="detail-spear-chronos_spear">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: var(--color-chrono);">Chronos Anchor Spear - Giáo Neo Thời Không</span>
-                            <span class="detail-id-tag">mace_exclusive:chronos_spear</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge">Giáo Thức Tỉnh</span>
-                            <span class="badge">CMD: 2003</span>
-                        </div>
-                    </div>
-                    <p style="margin-bottom: 24px;">Vũ khí cận chiến tầm xa độc quyền, ném đi để định vị thực thể và đóng băng thời gian cục bộ.</p>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Lệch Pha Không Gian</div>
-                        <div class="detail-block-content">Khi bị đối thủ đánh trúng bằng đòn cận chiến, có 12% tỉ lệ tự động dịch chuyển lùi lại phía sau 3 block và giảm 50% lượng sát thương nhận vào từ đòn đánh đó (Thời gian hồi bị động nội bộ: 12 giây).</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Đóng Băng Sinh Mệnh (Hồi chiêu: 70s)</div>
-                        <div class="detail-block-content">Ném giáo trúng mục tiêu, lập tức đóng băng cứng (Freeze) mục tiêu trong <code>2.5 giây</code> (45 ticks). Sau khi kết thúc thời gian đóng băng, mục tiêu nhận thêm hiệu ứng phân rã <code>Wither II trong 3 giây</code>.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền & Phản phệ: Neo Trực Diện</div>
-                        <div class="detail-block-content">Khi cầm giáo trên tay, lượng máu tối đa bị trừ đi 15%. Nếu ném giáo trượt mục tiêu (găm vào đất hoặc bay hết tầm), caster lập tức chịu phản phệ tự đóng băng bản thân (Self-freeze) trong <code>1.25 giây</code>.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title visuals">Hiệu ứng Hạt & Âm thanh</div>
-                        <div class="detail-block-content">Giáo bay kéo theo đường hạt chuyển màu từ xanh lục sang tím <code>DUST_COLOR_TRANSITION</code>. Đóng băng tạo ra 3 vòng hạt <code>END_ROD</code> đứng yên quanh nạn nhân, giây cuối vỡ vụn kèm âm thanh kính vỡ <code>BLOCK_GLASS_BREAK</code>.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Ender Pearl">E</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Netherite Spear">T</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Amethyst Shard">S</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                            <div class="craft-arrow">➔</div>
-                            <div class="craft-result" style="color: var(--color-chrono);">UCS</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Void-Piercer Spear -->
-                <div class="detail-panel" id="detail-spear-void_spear">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: var(--color-chaos);">Void-Piercer Spear - Giáo Xuyên Hư Không</span>
-                            <span class="detail-id-tag">mace_exclusive:void_spear</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge">Giáo Thần Thoại</span>
-                            <span class="badge">CMD: 10006</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Bước Đi Hư Không</div>
-                        <div class="detail-block-content">Kháng hoàn toàn hiệu ứng làm chậm Slowness. Sau khi thực hiện dịch chuyển tức thời bằng ngọc Ender Pearl, đòn cận chiến của giáo tiếp theo trong vòng 4 giây được cộng thêm 10% sát thương.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Backstab Rift (Hồi chiêu: 25s)</div>
-                        <div class="detail-block-content">Ném giáo trúng mục tiêu, lập tức dịch chuyển caster ra sau lưng mục tiêu, đòn đâm cận chiến tiếp theo gây thêm 20% sát thương, đồng thời caster nhận Strength I trong 3 giây.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Hụt Không Gian</div>
-                        <div class="detail-block-content">Nếu ném giáo trượt mục tiêu: Giáo bị trì hoãn hồi quy về túi đồ trong 5 giây, caster mất ngay 5 HP hiện tại và bị phát sáng Glowing trong 15 phút.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Ender Eye">E</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Trident">T</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Dragon Egg">D</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Blood-drinker Spear -->
-                <div class="detail-panel" id="detail-spear-blood_spear">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: var(--color-blood);">Blood-drinker Spear - Giáo Huyết Nguyền</span>
-                            <span class="detail-id-tag">mace_exclusive:blood_spear</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge">Giáo Thức Tỉnh</span>
-                            <span class="badge">CMD: 10007</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Mũi Giáo Phá Giáp</div>
-                        <div class="detail-block-content">Độ bỏ qua giáp của giáo tăng lên 30% (mặc định các giáo khác là 20%). Tấn công cận chiến mục tiêu đang bị chảy máu (bleeding) hồi lại 1 HP cho caster (cooldown nội bộ 2s).</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Huyết Thệ Liên Kết (Hồi chiêu: 45s)</div>
-                        <div class="detail-block-content">Cận chiến đánh trúng địch, nhấn right-click trong vòng 2s để tạo sợi xích máu liên kết 2 bên trong 6 giây. Mọi hiệu ứng hồi máu nạn nhân nhận vào giảm 50%, lượng bị giảm đó chuyển trực tiếp thành máu hồi cho caster.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Huyết Khát Phản Phệ</div>
-                        <div class="detail-block-content">Nếu cầm giáo trên tay mà quá 15 giây không gây sát thương lên bất kỳ người chơi hoặc quái vật nào, caster chịu hiệu ứng phân hủy Wither I trong 4 giây.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Ghast Tear">G</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Trident">T</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Totem of Undying">U</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Storm-caller Spear -->
-                <div class="detail-panel" id="detail-spear-storm_spear">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: #0ea5e9;">Storm-caller Spear - Giáo Gọi Sấm</span>
-                            <span class="detail-id-tag">mace_exclusive:storm_spear</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge">Giáo Thức Tỉnh</span>
-                            <span class="badge">CMD: 10008</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Tụ Điện Sét</div>
-                        <div class="detail-block-content">Khi trời đang mưa hoặc bão ngoài trời, caster cầm giáo nhận Speed I. Đồng thời, giáo ném đi bay nhanh hơn 15% khi trời mưa.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Lôi Thần Triệu Hồi (Hồi chiêu: 35s)</div>
-                        <div class="detail-block-content">Ném giáo trúng mục tiêu, gọi xuống 2 tia sét visual kèm theo 1 tia sét thật đánh thẳng vào nạn nhân. Tổng sát thương của cú sét giới hạn tối đa 14 HP và hủy đi 8% độ bền giáp của mục tiêu.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Truyền Dẫn Ngược</div>
-                        <div class="detail-block-content">Nếu caster đứng trong nước hoặc dưới trời mưa ngập chân khi kích hoạt kỹ năng Lôi thần, có 20% khả năng sét đánh ngược lại caster, gây 6 sát thương kèm mù Blindness trong 3 giây.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Lightning Rod">R</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Trident">T</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Heart of the Sea">H</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Decay-spreader Spear -->
-                <div class="detail-panel" id="detail-spear-decay_spear">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: var(--color-green);">Decay-spreader Spear - Giáo Héo Úa</span>
-                            <span class="detail-id-tag">mace_exclusive:decay_spear</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge">Giáo Thức Tỉnh</span>
-                            <span class="badge">CMD: 10009</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Kháng Độc Tố</div>
-                        <div class="detail-block-content">Caster được miễn nhiễm hoàn toàn hiệu ứng độc Poison, đồng thời giảm 50% thời gian tác dụng của mọi hiệu ứng Wither phải gánh chịu.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Đầm Lầy Thối Rữa (Hồi chiêu: 40s)</div>
-                        <div class="detail-block-content">Nhìn xuống mặt đất, right-click để tạo ra một vũng độc thối rữa bán kính 5 block trong vòng 5 giây. Kẻ địch đứng trong vũng độc nhận Wither II và hoàn toàn không thể chạy nhanh (sprint).</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Héo Úa Thân Xác</div>
-                        <div class="detail-block-content">Lượng máu hồi phục từ bình thuốc hoặc táo vàng nhận vào giảm 40%. Nếu cầm giáo đứng yên một chỗ quá 6 giây liên tục, tự gánh chịu Poison I trong 3 giây.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Wither Skeleton Skull">S</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Trident">T</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Wither Rose">R</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Spectral Phantom Spear -->
-                <div class="detail-panel" id="detail-spear-phantom_spear">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: #64748b;">Spectral Phantom Spear - Giáo Bóng Ma</span>
-                            <span class="detail-id-tag">mace_exclusive:phantom_spear</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge">Giáo Thức Tỉnh</span>
-                            <span class="badge">CMD: 10016</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Ảo Ảnh Hư Thực</div>
-                        <div class="detail-block-content">Cúi người (Sneak) liên tục trong 1.2 giây sẽ biến caster vào trạng thái tàng hình hoàn toàn cho tới khi đứng dậy, thực hiện đòn đánh hoặc nhận sát thương. Khi tàng hình nhận thêm +0.5 block reach cận chiến.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: U Linh Kích (Hồi chiêu: 30s)</div>
-                        <div class="detail-block-content">Ném giáo khi đang trong trạng thái tàng hình của nội tại. Đòn trúng đích sẽ gây thêm +35% sát thương và áp hiệu ứng mù mù Blindness II trong 2.5 giây lên nạn nhân.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Hao Tổn Linh Lực</div>
-                        <div class="detail-block-content">Khi đang tàng hình, tốc độ tụt đói tăng gấp 3 lần. Nếu ném giáo trượt mục tiêu từ trạng thái tàng hình, lập tức bị lộ và chịu Slowness III + Weakness I trong 4 giây.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Phantom Membrane">M</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Trident">T</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Fermented Spider Eye">E</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Prismatic Solar Spear -->
-                <div class="detail-panel" id="detail-spear-solar_spear">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: var(--color-power);">Prismatic Solar Spear - Giáo Thái Dương</span>
-                            <span class="detail-id-tag">mace_exclusive:solar_spear</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge">Giáo Thức Tỉnh</span>
-                            <span class="badge">CMD: 10017</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Quang Phổ Bảo Hộ</div>
-                        <div class="detail-block-content">Kích hoạt vào ban ngày dưới trời trống: Đòn cận chiến tăng 12% sát thương, caster tự động nhận hiệu ứng Hồi máu Regen I trong 3 giây sau mỗi chu kỳ 10 giây.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Tia Sáng Thái Dương (Hồi chiêu: 35s)</div>
-                        <div class="detail-block-content">Right-click bắn chùm ánh sáng thẳng dài 15 blocks. Gây 12 sát thương, thiêu đốt 5 giây và làm mù Blindness I trong 2 giây.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Hạt Bóng Tối</div>
-                        <div class="detail-block-content">Khi ở vào ban đêm hoặc đứng dưới lòng đất sâu (Y < 0): Sát thương cận chiến giảm 20%, khả năng hồi phục máu tự nhiên giảm đi 40%.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Glowstone Dust">G</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Trident">T</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Sunflower">S</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Abyssal Leviathan Spear -->
-                <div class="detail-panel" id="detail-spear-leviathan_spear">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: #0284c7;">Abyssal Leviathan Spear - Giáo Leviathan</span>
-                            <span class="detail-id-tag">mace_exclusive:leviathan_spear</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge">Giáo Thức Tỉnh</span>
-                            <span class="badge">CMD: 10018</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Thủy Thần</div>
-                        <div class="detail-block-content">Cấp hiệu ứng thở dưới nước Water Breathing vĩnh viễn khi đang cầm giáo. Khi lặn dưới nước, tốc độ bơi và tốc độ khai khoáng tăng thêm 50%.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Vòng Xoáy Thủy Triều (Hồi chiêu: 45s)</div>
-                        <div class="detail-block-content">Right-click vào một vị trí trong phạm vi 10 block để gọi ra một cột nước vòi rồng bán kính 4 block tồn tại trong 4 giây. Cột nước liên tục hút và kéo địch lên tâm cao, gây 2 sát thương chuẩn/giây và áp Slowness IV.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Mắc Cạn</div>
-                        <div class="detail-block-content">Khi đứng chiến đấu trên cạn lúc thời tiết không mưa: Sát thương ném/cận chiến của giáo giảm 15%, caster liên tục chịu hiệu ứng chậm chạp Slowness I.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Sponge">S</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Trident">T</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Prismarine Crystals">P</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Gluttonous Star Spear -->
-                <div class="detail-panel" id="detail-spear-gluttonous_spear">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: #4f46e5;">Gluttonous Star Spear - Giáo Tinh Tú Phàm Ăn</span>
-                            <span class="detail-id-tag">mace_exclusive:gluttonous_spear</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge">Giáo Thức Tỉnh</span>
-                            <span class="badge">CMD: 10019</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Hấp Thụ Sức Mạnh</div>
-                        <div class="detail-block-content">Đòn cận chiến đâm trúng mục tiêu có 12% tỉ lệ cướp đi 1 hiệu ứng có lợi ngẫu nhiên của mục tiêu trong vòng 8 giây (Thời gian hồi nội bộ: 10 giây).</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Tinh Tú Tàn Phá (Hồi chiêu: 50s)</div>
-                        <div class="detail-block-content">Ném giáo trúng mục tiêu, xóa tối đa 4 buff có lợi của mục tiêu. Mỗi buff bị xóa sẽ cộng thêm 2 sát thương cho cú ném đó (Cap tối đa cộng thêm +8 sát thương).</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Cơn Đói Vô Hạn</div>
-                        <div class="detail-block-content">Khi cầm giáo tốc độ tụt đói tăng gấp 3 lần. Nếu thanh thức ăn tụt về mức 0, lập tức chịu hiệu ứng Yếu ớt Weakness II + Chậm chạp Slowness I.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Golden Apple">A</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Trident">T</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Enchanted Golden Apple">E</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Cataclysm Overlord Spear -->
-                <div class="detail-panel" id="detail-spear-cataclysm_spear">
-                    <div class="detail-header">
-                        <div class="detail-title-group">
-                            <span class="detail-name" style="color: #b91c1c;">Cataclysm Overlord Spear - Giáo Chúa Tể Tai Ương</span>
-                            <span class="detail-id-tag">mace_exclusive:cataclysm_spear</span>
-                        </div>
-                        <div class="detail-badges">
-                            <span class="badge">Giáo Thức Tỉnh</span>
-                            <span class="badge">CMD: 10020</span>
-                        </div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title passive">Kỹ năng Bị động: Kháng Chấn Động</div>
-                        <div class="detail-block-content">Miễn nhiễm hoàn toàn sát thương từ các vụ nổ (TNT, Creeper, Ghast...). Giảm 70% độ giật lùi (knockback) nhận vào từ mọi nguồn.</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title active-skill">Kỹ năng Chủ động: Đại Địa Tai Ương (Hồi chiêu: 60s)</div>
-                        <div class="detail-block-content">Ném giáo trúng thực thể hoặc mặt đất, tạo ra vụ nổ địa chấn cực mạnh bán kính 6 block. Gây 16 sát thương và hất tung nạn nhân lên cao 2.5 block (Khối bị phá hủy tùy thuộc vào config).</div>
-                    </div>
-
-                    <div class="feature-block">
-                        <div class="feature-title curse">Lời nguyền: Sức Nặng Tai Ương</div>
-                        <div class="detail-block-content">Khi cầm giáo tốc độ di chuyển bị giảm đi 20%. Kích hoạt kỹ năng chủ động khiến caster tự tiêu hao 6 HP hiện tại và bị phát sáng Glowing trong 15 phút.</div>
-                    </div>
-
-                    <div class="crafting-section">
-                        <div class="meta-label" style="font-weight: bold; margin-bottom: 8px;">Công thức chế tạo:</div>
-                        <div class="crafting-container">
-                            <div class="crafting-grid">
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Heavy Core">H</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Trident">T</div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell"></div>
-                                <div class="grid-cell" data-tooltip="Nether Star">S</div>
-                                <div class="grid-cell"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Navigation Tab Management JS -->
-    <script>
-        function switchMainTab(tabId, btn) {
-            // Manage top button states
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            // Manage panels visibility
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            document.getElementById('panel-' + tabId).classList.add('active');
-
-            // Manage sidebars display
-            const content = document.getElementById('main-content-body');
-            document.querySelectorAll('.sub-sidebar').forEach(s => s.style.display = 'none');
-            
-            if (tabId === 'maces') {
-                document.getElementById('sidebar-maces').style.display = 'block';
-                content.classList.add('has-sidebar');
-                // Auto click active item
-                const activeItem = document.querySelector('#sidebar-maces .weapon-list-item.active');
-                if (activeItem) activeItem.click();
-            } else if (tabId === 'spears') {
-                document.getElementById('sidebar-spears').style.display = 'block';
-                content.classList.add('has-sidebar');
-                const activeItem = document.querySelector('#sidebar-spears .weapon-list-item.active');
-                if (activeItem) activeItem.click();
-            } else {
-                content.classList.remove('has-sidebar');
-            }
-        }
-
-        function switchWeapon(type, itemId, itemElement) {
-            // Manage item active classes
-            const sidebarId = type === 'mace' ? 'sidebar-maces' : 'sidebar-spears';
-            document.querySelectorAll('#' + sidebarId + ' .weapon-list-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            itemElement.classList.add('active');
-
-            // Manage panels inside main area
-            const panelId = type === 'mace' ? 'panel-maces' : 'panel-spears';
-            document.querySelectorAll('#' + panelId + ' .detail-panel').forEach(p => {
-                p.classList.remove('active');
-            });
-            
-            const targetDetail = document.getElementById('detail-' + type + '-' + itemId);
-            if (targetDetail) {
-                targetDetail.classList.add('active');
-            }
-        }
-
-        function filterList(sidebarId, query) {
-            const normalizedQuery = query.toLowerCase().trim();
-            document.querySelectorAll('#' + sidebarId + ' .weapon-list-item').forEach(item => {
-                const name = item.querySelector('.w-name').textContent.toLowerCase();
-                const id = item.querySelector('.w-id').textContent.toLowerCase();
-                if (name.includes(normalizedQuery) || id.includes(normalizedQuery)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        }
-    </script>
+  require-owner-online-to-progress: false
+  release-reservation-on-abort: false</pre>
+      <h3>Charge visual</h3>
+      <ul>
+        <li><strong>Default Mace:</strong> ring particle bán kính 2.5 → 0.4 bay vào tâm trong 3s, rồi <code>FLASH</code>/<code>EXPLOSION_EMITTER</code>.</li>
+        <li><strong>Themed override:</strong> Power vàng, Chaos tím portal, Blood đỏ, Void reverse portal, Gravity ash/black, Sonic cyan, Soulfire xanh linh hồn.</li>
+      </ul>
+      <h3>Anti abuse</h3>
+      <ul>
+        <li>Hai player craft cùng tick: chỉ một reservation thắng.</li>
+        <li>Shift-click / number-key / double-click bị cancel nếu chưa hỗ trợ multi-craft chính xác.</li>
+        <li>Nếu session commit fail: rollback block, inventory, hologram, task, reservation.</li>
+        <li>Restart ở charge/countdown/completion không duplicate drop.</li>
+      </ul>
+    </section>
+
+    <section id="cores">
+      <h2>6. Cores & Special Materials</h2>
+      <div class="grid">
+        <div class="card"><h3>Ego Core</h3><p><span class="tag">ego_core</span></p><p>Core bản ngã dùng cho một số weapon/control theme.</p><pre class="recipe">N R N
+R H R
+N R N</pre><p>N=Netherite Ingot, R=Wither Rose, H=Heavy Core. Cost gợi ý: 40 XP. Curse inventory: không nhặt XP orb, nhận thêm damage từ người yếu hơn max HP.</p></div>
+        <div class="card"><h3>Soulfire Core</h3><p><span class="tag">soulfire_core</span></p><pre class="recipe">L M L
+M H M
+L M L</pre><p>L=Soul Lantern, M=Magma Block, H=Heavy Core. Curse: tự cháy soul fire ngẫu nhiên, fire resistance giảm hiệu quả.</p></div>
+        <div class="card"><h3>Blood Core</h3><p><span class="tag">blood_core</span></p><p>Ritual Nether/blood hoặc config craft tùy server. Dùng cho Vampiric và craft trực tiếp Chaos Mace. Instability: mỗi 10s khi ở trong inventory có 10% gây 1 tim damage bằng Bukkit damage flow.</p></div>
+        <div class="card"><h3>Sculk Core</h3><p><span class="tag">sculk_core</span></p><p>Warden chết gần Heavy Core trên Sculk Catalyst. Instability: khi cầm main/offhand, mỗi 10s có 19% nhận Darkness ưu tiên (fallback Blindness) trong 29s.</p></div>
+        <div class="card"><h3>End Core</h3><p><span class="tag">end_core</span></p><p>Thay Chrono Core. Drop Heavy Core qua End Portal: 20% End Core, 80% Ruined Core. Instability: khi ở inventory, mỗi 60s có 10% teleport ngẫu nhiên tới vị trí an toàn gần đó.</p></div>
+        <div class="card"><h3>Chaos Core</h3><p><span class="tag">chaos_core</span></p><p>Disabled historical data only. Không có active item/core/recipe requirement trong Phase 3; Chaos Mace craft trực tiếp từ Void Mace + Blood Core + Wither Rose + 6 Obsidian Chaos.</p></div>
+        <div class="card"><h3>Ruined Core</h3><p><span class="tag">ruined_core</span></p><p>Fail craft/ritual. Không có recycle recipe active và không dùng làm weapon trực tiếp.</p></div>
+        <div class="card"><h3>Obsidian Chaos</h3><p><span class="tag">obsidian_chaos</span></p><p>Creeper nổ khi player cầm Obsidian: 5% success, consume 1 obsidian khi success, drop Obsidian Chaos tại death location và holder phải chết. Visual: obsidian vỡ + portal smoke.</p></div>
+        <div class="card"><h3>Challenger's Eye</h3><p><span class="tag">challenger_eye</span></p><p>Chỉ drop khi fatal damager thực sự là Enderman và Totem proc path xảy ra; Totem bị từ chối để player thật sự chết, Eye nằm trong death drops/location. Visual: reverse portal quanh mắt.</p></div>
+      </div>
+    </section>
+
+    <section id="input">
+      <h2>7. Input chuẩn cho Active Ability</h2>
+      <ul>
+        <li>Active Mace = <strong>Sneak + Left Click</strong>.</li>
+        <li>Handle <code>LEFT_CLICK_AIR</code>, <code>LEFT_CLICK_BLOCK</code>, và sneak attack entity.</li>
+        <li>Right Click không cast active.</li>
+        <li>Nếu cast thành công trong entity hit: cancel damage thường.</li>
+        <li>Nếu cooldown/điều kiện fail: không cancel hit thường.</li>
+      </ul>
+    </section>
+
+    <section id="balance">
+      <h2>8. Balance Rules</h2>
+      <table><thead><tr><th>Loại</th><th>Mức gợi ý</th></tr></thead><tbody>
+        <tr><td>Single-target active damage</td><td>8-16 damage, hoặc self-cost/cooldown cao nếu true damage.</td></tr>
+        <tr><td>AoE damage</td><td>4-10 mỗi mục tiêu, cap tổng.</td></tr>
+        <tr><td>Hard CC/freeze</td><td>1-3s bình thường, 5s chỉ khi chance/cooldown cao.</td></tr>
+        <tr><td>Lifesteal</td><td>8-18% damage, cap per hit.</td></tr>
+        <tr><td>Major cooldown</td><td>5-10 phút cho resurrection/rage mạnh.</td></tr>
+        <tr><td>Curse</td><td>Phải gắn theme và có thể hiểu bằng lore ngắn.</td></tr>
+      </tbody></table>
+    </section>
+
+    <section id="weapons">
+      <h2>9. Mace Wiki — Phase 3 Roster</h2>
+
+      <section class="card" id="power_mace"><h3>9.1 Power Mace — Búa Quyền Năng</h3><p><span class="tag">ID: power_mace</span><span class="tag">Entry</span></p><p><strong>Recipe:</strong> 1 Heavy Core + 1 Breeze Rod + 1 Netherite Ingot.</p><pre class="recipe">- H -
+- B -
+- N -</pre><p><strong>Active — Power Strike:</strong> Sneak+LeftClick chỉ thành công khi thật sự đánh trúng entity. Hit hợp lệ gây impact damage theo config, cấp +5% movement speed trong 10s bằng modifier có key riêng để không stack vô hạn, rồi roll 10% tạo vụ nổ lực bán kính 10 block hất mob/entity lên cao; click block hoặc đánh hụt không kích hoạt.</p><p><strong>Passive:</strong> các đòn rơi cao vẫn tích Stored Momentum, tăng sát thương/knockback theo độ rơi trong giới hạn config; passive chạy trên hit thường, không cần active.</p><p><strong>Curse:</strong> nếu Sneak+LeftClick vào không khí hoặc block mà không trúng entity, người dùng bị Slowness 60s như cú vung búa kéo ngược cơ thể.</p><p><strong>Animation/Particles:</strong> khi hit, một vòng nứt vàng trắng mở từ chân target trong 6-10 tick; nếu proc 10%, các tia <code>CRIT</code>/<code>ELECTRIC_SPARK</code> bay từ mặt đất lên đầu mob, <code>EXPLOSION</code> chỉ là visual/sound không phá block, velocity đẩy theo vector xa tâm và Y mạnh; cleanup không tạo task dài.</p><p><strong>Lore chuẩn:</strong> 1) Giới thiệu búa quyền năng dồn lực vào cú đánh sạch. 2) Active: ngồi + đánh trúng entity để strike, 10% hất tung bán kính 10. 3) Passive: hit cho +5% speed 10s và rơi cao cộng Momentum. 4) Curse: đánh hụt/click block bị Slowness 60s.</p></section>
+
+      <section class="card" id="void_mace"><h3>9.2 Void Mace — Búa Vực Thẳm</h3><p><span class="tag">ID: void_mace</span><span class="tag">End Core</span></p><pre class="recipe">G G G
+- E G
+G R C</pre><p>E=End Core, G=Enchanted Golden Apple x6, R=Wither Rose làm cán, C=Challenger's Eye, dấu <code>-</code> là ô trống thật, không phải ingredient placeholder.</p><p><strong>Active / Abyss Interaction:</strong> Void Mace không được cast từ right click. Khi đang ở Abyss State sau resurrection, các hit hợp lệ roll 50% gây Mind Detachment trong 5s: Darkness mạnh + freeze đứng yên qua FreezeService; không stack nếu target đang bị freeze.</p><p><strong>Passive — Devour Matter:</strong> mỗi melee hit roll 10% khóa đúng 2 hotbar slot của target trong 5s. Slot lock phải nhớ item gốc, không xóa/dupe, không cộng dồn nếu target đang bị lock.</p><p><strong>Emergency Passive — Resurrected from the Abyss:</strong> fatal damage roll 5%; nếu pass và không trong cooldown 10 phút, mô phỏng Totem-resurrection riêng: hủy chết, cấp absorption/tạm +10 máu, bật Abyss State 30s, sau đó áp Weakness II 20s và Totem suppression 15s để tránh chain cứu mạng.</p><p><strong>Curse:</strong> natural regen giảm 60%, healing nhận giảm 35%, food drain tăng 50%; nếu Void Mace ở inventory và player chạm nước thì Wither II 3s.</p><p><strong>Animation/Particles:</strong> khi cầm, <code>REVERSE_PORTAL</code> bay từ ngoài vào đầu búa như lỗ hút; hotbar lock tạo khe tím mỏng trước mặt target rồi vỡ thành hạt <code>DRAGON_BREATH</code>; resurrection dùng totem particles tím xoáy từ chân lên đầu trong 20 tick kèm respawn-anchor âm trầm; Mind Detachment vẽ vòng tím tách khỏi đầu target rồi siết lại khi freeze hết.</p><p><strong>Lore chuẩn:</strong> 1) Búa vực thẳm ăn mòn vật chất và kéo chủ nhân khỏi ranh giới tử vong. 2) Active/Abyss: hit trong Abyss có thể tách tâm trí, gây Darkness + freeze. 3) Passive: 10% khóa 2 hotbar slot 5s và 5% resurrection có cooldown. 4) Curse: hồi phục yếu, đói nhanh, gặp nước bị Wither.</p></section>
+
+      <section class="card" id="chaos_mace"><h3>9.3 Chaos Mace — Búa Hỗn Loạn</h3><p><span class="tag">ID: chaos_mace</span><span class="tag">Late-game</span></p><p><strong>Gate/Recipe:</strong> Không có Chaos Core active. Chaos Mace craft trực tiếp bằng Void Mace + Blood Core + Wither Rose + 6 Obsidian Chaos; recipe phải dùng ExactChoice/PDC cho custom items.</p><p><strong>Normal hit:</strong> hit thường có cơ hội theo config teleport target quanh vị trí cũ bán kính 2-4 block. Teleport phải tìm safe-location, không đưa vào lava/void/block kín; nếu không tìm được thì bỏ qua proc.</p><p><strong>Rage charge:</strong> cần 10 điểm nộ. Mob kill roll 20% +1; player kill luôn +1. Charge phải lưu theo UUID wielder, cleanup khi quit/death nếu implementation không persist.</p><p><strong>Active — Madness Release:</strong> Sneak+LeftClick khi đủ 10 nộ bật Rage State 2 phút, cooldown 5 phút, cấp 3 empowered hits. Mỗi empowered hit tiêu 1 stack, áp Chaos Effect 10s lên target và buff caster “Kẻ Điên Loạn” 10s.</p><p><strong>Chaos Effect:</strong> hotbar shuffle mỗi 0.5s trong 10s, Slowness IV, Nausea, Wither. Shuffle phải hoán vị inventory hiện có trong hotbar, lưu snapshot/guard để không mất item; bản passive 1s chỉ shuffle một lần.</p><p><strong>Passive/Curse:</strong> khi đang cầm và bị damage, 10% attacker dính Chaos 1s. Lần đầu cầm tự Chaos 10s; hết Rage mà không giết ai tự Chaos 30s; Chaos Mace ở inventory gặp nước gây Wither II 3s.</p><p><strong>Animation/Particles:</strong> hold aura dùng <code>PORTAL</code> và <code>REVERSE_PORTAL</code> đổi chiều mỗi nhịp; mỗi rage charge sinh rune tím từ xác mob bay về búa; active mở 3 fractal ring lệch góc quanh caster, empowered hit nổ <code>DRAGON_BREATH</code> quanh đầu target, hotbar shuffle có shimmer tím chạy ngang 9 slot; sound dùng dragon growl/wither spawn nhỏ để không quá ồn.</p><p><strong>Lore chuẩn:</strong> 1) Búa hỗn loạn late-game được rèn trực tiếp từ Void Mace và vật liệu hỗn mang. 2) Active: đủ 10 nộ, ngồi + đánh để bật Madness 2 phút/3 hit. 3) Passive: kill tích nộ, hit/counter làm méo vị trí và hotbar địch. 4) Curse: lần đầu cầm, rage thất bại hoặc gặp nước đều phản phệ Chaos/Wither.</p></section>
+
+      <section class="card" id="vampiric_mace"><h3>9.4 Vampiric Mace — Búa Huyết Ma</h3><p><span class="tag">ID: vampiric_mace</span></p><pre class="recipe">N W N
+B H B
+N S N</pre><p>H=Heavy Core, B=Blood Core, W=Nether Wart, S=Skeleton Skull thường, N=Nether material configurable.</p><p><strong>Active — Blood Siphon:</strong> Sneak+LeftClick chỉ thành công khi target entity hợp lệ trong tầm nhìn/hit. Gây siphon damage theo config, hồi caster tức thời, và nếu target là player thì giảm tạm 1 tim max HP bằng AttributeModifier key riêng trong 60-90s; caster nhận max-health/heal benefit tương ứng, cooldown 75s.</p><p><strong>Passive:</strong> melee thường hồi 12% final damage, cap 2 HP/hit; khi caster dưới 30% HP, hit được tăng damage theo config nhưng phải tránh multiply nhiều lần trên cùng event.</p><p><strong>Curse:</strong> khi cầm/carry theo hệ CurseService, caster bị -4 HP max health bằng lease không stack. Nếu Sneak+LeftClick hụt entity hoặc click block, caster nhận 6 damage tạm thời; tuyệt đối không trừ max HP vĩnh viễn.</p><p><strong>Cleanup/compat:</strong> mọi max-health drain phải dùng NamespacedKey riêng, TTL scheduler, cleanup on expiry/death/quit/drop/switch; không sửa base max health trực tiếp để tránh xung đột với plugin lifesteal khác.</p><p><strong>Animation/Particles:</strong> passive spawn <code>DAMAGE_INDICATOR</code> giọt nhỏ tại vết đánh; active tạo 3 vòng máu đỏ co vào ngực target rồi kéo thành dây hạt đỏ sang caster trong 12-20 tick; target bị drain có pulse đỏ quanh tim, caster có pulse hồi máu đỏ sẫm; sound phantom bite/wither hurt pitch thấp.</p><p><strong>Lore chuẩn:</strong> 1) Búa huyết ma hút sinh lực qua vết thương nhưng gặm máu chủ. 2) Active: ngồi + đánh trúng để siphon máu và rút tạm 1 tim max HP của player target. 3) Passive: lifesteal theo damage, cap hồi mỗi hit. 4) Curse: cầm bị -4 HP max health, đánh hụt bị 6 damage.</p></section>
+
+      <section class="card" id="gravity_mace"><h3>9.5 Singularity Gravity Mace — Búa Trọng Lực Kỳ Dị</h3><p><span class="tag">ID: gravity_mace</span><span class="tag">Gravity + Singularity merged</span></p><pre class="recipe">C O C
+S E S
+N R N</pre><p>E=End Core, S=Sculk Core, N=Netherite Block, R=Breeze Rod, C=Crying Obsidian, O=Obsidian.</p><p><strong>Active — Singularity Well:</strong> Sneak+LeftClick tạo hố trọng lực tại block/entity nhìn tối đa 10 block. Trong 3s đầu, mọi LivingEntity bán kính 6-8 bị kéo từng tick về tâm và nhận Slowness III; khi collapse, damage = 2 HP + 1.5 HP mỗi entity bị hút, cap 15 HP, cooldown 60s.</p><p><strong>Passive:</strong> giảm fall damage 70% bằng listener damage cause FALL; melee hit kéo target nhẹ về phía caster để giữ nhịp combo, không kéo boss/vehicle nếu Bukkit flag không an toàn.</p><p><strong>Curse:</strong> khi cầm chịu Slowness I/áp lực nặng và hunger drain x2. Nếu active hút từ 4 entity trở lên, caster nhận Mining Fatigue II 12s và mất 3 HP hiện tại như phản lực trọng trường.</p><p><strong>Animation/Particles:</strong> hold aura là <code>ASH</code> bay quỹ đạo thấp quanh chân và đầu búa; active spawn spiral <code>PORTAL</code>/<code>DRAGON_BREATH</code> từ rìa vào tâm theo bán kính giảm dần trong 60 tick; collapse có flash trắng tím, âm <code>BLOCK_RESPAWN_ANCHOR_DEPLETE</code>, rồi hạt bị hút tắt trong 5 tick. Task phải tự hủy sau collapse/owner offline/world unload.</p><p><strong>Lore chuẩn:</strong> 1) Búa trọng lực kỳ dị bẻ cong khối lượng quanh điểm nhìn. 2) Active: ngồi + đánh mở giếng 3s kéo địch rồi collapse damage có cap. 3) Passive: giảm fall damage và kéo nhẹ target khi melee. 4) Curse: nặng nề, đói nhanh, hút quá nhiều bị phản lực.</p></section>
+
+      <section class="card" id="sonic_mace"><h3>9.6 Echoing Warden Mace — Búa Tiếng Vọng Warden</h3><p><span class="tag">ID: sonic_mace</span></p><p><strong>Recipe:</strong> Sculk Core + Breeze Rod + Echo Shard + Reinforced Deepslate/Ancient Debris tùy config.</p><p><strong>Active — Sonic Boom:</strong> Sneak+LeftClick bắn beam theo hướng nhìn tối đa 12 block. Target đầu tiên trên ray nhận 14 true/config damage, knockback 2.0, caster trả 4 HP hiện tại nhưng không tự kết liễu; cooldown 35s.</p><p><strong>Passive:</strong> khi đứng trên/near Sculk nhận Speed I hoặc giảm nhiễu theo implementation, đồng thời smash/falling hit cộng damage theo độ cao, cap +6 để giữ vanilla Mace feel.</p><p><strong>Curse:</strong> sau active caster bị Blindness 1.5s và Slowness II 2s vì phản âm; khi cầm có Glowing/warden attention định kỳ để kẻ địch dễ phát hiện.</p><p><strong>Animation/Particles:</strong> beam gồm các segment cách nhau 0.5 block, spawn <code>SONIC_BOOM</code>/<code>SCULK_SOUL</code> theo đường thẳng từ mắt caster tới hit point trong 1-2 tick; trước khi bắn có vòng cyan nén vào đầu búa, khi trúng target có ring cyan nén vào ngực rồi bật ra. Sound chính là Warden sonic boom, volume giới hạn để không spam.</p><p><strong>Lore chuẩn:</strong> 1) Búa tiếng vọng Warden nén âm sâu thành đòn xuyên phá. 2) Active: ngồi + đánh bắn beam 12 block, 14 damage, tốn 4 HP. 3) Passive: sculk hỗ trợ di chuyển và falling smash tăng damage. 4) Curse: phản âm gây Blindness/Slowness và làm chủ phát sáng.</p></section>
+
+      <section class="card" id="soulfire_mace"><h3>9.7 Soulfire Pyre Mace — Búa Hỏa Thiêu Hồn</h3><p><span class="tag">ID: soulfire_mace</span></p><p><strong>Recipe:</strong> Soulfire Core + Breeze Rod + Soul Campfire + Soul Lantern/Magma.</p><p><strong>Active — Soulfire Storm:</strong> Sneak+LeftClick tạo vùng bão lửa linh hồn bán kính 5 trong 5s tại vị trí caster/hit theo implementation. Enemy trong vùng nhận 3 HP/s và Wither I; caster trả 4 HP hiện tại nhưng không nên tự chết nếu design safety bật; cooldown 40s.</p><p><strong>Passive:</strong> khi cầm được miễn/giảm fire-lava damage theo listener, melee đốt target bằng soul fire 3s, 1 HP/s hoặc fire tick tương đương config.</p><p><strong>Curse:</strong> hunger drain x2 vì linh hồn cháy liên tục; active luôn thu current health cost, kể cả khi không trúng nhiều target, nên người chơi phải cân thời điểm dùng.</p><p><strong>Animation/Particles:</strong> hold effect là <code>SOUL_FIRE_FLAME</code> bám quanh đầu búa như lửa xanh nhỏ; active phát 5 pulse mỗi giây, mỗi pulse là vòng soul flame lan từ tâm ra radius 5, sau đó <code>SOUL</code> bay lên như linh hồn bị thiêu; sound firecharge mở màn, campfire crackle nền, extinguish nhỏ khi hết TTL. Task phải dừng đúng sau 5s.</p><p><strong>Lore chuẩn:</strong> 1) Búa hỏa thiêu hồn đổi máu chủ lấy lửa xanh nuốt linh hồn. 2) Active: ngồi + đánh tạo bão soul fire 5s radius 5, tốn 4 HP. 3) Passive: kháng lửa/lava và melee đốt soul fire. 4) Curse: đói nhanh, active luôn thu máu hiện tại.</p></section>
+    </section>
+
+    <section id="particles">
+      <h2>10. Particle & Sound Profile Wiki</h2>
+      <table><thead><tr><th>Theme</th><th>Hold</th><th>Active</th><th>Backfire/Hit</th></tr></thead><tbody>
+        <tr><td>Power</td><td>Electric spark thưa quanh đầu búa.</td><td>RingBurst vàng trắng + crit cloud.</td><td>Smash miss: cloud nặng dưới chân.</td></tr>
+        <tr><td>Void</td><td>Reverse portal hút vào tâm.</td><td>Abyss resurrection totem tím + dragon breath.</td><td>Mind split: vòng tím tách khỏi đầu.</td></tr>
+        <tr><td>Chaos</td><td>Portal/reverse portal lật chiều.</td><td>Fractal rage ring 3 lớp.</td><td>Chaos: dragon breath + hotbar shimmer.</td></tr>
+        <tr><td>Blood</td><td>DAMAGE_INDICATOR drip.</td><td>Blood tether và 3 vòng máu.</td><td>Low HP proc: pulse đỏ.</td></tr>
+        <tr><td>Gravity</td><td>Ash orbit thấp.</td><td>Portal/dragon breath black hole spiral.</td><td>Collapse flash + anchor sound.</td></tr>
+        <tr><td>Sonic</td><td>Sculk soul cyan flicker.</td><td>Sonic beam segment 0.5 block.</td><td>Self blindness: cyan ring vỡ.</td></tr>
+        <tr><td>Soulfire</td><td>Soul flame quanh đầu búa.</td><td>Soulfire ring lan theo nhịp.</td><td>Self cost: soul particles rơi xuống.</td></tr>
+      </tbody></table>
+      <p>Implementation phải có particle budget, TTL cleanup và không spawn cho viewer quá xa.</p>
+    </section>
+
+    <section id="recipes">
+      <h2>11. Recipe Summary</h2>
+      <table><thead><tr><th>Item</th><th>Core/Gate</th><th>Ghi chú</th></tr></thead><tbody>
+        <tr><td>Power Mace</td><td>Heavy Core</td><td>Entry: Heavy Core + Breeze Rod + Netherite Ingot.</td></tr>
+        <tr><td>Void Mace</td><td>End Core</td><td>6 Enchanted Golden Apples + Wither Rose + Challenger's Eye.</td></tr>
+        <tr><td>Chaos Core</td><td>Disabled</td><td>No active recipe/requirement in Phase 3.</td></tr>
+        <tr><td>Chaos Mace</td><td>Void Mace + Blood Core</td><td>Direct craft with 6 Obsidian Chaos + Wither Rose; no Chaos Core.</td></tr>
+        <tr><td>Vampiric Mace</td><td>Blood Core</td><td>Nether Wart + Skeleton Skull, no Nether Star.</td></tr>
+        <tr><td>Gravity Mace</td><td>End Core + Sculk Core</td><td>Merged Gravity/Singularity; expensive.</td></tr>
+        <tr><td>Sonic Mace</td><td>Sculk Core</td><td>Echo/Warden theme.</td></tr>
+        <tr><td>Soulfire Mace</td><td>Soulfire Core</td><td>Soul fire theme.</td></tr>
+      </tbody></table>
+    </section>
+
+    <section id="qa">
+      <h2>12. QA/Test Matrix</h2>
+      <table><thead><tr><th>Nhóm</th><th>Test bắt buộc</th></tr></thead><tbody>
+        <tr><td>Build</td><td><code>gradle build</code> timeout 120s pass.</td></tr>
+        <tr><td>Docs sync</td><td>Grep no active <code>chrono_core|dark_ego|egosmp|devourer_mace|phoenix_mace|aegis_mace</code>.</td></tr>
+        <tr><td>Input</td><td>Right Click không cast; Sneak+LeftClick cast air/block/entity; entity cast không double damage.</td></tr>
+        <tr><td>Forge</td><td>Same tick craft, 1 tick delayed craft, shift-click, restart charge/countdown/completion, break Lodestone.</td></tr>
+        <tr><td>Chaos</td><td>Kill charge mob/player, rage 2 phút, 3 empowered hits, shuffle 0.5s, no-kill backfire, no item loss.</td></tr>
+        <tr><td>Void</td><td>Hotbar lock no stack, fatal resurrection 5%, cooldown 10 phút, Totem conflict, Mind Detachment cleanup.</td></tr>
+        <tr><td>Particles</td><td>Every Mace has hold/active/hit/backfire visual, no task leak with 5 players casting.</td></tr>
+      </tbody></table>
+    </section>
+
+    <section id="agent">
+      <h2>13. Agent Operating Rules</h2>
+      <ul>
+        <li>Read <code>AGENTS.md</code> before code changes.</li>
+        <li>Read root docs first; archive is historical.</li>
+        <li>Build/test commands must set timeout 120000ms.</li>
+        <li>No commits unless explicitly requested.</li>
+        <li>Architect delegates to backend/reviewer; backend codes; reviewer does not edit.</li>
+        <li>Every implementation report must include files changed, build result, grep checks, remaining risks.</li>
+      </ul>
+    </section>
+
+    <section id="roadmap">
+      <h2>14. Roadmap</h2>
+      <h3>Phase 3A — Sync & Cleanup</h3><ul><li>Disable spear gameplay.</li><li>Remove old tokens/resources.</li><li>Build pass.</li></ul>
+      <h3>Phase 3B — Config/Lore/Recipe</h3><ul><li>7 mace configs match this plan.</li><li>Exact custom recipes for cores/materials.</li></ul>
+      <h3>Phase 3C — Gameplay Mechanics</h3><ul><li>Chaos/Void deep mechanics.</li><li>Other mace balance validation.</li></ul>
+      <h3>Phase 3D — Particle & QA</h3><ul><li>Full particle/sound profile coverage.</li><li>Forge race tests and hotbar safety tests.</li></ul>
+      <h3>Phase 4 — Spear</h3><ul><li>Only after Phase 3 Mace passes.</li><li>Re-enable spear gameplay intentionally with new docs.</li></ul>
+    </section>
+  </main>
+</div>
 </body>
 </html>
-

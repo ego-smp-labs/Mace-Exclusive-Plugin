@@ -4,21 +4,23 @@ name: "&5&lSINGULARITY GRAVITY MACE"
 material: MACE
 custom-model-data: 10004
 lore:
-  - "&7Controls time and space around it."
-  - "&7Passive: Reduces fall damage by 70%."
-  - "&7Sneak + Left-Click to trigger Gravity Well."
+  - "&7A collapsed-star mace that bends weight, falling, and enemy position."
+  - "&eActive: &fSneak + Left-Click opens a gravity well for 3s, then collapses with capped damage."
+  - "&aPassive: &fReduces fall damage by 70% and lightly pulls melee targets toward you."
+  - "&cCurse: &fHeavy mass applies Slowness pressure and doubles hunger drain."
 recipe:
   enabled: true
   shape:
-    - "OCO"
-    - "GBG"
-    - "ONO"
+    - "COC"
+    - "SES"
+    - "NRN"
   ingredients:
-    C: end_core
-    B: BREEZE_ROD
-    G: CRYING_OBSIDIAN
-    O: obsidian_chaos
+    E: end_core
+    S: sculk_core
     N: NETHERITE_BLOCK
+    R: BREEZE_ROD
+    C: CRYING_OBSIDIAN
+    O: OBSIDIAN
 cooldowns:
   gravity_well: 60
 effects:
@@ -26,7 +28,7 @@ effects:
   pull_range: 2.5
   active:
     pull_radius: 8.0
-    duration: 3 # seconds
+    duration: 3
     base_damage: 2.0
     damage_per_entity: 1.5
     max_damage: 15.0
@@ -34,4 +36,4 @@ effects:
     slowness_amplifier: 0
     hunger_multiplier: 2.0
 messages:
-  skill-gravity-well: "&5[Gravity Mace] &fĐã kích hoạt &dGiếng Trọng Lực&f!"
+  skill-gravity-well: "&5[Gravity Mace] &fAsh orbits feed a portal spiral; collapse flashes like a depleted anchor."

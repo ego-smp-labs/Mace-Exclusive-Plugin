@@ -14,11 +14,13 @@ public final class PowerStoredMomentumAbility implements PassiveAbility {
     private static final String ID = "power_mace.stored_momentum";
 
     private final ConfigManager configManager;
+    private final PowerGroundPulseAbility hitEffects;
     private final ParticleProfile particles = new ParticleProfile(Particle.CRIT, 18, 0.35, 0.35, 0.35, 0.05);
     private final SoundProfile sound = new SoundProfile(Sound.ENTITY_PLAYER_ATTACK_KNOCKBACK, 0.8f, 0.9f);
 
-    public PowerStoredMomentumAbility(ConfigManager configManager) {
+    public PowerStoredMomentumAbility(ConfigManager configManager, PowerGroundPulseAbility hitEffects) {
         this.configManager = configManager;
+        this.hitEffects = hitEffects;
     }
 
     @Override
@@ -37,6 +39,8 @@ public final class PowerStoredMomentumAbility implements PassiveAbility {
         if (target == null) {
             return;
         }
+
+        hitEffects.applyHitEffects(context.player(), target);
 
         double downwardSpeed = Math.max(0.0D, -context.player().getVelocity().getY());
         double fallDistance = context.player().getFallDistance();

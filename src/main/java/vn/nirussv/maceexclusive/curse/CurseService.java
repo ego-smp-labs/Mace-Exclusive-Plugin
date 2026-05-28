@@ -2,6 +2,8 @@ package vn.nirussv.maceexclusive.curse;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
@@ -30,6 +32,7 @@ import vn.nirussv.maceexclusive.item.ItemMatcher;
 
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -37,7 +40,6 @@ public final class CurseService implements Listener {
 
     private static final double DEFAULT_CHAOS_HEALTH_PENALTY = 4.0D;
     private static final double DEFAULT_CHAOS_WATER_DAMAGE = 1.5D;
-    private static final double DEFAULT_CHRONOS_HEALTH_MULTIPLIER = 0.85D;
 
     private final Plugin plugin;
     private final ConfigManager configManager;
@@ -46,6 +48,8 @@ public final class CurseService implements Listener {
     private final NamespacedKey maxHealthLeaseKey;
     private final Set<UUID> heldCursePlayers = new HashSet<>();
     private final Set<UUID> waterBackfirePlayers = new HashSet<>();
+    private final Random random = new Random();
+    private long coreCurseTickCounter;
     private long environmentIntervalTicks;
     private BukkitTask environmentTask;
 
@@ -203,7 +207,6 @@ public final class CurseService implements Listener {
     }
 
     private boolean hasHoldCurse(String itemId) {
-        if (itemId.equals("chronos_anchor_spear")) return true;
         double penalty = configManager.getItemCurseDouble(itemId, "max_health_penalty", 0.0D);
         return penalty > 0.0D;
     }
@@ -213,12 +216,6 @@ public final class CurseService implements Listener {
         if (penalty > 0.0D) {
             double amount = -Math.abs(penalty);
             attributeLease.apply(player, Attribute.GENERIC_MAX_HEALTH, maxHealthLeaseKey, amount, AttributeModifier.Operation.ADD_NUMBER);
-            return;
-        }
-        if (itemId.equals("chronos_anchor_spear")) {
-            double multiplier = configManager.getItemCurseDouble(itemId, "max_health_multiplier", DEFAULT_CHRONOS_HEALTH_MULTIPLIER);
-            double scalar = Math.min(0.0D, multiplier - 1.0D);
-            attributeLease.apply(player, Attribute.GENERIC_MAX_HEALTH, maxHealthLeaseKey, scalar, AttributeModifier.Operation.ADD_SCALAR);
             return;
         }
         attributeLease.revoke(player, Attribute.GENERIC_MAX_HEALTH);
@@ -243,6 +240,7 @@ public final class CurseService implements Listener {
     }
 
     private void tickEnvironmentCurses() {
+        coreCurseTickCounter += environmentIntervalTicks;
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             if (!player.isOnline() || player.isDead()) continue;
 
@@ -264,6 +262,60 @@ public final class CurseService implements Listener {
                 if (player.getLocation().getBlock().getLightLevel() < threshold) {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 0, false, false, false));
                 }
+            }
+
+            tickCoreInstability(player);
+        }
+    }
+
+    private void tickCoreInstability(Player player) {
+        if (coreCurseTickCounter % (20L * 10L) == 0L) {
+            if (hasCoreInInventory(player, "blood_core") && random.nextDouble() < 0.10D) {
+                player.damage(2.0D);
+                player.getWorld().spawnParticle(Particle.DAMAGE_INDICATOR, player.getLocation().add(0, 1.0, 0), 8, 0.3, 0.4, 0.3, 0.02);
+            }
+            if (isHoldingCore(player, "sculk_core") && random.nextDouble() < 0.19D) {
+                PotionEffectType darkness = PotionEffectType.getByName("DARKNESS");
+                if (darkness == null) darkness = PotionEffectType.BLINDNESS;
+                player.addPotionEffect(new PotionEffect(darkness, 20 * 29, 0, false, true, true));
+                player.getWorld().spawnParticle(Particle.SCULK_SOUL, player.getLocation().add(0, 1.0, 0), 24, 0.5, 0.6, 0.5, 0.03);
+                player.getWorld().playSound(player.getLocation(), org.bukkit.Sound.ENTITY_WARDEN_HEARTBEAT, 0.8f, 0.7f);
+            }
+        }
+        if (coreCurseTickCounter % (20L * 60L) == 0L && hasCoreInInventory(player, "end_core") && random.nextDouble() < 0.10D) {
+            teleportNearbySafely(player);
+        }
+    }
+
+    private boolean hasCoreInInventory(Player player, String id) {
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && itemMatcher.isCore(item, id)) return true;
+        }
+        return false;
+    }
+
+    private boolean isHoldingCore(Player player, String id) {
+        return itemMatcher.isCore(player.getInventory().getItemInMainHand(), id)
+            || itemMatcher.isCore(player.getInventory().getItemInOffHand(), id);
+    }
+
+    private void teleportNearbySafely(Player player) {
+        Location origin = player.getLocation();
+        if (origin.getWorld() == null) return;
+        for (int attempt = 0; attempt < 18; attempt++) {
+            int dx = random.nextInt(33) - 16;
+            int dz = random.nextInt(33) - 16;
+            Location candidate = origin.clone().add(dx, 0, dz);
+            candidate.setY(origin.getWorld().getHighestBlockYAt(candidate) + 1.0D);
+            Material feet = candidate.getBlock().getType();
+            Material head = candidate.clone().add(0, 1, 0).getBlock().getType();
+            Material below = candidate.clone().add(0, -1, 0).getBlock().getType();
+            if (feet.isAir() && head.isAir() && below.isSolid() && below != Material.LAVA && below != Material.FIRE) {
+                origin.getWorld().spawnParticle(Particle.REVERSE_PORTAL, origin.add(0, 1, 0), 32, 0.5, 0.6, 0.5, 0.05);
+                player.teleport(candidate.setDirection(origin.getDirection()));
+                player.getWorld().spawnParticle(Particle.PORTAL, player.getLocation().add(0, 1, 0), 32, 0.5, 0.6, 0.5, 0.05);
+                player.getWorld().playSound(player.getLocation(), org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 0.8f, 1.0f);
+                return;
             }
         }
     }

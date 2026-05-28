@@ -4,23 +4,26 @@ name: "&c&lMACE OF VAMPIRISM"
 material: MACE
 custom-model-data: 10002
 lore:
-  - "&7A cursed weapon that hungers for blood."
-  - "&7Passive: Lifesteals on melee attacks."
-  - "&7Sneak + Left-Click to siphon Max HP."
+  - "&7A blood-bound mace that feeds through wounds but gnaws at its owner."
+  - "&eActive: &fSneak + Left-Click a target to siphon health and drain 1 temporary max-heart."
+  - "&aPassive: &fMelee heals 12% of final damage, capped at 2 HP per hit; low HP increases damage."
+  - "&cCurse: &fHolding/carrying reduces max health by 4 HP; missing a target deals 6 damage to you."
 recipe:
   enabled: true
   shape:
-    - "NCN"
-    - "MBM"
+    - "NWN"
+    - "BHB"
     - "NSN"
   ingredients:
-    C: blood_core
-    B: BREEZE_ROD
+    H: HEAVY_CORE
+    B: blood_core
+    W: NETHER_WART
     S: SKELETON_SKULL
-    N: NETHER_WART
-    M: MAGMA_BLOCK
+    N: MAGMA_BLOCK
 cooldowns:
   siphon: 75
+curse:
+  max_health_penalty: 4.0
 effects:
   lifesteal:
     percent: 0.12
@@ -36,4 +39,4 @@ effects:
       fall: 1.10
       projectile: 1.10
 messages:
-  skill-siphon: "&c[Vampiric Mace] &fĐã cưỡng đoạt sinh mệnh của đối thủ!"
+  skill-siphon: "&c[Vampiric Mace] &fBlood tethers coil from the target, restoring you while temporary max-health leases are tracked and cleaned up."
