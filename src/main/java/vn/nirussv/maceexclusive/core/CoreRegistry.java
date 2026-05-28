@@ -2,6 +2,7 @@ package vn.nirussv.maceexclusive.core;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
+import vn.nirussv.maceexclusive.config.ResourceBootstrap;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,6 +55,9 @@ public final class CoreRegistry {
     private void ensureBundledYamlCopied() {
         File dir = new File(plugin.getDataFolder(), CORES_DIR);
         if (!dir.exists() && !dir.mkdirs()) plugin.getLogger().warning("Could not create core config directory: " + dir.getPath());
+        for (String resource : ResourceBootstrap.CORE_RESOURCES) {
+            ResourceBootstrap.ensure(plugin, resource);
+        }
         for (String resource : bundledYamlResources()) {
             File target = new File(plugin.getDataFolder(), resource);
             if (!target.exists()) plugin.saveResource(resource, false);

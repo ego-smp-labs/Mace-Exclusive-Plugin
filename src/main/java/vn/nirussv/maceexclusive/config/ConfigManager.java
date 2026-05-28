@@ -70,10 +70,7 @@ public class ConfigManager {
     }
 
     private void ensureLanguageResource(String fileName) {
-        File langFile = new File(plugin.getDataFolder(), fileName);
-        if (!langFile.exists()) {
-            plugin.saveResource(fileName, false);
-        }
+        ResourceBootstrap.ensure(plugin, fileName);
     }
 
     private void loadTypedConfigs() {
@@ -254,6 +251,10 @@ public class ConfigManager {
     private void ensureBundledYamlCopied(String resourceDirectory) {
         File dir = new File(plugin.getDataFolder(), resourceDirectory);
         if (!dir.exists() && !dir.mkdirs()) plugin.getLogger().warning("Could not create config directory: " + dir.getPath());
+        List<String> explicit = ITEM_CONFIG_DIRECTORY.equals(resourceDirectory) ? ResourceBootstrap.ITEM_RESOURCES : List.of();
+        for (String resource : explicit) {
+            ResourceBootstrap.ensure(plugin, resource);
+        }
         for (String resource : bundledYamlResources(resourceDirectory)) {
             File target = new File(plugin.getDataFolder(), resource);
             if (!target.exists()) plugin.saveResource(resource, false);

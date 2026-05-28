@@ -33,4 +33,12 @@
 <li>Verification: active src/resources grep for <code>MaceType|MaceFactory|ExclusiveItemId|egosmp|dark_ego|chrono_core|devourer_mace|phoenix_mace|aegis_mace</code> returned no files. Build command <code>if (Test-Path -LiteralPath ".\\gradlew.bat") { .\\gradlew.bat build } else { gradle build }</code> passed in 2s with timeout 120000ms.</li>
 <li>Manual-test TODO: no MockBukkit/test harness exists; verify in server: Power/Vampiric miss curses, left-click block does not activate target abilities, Right Click does not cast, Obsidian Chaos death despite Totem/armor, Challenger Eye only on Enderman+Totem death path, timed Vampiric modifiers clean after repeated casts, and disabled spear resources cannot be acquired by normal recipe/forge flow.</li>
 </ul></section>
+<section class="ok"><h2>2026-05-28 Backend hotfix pass — 1.0.1/1.0.2 runtime issues</h2><ul>
+<li>Forge visuals now avoid data-sensitive <code>FLASH</code>, safely catch/rate-limit risky particle failures, and use lower particle/sound counts during charge/completion.</li>
+<li>First-install resource creation now has deterministic explicit fallbacks for root config/lang, <code>items/*.yml</code>, and <code>cores/*.yml</code>, with a boot summary and missing bundled-resource warnings.</li>
+<li>Acquisition messages now pass <code>%name%</code> to craft/pickup/title/warning paths and split crafted/pickup/received semantics. Pickup registration is idempotent and uses <code>EntityPickupItemEvent</code>; inventory clicks no longer replay ownership UI.</li>
+<li>TPS hot spots reduced: Gravity Well scans every 5 ticks and damages once on collapse, Sonic Boom uses one ray trace instead of per-segment scans, Soulfire melee burn uses one shared refreshable task, and environment curse interval is explicit in config.</li>
+<li>Verification: grep for <code>RIGHT_CLICK|PlayerPickupItemEvent|Particle.FLASH|%namey|Xnamey</code> in active source/resources returned no files. Build passed with the required 120000ms timeout. Jar resource listing confirmed config/lang plus all bundled item/core YAMLs.</li>
+<li>Manual QA TODO: delete plugin data folder and start server; verify all files/folders are created, forge charge/complete produces no particle exception, forge complete plus pickup emits one acquisition warning/title/broadcast, clicking owned mace does not replay UI, and use Spark/timings around Gravity/Sonic/Soulfire under load.</li>
+</ul></section>
 </main></body></html>

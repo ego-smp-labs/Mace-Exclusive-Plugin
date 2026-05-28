@@ -41,14 +41,14 @@ public final class ContainerGuardListener implements Listener {
             return;
         }
         
-        if (!maceManager.claimIfAllowed(item, player)) {
+        if (!maceManager.canPickup(item, player)) {
             event.setCancelled(true);
             String id = optId.get();
             String holderName = maceManager.getHolderName(id);
             if (holderName == null) holderName = "Unknown";
             
             String msgPath = id.contains("chaos") ? "chaos.already-exists" : "mace.already-exists";
-            player.sendMessage(configManager.getMessage(msgPath, java.util.Map.of("player", holderName)));
+            player.sendMessage(configManager.getMessage(msgPath, java.util.Map.of("player", holderName, "name", maceManager.displayName(id))));
         }
     }
 

@@ -23,6 +23,9 @@ import java.util.UUID;
 
 public class MaceManager {
 
+    public enum ClaimResult { NOT_EXCLUSIVE, NEWLY_CLAIMED, ALREADY_OWNER, DENIED }
+    public enum AcquisitionReason { CRAFTED, PICKUP, RECEIVED }
+
     private final MaceRepository repository;
     private final ConfigManager configManager;
     private final ItemMatcher itemMatcher;
@@ -68,14 +71,23 @@ public class MaceManager {
         return true;
     }
 
-    public boolean claimIfAllowed(ItemStack item, Player player) {
+    public ClaimResult claimIfAllowed(ItemStack item, Player player) {
+        Optional<String> matched = getExclusiveItemKey(item);
+        if (matched.isEmpty()) return ClaimResult.NOT_EXCLUSIVE;
+        String id = matched.get();
+        if (!configManager.isSingletonItem(id)) return ClaimResult.ALREADY_OWNER;
+        UUID holder = repository.getHolder(id);
+        if (holder == null) return register(item, player.getUniqueId(), id) ? ClaimResult.NEWLY_CLAIMED : ClaimResult.DENIED;
+        return holder.equals(player.getUniqueId()) ? ClaimResult.ALREADY_OWNER : ClaimResult.DENIED;
+    }
+
+    public boolean canPickup(ItemStack item, Player player) {
         Optional<String> matched = getExclusiveItemKey(item);
         if (matched.isEmpty()) return true;
         String id = matched.get();
         if (!configManager.isSingletonItem(id)) return true;
         UUID holder = repository.getHolder(id);
-        if (holder == null) return register(item, player.getUniqueId(), id);
-        return holder.equals(player.getUniqueId());
+        return holder == null || holder.equals(player.getUniqueId());
     }
 
     public boolean isOwnedByAnother(ItemStack item, Player player) {
@@ -88,31 +100,55 @@ public class MaceManager {
     }
 
     public void onPlayerBecameHolder(Player player, Location location, String id) {
+        notifyAcquisition(player, location, id, AcquisitionReason.CRAFTED);
+    }
+
+    public void notifyAcquisition(Player player, Location location, String id, AcquisitionReason reason) {
         player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 200, 0, false, false, true));
         player.playSound(location, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 0.5f);
-        broadcastOwnership(player, location, id);
+        if (reason == AcquisitionReason.RECEIVED) {
+            player.sendMessage(configManager.getPrefixedMessage(messagePrefix(id) + "received", Map.of("name", displayName(id), "player", player.getName())));
+        } else {
+            broadcastOwnership(player, location, id, reason);
+        }
         showAcquisitionUI(player, id);
     }
 
-    private void broadcastOwnership(Player player, Location location, String id) {
+    private void broadcastOwnership(Player player, Location location, String id, AcquisitionReason reason) {
         boolean chaos = "chaos_mace".equals(id);
         String playerDisplay = chaos ? "&k" + player.getName() + "&r" : player.getName();
+        String messageAction = switch (reason) {
+            case PICKUP -> "pickup";
+            case RECEIVED -> "received";
+            case CRAFTED -> "crafted";
+        };
         Map<String, String> placeholders = Map.of(
             "player", playerDisplay,
+            "name", displayName(id),
             "x", String.valueOf(location.getBlockX()),
             "y", String.valueOf(location.getBlockY()),
             "z", String.valueOf(location.getBlockZ()),
             "world", location.getWorld().getName()
         );
-        Bukkit.broadcast(configManager.getMessage(chaos ? "chaos.crafted" : "mace.crafted", placeholders));
+        Bukkit.broadcast(configManager.getMessage(messagePrefix(id) + messageAction, placeholders));
     }
 
     private void showAcquisitionUI(Player player, String id) {
         boolean chaos = "chaos_mace".equals(id);
-        Component title = configManager.getMessage(chaos ? "chaos.title" : "mace.title");
-        Component subtitle = configManager.getMessage(chaos ? "chaos.subtitle" : "mace.subtitle");
+        Map<String, String> placeholders = Map.of("name", displayName(id), "player", player.getName());
+        Component title = configManager.getMessage(chaos ? "chaos.title" : "mace.title", placeholders);
+        Component subtitle = configManager.getMessage(chaos ? "chaos.subtitle" : "mace.subtitle", placeholders);
         player.showTitle(Title.title(title, subtitle, Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofMillis(500))));
-        player.sendMessage(configManager.getPrefixedMessage(chaos ? "chaos.warning" : "mace.warning"));
+        player.sendMessage(configManager.getPrefixedMessage(chaos ? "chaos.warning" : "mace.warning", placeholders));
+    }
+
+    public String displayName(String id) {
+        var cfg = configManager.getItemConfig(id);
+        return cfg == null ? id : cfg.name();
+    }
+
+    private String messagePrefix(String id) {
+        return "chaos_mace".equals(id) ? "chaos." : "mace.";
     }
 
     public boolean reset(String id) {

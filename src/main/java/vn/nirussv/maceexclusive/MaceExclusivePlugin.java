@@ -4,6 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import vn.nirussv.maceexclusive.ability.AbilityService;
 import vn.nirussv.maceexclusive.command.MaceCommand;
 import vn.nirussv.maceexclusive.config.ConfigManager;
+import vn.nirussv.maceexclusive.config.ResourceBootstrap;
 import vn.nirussv.maceexclusive.core.CoreCraftListener;
 import vn.nirussv.maceexclusive.core.CoreItemFactory;
 import vn.nirussv.maceexclusive.core.CoreRegistry;
@@ -47,6 +48,11 @@ public class MaceExclusivePlugin extends JavaPlugin {
     public void onEnable() {
         try {
             saveDefaultConfig();
+            ResourceBootstrap.BootstrapSummary bootstrapSummary = ResourceBootstrap.ensureAll(this);
+            getLogger().info("Resource bootstrap: copied=" + bootstrapSummary.copied()
+                + ", missingBundled=" + bootstrapSummary.missing()
+                + ", expected(root/items/cores)=" + bootstrapSummary.rootExpected() + "/"
+                + bootstrapSummary.itemsExpected() + "/" + bootstrapSummary.coresExpected() + ".");
             reloadConfig();
             this.configManager = new ConfigManager(this);
             this.configManager.reload();

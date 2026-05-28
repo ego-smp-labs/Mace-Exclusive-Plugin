@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.entity.Entity;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,6 +16,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
@@ -75,27 +76,40 @@ public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbili
         // Cost HP
         player.setHealth(Math.max(1.0D, player.getHealth() - cost));
 
-        // Fire Sonic Boom: trace line 12 blocks, damage first entity hit
+        // Fire Sonic Boom: one entity ray trace plus optional block occlusion check.
         Location eye = player.getEyeLocation();
         Vector dir = eye.getDirection().normalize();
+        RayTraceResult entityTrace = player.getWorld().rayTraceEntities(
+            eye,
+            dir,
+            range,
+            0.8D,
+            entity -> entity instanceof LivingEntity && !entity.equals(player)
+        );
+        RayTraceResult blockTrace = player.getWorld().rayTraceBlocks(eye, dir, range, FluidCollisionMode.NEVER, true);
+        double beamDistance = range;
+        LivingEntity hit = null;
+        if (entityTrace != null && entityTrace.getHitEntity() instanceof LivingEntity living) {
+            double entityDistance = entityTrace.getHitPosition().distance(eye.toVector());
+            double blockDistance = blockTrace == null ? Double.MAX_VALUE : blockTrace.getHitPosition().distance(eye.toVector());
+            if (entityDistance <= blockDistance + 0.05D) {
+                hit = living;
+                beamDistance = entityDistance;
+            } else {
+                beamDistance = Math.min(beamDistance, blockDistance);
+            }
+        } else if (blockTrace != null) {
+            beamDistance = blockTrace.getHitPosition().distance(eye.toVector());
+        }
 
-        // Spawn Sonic particles along trace line
-        for (double d = 0.5D; d <= range; d += 0.5D) {
+        // Spawn capped Sonic particles along trace line.
+        for (double d = 0.75D; d <= beamDistance; d += 1.0D) {
             Location pLoc = eye.clone().add(dir.clone().multiply(d));
             pLoc.getWorld().spawnParticle(Particle.SONIC_BOOM, pLoc, 1, 0.0, 0.0, 0.0, 0.0);
-            
-            // Check entities near pLoc
-            for (Entity entity : pLoc.getWorld().getNearbyEntities(pLoc, 0.8, 0.8, 0.8)) {
-                if (entity instanceof LivingEntity living && !living.equals(player)) {
-                    // Deal true damage
-                    living.damage(damage, player);
-                    living.setVelocity(dir.clone().multiply(knockback).setY(0.35));
-                    
-                    // Break loop
-                    d = range + 1;
-                    break;
-                }
-            }
+        }
+        if (hit != null) {
+            hit.damage(damage, player);
+            hit.setVelocity(dir.clone().multiply(knockback).setY(0.35));
         }
 
         cooldownService.setCooldown(player, id(), cooldownSec * 1000L);

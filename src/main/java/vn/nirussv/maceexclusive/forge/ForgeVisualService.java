@@ -5,8 +5,11 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.Bukkit;
 
 public final class ForgeVisualService {
+
+    private long lastParticleWarningMillis;
 
     public void playCharge(Block block, String itemId, long elapsedTicks, long totalTicks) {
         if (block == null || block.getWorld() == null) return;
@@ -20,16 +23,16 @@ public final class ForgeVisualService {
     public void playChargeBurst(Block block) {
         if (block == null || block.getWorld() == null) return;
         Location center = block.getLocation().add(0.5, 1.0, 0.5);
-        block.getWorld().spawnParticle(Particle.FLASH, center, 1);
-        block.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, center, 1);
-        block.getWorld().playSound(center, Sound.ENTITY_GENERIC_EXPLODE, 1.0f, 1.3f);
+        safeSpawn(block.getWorld(), Particle.EXPLOSION_EMITTER, center, 1, 0.0, 0.0, 0.0, 0.0);
+        safeSpawn(block.getWorld(), Particle.ELECTRIC_SPARK, center, 18, 0.35, 0.35, 0.35, 0.08);
+        safePlaySound(block.getWorld(), center, Sound.ENTITY_GENERIC_EXPLODE, 0.8f, 1.3f);
     }
 
     public void playCompletion(Block block) {
         if (block == null || block.getWorld() == null) return;
         Location center = block.getLocation().add(0.5, 1.0, 0.5);
-        block.getWorld().spawnParticle(Particle.TOTEM_OF_UNDYING, center, 120, 0.6, 0.6, 0.6, 0.15);
-        block.getWorld().playSound(center, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 0.8f);
+        safeSpawn(block.getWorld(), Particle.TOTEM_OF_UNDYING, center, 60, 0.6, 0.6, 0.6, 0.12);
+        safePlaySound(block.getWorld(), center, Sound.UI_TOAST_CHALLENGE_COMPLETE, 0.8f, 0.8f);
     }
 
     private void playMaceCharge(Block block, long elapsedTicks, long totalTicks) {
@@ -37,26 +40,51 @@ public final class ForgeVisualService {
         Location center = block.getLocation().add(0.5, 1.05, 0.5);
         double progress = Math.min(1.0D, Math.max(0.0D, (double) elapsedTicks / Math.max(1L, totalTicks)));
         double radius = 2.5D - (2.1D * progress);
-        for (int i = 0; i < 24; i++) {
-            double angle = (Math.PI * 2.0D * i / 24.0D) + progress * Math.PI * 4.0D;
+        for (int i = 0; i < 12; i++) {
+            double angle = (Math.PI * 2.0D * i / 12.0D) + progress * Math.PI * 4.0D;
             double x = Math.cos(angle) * radius;
             double z = Math.sin(angle) * radius;
             Location particle = center.clone().add(x, 0.15D * Math.sin(angle * 2), z);
-            world.spawnParticle(Particle.ELECTRIC_SPARK, particle, 1, 0.01, 0.01, 0.01, 0.0);
-            if (i % 4 == 0) world.spawnParticle(Particle.CRIT, particle, 1, -x / 10.0D, 0.02, -z / 10.0D, 0.08);
+            safeSpawn(world, Particle.ELECTRIC_SPARK, particle, 1, 0.01, 0.01, 0.01, 0.0);
+            if (i % 4 == 0) safeSpawn(world, Particle.CRIT, particle, 1, -x / 10.0D, 0.02, -z / 10.0D, 0.08);
         }
-        world.playSound(center, Sound.BLOCK_BEACON_POWER_SELECT, 0.45f, 1.2f + (float) progress * 0.5f);
+        if (elapsedTicks % 10L == 0L) safePlaySound(world, center, Sound.BLOCK_BEACON_POWER_SELECT, 0.25f, 1.2f + (float) progress * 0.5f);
     }
 
     private void playSpearCharge(Block block, long elapsedTicks) {
         World world = block.getWorld();
         Location center = block.getLocation().add(0.5, 1.1, 0.5);
-        world.spawnParticle(Particle.ELECTRIC_SPARK, center, 22, 0.45, 0.45, 0.45, 0.06);
-        world.spawnParticle(Particle.END_ROD, center, 10, 0.35, 0.6, 0.35, 0.03);
-        world.spawnParticle(Particle.CLOUD, center, 6, 0.35, 0.1, 0.35, 0.01);
+        safeSpawn(world, Particle.ELECTRIC_SPARK, center, 12, 0.45, 0.45, 0.45, 0.06);
+        safeSpawn(world, Particle.END_ROD, center, 6, 0.35, 0.6, 0.35, 0.03);
+        safeSpawn(world, Particle.CLOUD, center, 4, 0.35, 0.1, 0.35, 0.01);
         if (elapsedTicks % 10L == 0L) {
             world.strikeLightningEffect(center);
-            world.playSound(center, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 0.8f, 1.65f);
+            safePlaySound(world, center, Sound.ENTITY_LIGHTNING_BOLT_THUNDER, 0.6f, 1.65f);
+        }
+    }
+
+    private void safeSpawn(World world, Particle particle, Location location, int count, double offsetX, double offsetY, double offsetZ, double extra) {
+        try {
+            world.spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, extra);
+        } catch (IllegalArgumentException exception) {
+            warnParticle(world, particle, exception);
+        } catch (RuntimeException exception) {
+            warnParticle(world, particle, exception);
+        }
+    }
+
+    private void safePlaySound(World world, Location location, Sound sound, float volume, float pitch) {
+        try {
+            world.playSound(location, sound, volume, pitch);
+        } catch (RuntimeException ignored) {
+        }
+    }
+
+    private void warnParticle(World world, Particle particle, RuntimeException exception) {
+        long now = System.currentTimeMillis();
+        if (now - lastParticleWarningMillis >= 30_000L) {
+            lastParticleWarningMillis = now;
+            Bukkit.getLogger().warning("[Mace-Exclusive] Skipping unsupported forge particle " + particle + ": " + exception.getMessage());
         }
     }
 }

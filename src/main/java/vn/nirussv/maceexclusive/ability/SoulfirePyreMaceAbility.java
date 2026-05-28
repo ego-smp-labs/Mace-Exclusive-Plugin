@@ -19,6 +19,9 @@ import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 
 import java.util.UUID;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public final class SoulfirePyreMaceAbility implements ActiveAbility, PassiveAbility, Listener {
 
@@ -27,6 +30,8 @@ public final class SoulfirePyreMaceAbility implements ActiveAbility, PassiveAbil
     private final MaceExclusivePlugin plugin;
     private final ConfigManager configManager;
     private final CooldownService cooldownService;
+    private final Map<UUID, BurnState> soulBurns = new HashMap<>();
+    private org.bukkit.scheduler.BukkitTask soulBurnTask;
 
     public SoulfirePyreMaceAbility(MaceExclusivePlugin plugin, ConfigManager configManager, CooldownService cooldownService) {
         this.plugin = plugin;
@@ -124,21 +129,9 @@ public final class SoulfirePyreMaceAbility implements ActiveAbility, PassiveAbil
         LivingEntity target = context.target();
         if (target == null) return;
 
-        // Soul Fire on Hit: 3s tick
-        new BukkitRunnable() {
-            int count = 0;
-
-            @Override
-            public void run() {
-                if (count >= 3 || target.isDead() || !target.isValid()) {
-                    this.cancel();
-                    return;
-                }
-                target.damage(2.0D, attacker);
-                target.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, target.getLocation().add(0.0, 1.0, 0.0), 8, 0.3, 0.5, 0.3, 0.01);
-                count++;
-            }
-        }.runTaskTimer(plugin, 20L, 20L);
+        // Soul Fire on Hit: refresh a bounded shared task instead of spawning one task per hit.
+        soulBurns.put(target.getUniqueId(), new BurnState(target, attacker, 3));
+        ensureSoulBurnTask();
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -152,6 +145,39 @@ public final class SoulfirePyreMaceAbility implements ActiveAbility, PassiveAbil
         if (cause == EntityDamageEvent.DamageCause.FIRE || cause == EntityDamageEvent.DamageCause.FIRE_TICK || 
             cause == EntityDamageEvent.DamageCause.LAVA || cause == EntityDamageEvent.DamageCause.HOT_FLOOR) {
             event.setCancelled(true);
+        }
+    }
+
+    private void ensureSoulBurnTask() {
+        if (soulBurnTask != null) return;
+        soulBurnTask = plugin.getServer().getScheduler().runTaskTimer(plugin, () -> {
+            Iterator<Map.Entry<UUID, BurnState>> iterator = soulBurns.entrySet().iterator();
+            while (iterator.hasNext()) {
+                BurnState state = iterator.next().getValue();
+                if (state.remainingTicks <= 0 || state.target.isDead() || !state.target.isValid() || !state.attacker.isOnline()) {
+                    iterator.remove();
+                    continue;
+                }
+                state.target.damage(2.0D, state.attacker);
+                state.target.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, state.target.getLocation().add(0.0, 1.0, 0.0), 5, 0.3, 0.5, 0.3, 0.01);
+                state.remainingTicks--;
+            }
+            if (soulBurns.isEmpty() && soulBurnTask != null) {
+                soulBurnTask.cancel();
+                soulBurnTask = null;
+            }
+        }, 20L, 20L);
+    }
+
+    private static final class BurnState {
+        private final LivingEntity target;
+        private final Player attacker;
+        private int remainingTicks;
+
+        private BurnState(LivingEntity target, Player attacker, int remainingTicks) {
+            this.target = target;
+            this.attacker = attacker;
+            this.remainingTicks = remainingTicks;
         }
     }
 }

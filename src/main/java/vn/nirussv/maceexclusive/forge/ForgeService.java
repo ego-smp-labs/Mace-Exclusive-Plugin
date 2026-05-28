@@ -268,7 +268,18 @@ public final class ForgeService {
         World world = spawnLocation.getWorld();
         if (world == null) { reservedItemIds.remove(session.itemId()); return; }
         ItemStack result = itemFactory.create(session.itemId());
-        if (session.owner() != null) maceManager.register(result, session.owner(), session.itemId());
+        if (session.owner() == null) {
+            reservedItemIds.remove(session.itemId());
+            plugin.getLogger().warning("Aborted forge completion without owner for itemId=" + session.itemId()
+                + " owner=null location=" + formatLocation(spawnLocation));
+            return;
+        }
+        if (!maceManager.register(result, session.owner(), session.itemId())) {
+            reservedItemIds.remove(session.itemId());
+            plugin.getLogger().warning("Aborted forge completion after failed registration for itemId=" + session.itemId()
+                + " owner=" + session.owner() + " location=" + formatLocation(spawnLocation));
+            return;
+        }
         if (configManager.getCompletionExplosionPower() > 0f) world.createExplosion(spawnLocation, configManager.getCompletionExplosionPower(), false, false);
         visualService.playCompletion(session.blockLocation().getBlock());
         Item item = world.dropItem(spawnLocation, result);
@@ -278,6 +289,13 @@ public final class ForgeService {
         Player owner = session.owner() == null ? null : plugin.getServer().getPlayer(session.owner());
         if (owner != null) maceManager.onPlayerBecameHolder(owner, spawnLocation, session.itemId());
         reservedItemIds.remove(session.itemId());
+    }
+
+    private String formatLocation(Location location) {
+        if (location == null) return "null";
+        World world = location.getWorld();
+        String worldName = world == null ? "null" : world.getName();
+        return worldName + ":" + location.getBlockX() + "," + location.getBlockY() + "," + location.getBlockZ();
     }
 
     private void createHologram(ForgeSession session) {

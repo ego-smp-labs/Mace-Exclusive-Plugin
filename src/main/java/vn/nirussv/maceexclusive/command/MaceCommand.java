@@ -13,6 +13,7 @@ import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.item.ExclusiveItemFactory;
 import vn.nirussv.maceexclusive.item.ItemRegistry;
 import vn.nirussv.maceexclusive.mace.MaceManager;
+import vn.nirussv.maceexclusive.mace.MaceManager.AcquisitionReason;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,21 +63,20 @@ public class MaceCommand implements CommandExecutor, TabCompleter {
         String id = parsed.get();
         if (!maceManager.canCreate(id)) {
             String holderName = maceManager.getHolderName(id);
-            player.sendMessage(configManager.getPrefixedMessage(messageKey(id, "already-exists"), Map.of("player", holderName != null ? holderName : "Unknown")));
+            player.sendMessage(configManager.getPrefixedMessage(messageKey(id, "already-exists"), Map.of("player", holderName != null ? holderName : "Unknown", "name", maceManager.displayName(id))));
             return;
         }
         ItemStack item = itemFactory.create(id);
         maceManager.register(item, player.getUniqueId(), id);
         player.getInventory().addItem(item);
-        maceManager.onPlayerBecameHolder(player, player.getLocation(), id);
-        player.sendMessage(configManager.getPrefixedMessage(messageKey(id, "received")));
+        maceManager.notifyAcquisition(player, player.getLocation(), id, AcquisitionReason.RECEIVED);
     }
 
     private void handleReset(CommandSender sender, String[] args) {
         Optional<String> parsed = parseItemId(args, 1);
         if (parsed.isEmpty()) { sendItemUsage(sender); return; }
         String id = parsed.get();
-        sender.sendMessage(configManager.getPrefixedMessage(maceManager.reset(id) ? messageKey(id, "reset") : messageKey(id, "not-found")));
+        sender.sendMessage(configManager.getPrefixedMessage(maceManager.reset(id) ? messageKey(id, "reset") : messageKey(id, "not-found"), Map.of("name", maceManager.displayName(id))));
     }
 
     private void handleInfo(CommandSender sender, String[] args) {
@@ -84,8 +84,8 @@ public class MaceCommand implements CommandExecutor, TabCompleter {
         if (parsed.isEmpty()) { sendItemUsage(sender); return; }
         String id = parsed.get();
         String holder = maceManager.getHolderName(id);
-        if (holder != null) sender.sendMessage(configManager.getPrefixedMessage(messageKey(id, "holder-info"), Map.of("player", holder)));
-        else sender.sendMessage(configManager.getPrefixedMessage(messageKey(id, "not-found")));
+        if (holder != null) sender.sendMessage(configManager.getPrefixedMessage(messageKey(id, "holder-info"), Map.of("player", holder, "name", maceManager.displayName(id))));
+        else sender.sendMessage(configManager.getPrefixedMessage(messageKey(id, "not-found"), Map.of("name", maceManager.displayName(id))));
     }
 
     private Optional<String> parseItemId(String[] args, int index) {

@@ -85,10 +85,11 @@ public final class GravityMaceAbility implements ActiveAbility, PassiveAbility, 
         net.kyori.adventure.text.Component msg = configManager.getItemMessage("gravity_mace", "messages.skill-gravity-well");
         if (msg != null) player.sendMessage(msg);
 
-        // Run gravity well pulling task
+        // Run gravity well at a bounded interval; avoid per-tick entity scans.
         new BukkitRunnable() {
             int ticks = 0;
             final int maxTicks = durationSec * 20;
+            final int periodTicks = 5;
 
             @Override
             public void run() {
@@ -100,8 +101,8 @@ public final class GravityMaceAbility implements ActiveAbility, PassiveAbility, 
                 }
 
                 // Play swirling black hole particles
-                center.getWorld().spawnParticle(Particle.PORTAL, center, 10, 0.5, 0.5, 0.5, 0.05);
-                center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 4, 0.3, 0.3, 0.3, 0.01);
+                center.getWorld().spawnParticle(Particle.PORTAL, center, 5, 0.5, 0.5, 0.5, 0.05);
+                center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 2, 0.3, 0.3, 0.3, 0.01);
                 if (ticks % 10 == 0) {
                     center.getWorld().playSound(center, Sound.BLOCK_BEACON_DEACTIVATE, 1.0f, 0.5f);
                 }
@@ -116,21 +117,18 @@ public final class GravityMaceAbility implements ActiveAbility, PassiveAbility, 
                         living.setVelocity(dir.normalize().multiply(0.2D));
                     }
 
-                    // Apply Slowness III
-                    living.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 20, 2, false, false, false));
-                    
-                    // Deal periodic damage (2 HP per second = 0.1 HP per tick)
-                    living.damage(0.1D, player);
+                    // Apply short Slowness between pull pulses; collapse handles damage once.
+                    living.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, periodTicks + 10, 2, false, false, false));
                 }
 
-                ticks++;
+                ticks += periodTicks;
             }
-        }.runTaskTimer(plugin, 0L, 1L);
+        }.runTaskTimer(plugin, 0L, 5L);
     }
 
     private void triggerCollapse(Player caster, Location center, double radius) {
-        center.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, center, 2);
-        center.getWorld().spawnParticle(Particle.FLASH, center, 1);
+        center.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, center, 1);
+        center.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, center, 24, 0.5, 0.5, 0.5, 0.08);
         center.getWorld().playSound(center, Sound.ENTITY_GENERIC_EXPLODE, 1.2f, 0.8f);
 
         List<LivingEntity> pulled = new ArrayList<>();

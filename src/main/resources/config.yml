@@ -16,6 +16,9 @@ settings:
   verbose: false
 
 performance:
+  # Main environment curse sweep interval. Higher values reduce inventory scans.
+  # Blood/Sculk core instability still resolves every 10s; End core every 60s.
+  environment-curse-interval-ticks: 100
   # Repeating task rate for passive held-item effects.
   holding-effect-tick-rate: 5
   # Effects when crafting the Mace for the first time.
