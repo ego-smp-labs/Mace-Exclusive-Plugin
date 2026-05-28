@@ -1,0 +1,295 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scratch & Todo — Base Refactor Phase</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0b0f19;
+            --bg-card: rgba(22, 28, 45, 0.6);
+            --bg-card-hover: rgba(30, 41, 69, 0.8);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-info: #3b82f6;
+            --sidebar-width: 280px;
+            --transition-speed: 0.25s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.03) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.03) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        header {
+            margin-bottom: 32px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 24px;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(to right, #f8fafc, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(8px);
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .todo-list {
+            list-style: none;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .checkbox.checked {
+            background-color: rgba(16, 185, 129, 0.2);
+            border: 2px solid var(--color-success);
+            color: var(--color-success);
+        }
+
+        .checkbox.unchecked {
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--border-color);
+            color: transparent;
+        }
+
+        .todo-text {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--color-success);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .badge-warning {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--color-warning);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        /* Back link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="plan.html" class="back-link">← Quay lại Bản kế hoạch chính</a>
+        <header>
+            <h1>Scratch & Todo — Base Refactor Phase</h1>
+            <div class="subtitle">File theo dõi kế hoạch làm nền cho Mace-Exclusive. Trình theo dõi trạng thái tiến độ theo từng Milestone.</div>
+        </header>
+
+        <!-- AGENT PROMPT CALLOUT -->
+        <div class="callout callout-review" style="border-left-color: #a855f7; background-color: rgba(168, 85, 247, 0.04); margin-bottom: 32px;">
+            <div class="callout-title" style="font-size: 1.1rem; color: #fff; font-weight: bold; display: flex; align-items: center; gap: 8px;">🤖 CHỈ DẪN DÀNH CHO CODING AGENT (PROMPT ĐỂ REFAC & CODE)</div>
+            <p style="margin-top: 8px; font-size: 0.95rem; color: var(--text-primary);"><strong>Mục tiêu:</strong> Tái cấu trúc (Refactor) lại dự án theo chuẩn thiết kế sạch và giải quyết triệt để các sai sót kiến trúc của phiên bản cũ.</p>
+            <ul style="margin-top: 10px; margin-left: 20px; list-style-type: decimal; color: var(--text-secondary); font-size: 0.9rem;">
+                <li style="margin-bottom: 6px;"><strong>Loại bỏ hardcode & Legacy Code:</strong> Xóa bỏ hoàn toàn lớp deprecated <code>MaceType</code> và <code>MaceFactory</code> cũ để tránh nhầm lẫn luồng dữ liệu.</li>
+                <li style="margin-bottom: 6px;"><strong>Dynamic Registry (SOLID OCP):</strong> Thay thế enum cứng <code>ExclusiveItemId</code>. Chuyển sang Registry động dựa trên String ID, tự động quét và nạp file từ <code>items/*.yml</code> và <code>cores/*.yml</code> khi khởi chạy plugin để đăng ký vật phẩm thô và vật phẩm hoàn chỉnh.</li>
+                <li style="margin-bottom: 6px;"><strong>Sửa lỗi namespace & PDC key lộn xộn:</strong> Kiểm tra toàn bộ tệp cấu hình và mã nguồn Java, chuyển đổi tất cả các namespace không nhất quán (ví dụ: tag <code>egosmp:dark_ego</code> trong <code>chaos_mace.yml</code>) hoặc các tag PDC cũ về chuẩn duy nhất: <code>mace_exclusive:item_id</code> và <code>mace_exclusive:core_id</code>.</li>
+                <li style="margin-bottom: 6px;"><strong>Triển khai Core & Ritual Engine:</strong> Triển khai package <code>vn.nirussv.maceexclusive.core</code> để nạp file lõi, viết <code>CoreCraftListener</code> xử lý chế tạo Core (tỉ lệ fail 30%, lockout 15 phút, freeze 3s, tạo Ruined Core) và <code>RitualService</code> lắng nghe nghi lễ thế giới.</li>
+                <li style="margin-bottom: 6px;"><strong>Tránh Code lồng chéo (Coupling):</strong> Tách biệt hoàn toàn phần xử lý logic kỹ năng (Abilities) khỏi Listener chính. Mỗi kỹ năng phải là một class riêng triển khai interface <code>ActiveAbility</code> hoặc <code>PassiveAbility</code>. Áp dụng Guard Clauses tích cực để làm phẳng luồng xử lý, không lồng <code>if-else</code> quá 3 cấp độ.</li>
+            </ul>
+        </div>
+
+        <section>
+            <h2>Current Snapshot <span class="badge badge-warning">Đang cập nhật</span></h2>
+            <ul style="color: var(--text-secondary); padding-left: 20px; font-size: 0.95rem;">
+                <li style="margin-bottom: 8px;">Project hiện tại là plugin Paper/Spigot Java 21, Paper API 1.21.1.</li>
+                <li style="margin-bottom: 8px;">Kiến trúc đang xoay quanh <code>MaceType</code> chỉ có <code>POWER</code>, <code>CHAOS</code>; item nhận dạng bằng nhiều PDC key riêng.</li>
+                <li style="margin-bottom: 8px;"><code>MaceEffectTask</code> hiện chạy lặp 5 tick; cần thay bằng event-driven/short-lived task.</li>
+                <li style="margin-bottom: 8px;">Recipe đăng ký trực tiếp trong <code>MaceExclusivePlugin</code>; cần tách <code>RecipeRegistry</code>/<code>ForgeService</code>.</li>
+                <li style="margin-bottom: 8px;">README/ARCHITECTURE đang mô tả plugin cũ, cần update sau khi refactor base.</li>
+            </ul>
+        </section>
+
+        <!-- [Phase 1 Completed & Archived] Milestones 0-7 have been archived in docs/archive/SCRATCH_BASE_TODO.md -->
+        <!-- MILESTONE 8 -->
+        <section>
+            <h2>Milestone 8 — Direct Craft to Lodestone Forge <span class="badge badge-success">Completed</span></h2>
+            <div class="todo-list">
+                <div class="todo-item completed">
+                    <div class="checkbox checked">✓</div>
+                    <div class="todo-text">Bỏ hoàn toàn pipeline <code>unawakened_*</code> / Dormant / Awakening Stone riêng.</div>
+                </div>
+                <div class="todo-item completed">
+                    <div class="checkbox checked">✓</div>
+                    <div class="todo-text">Craft result vũ khí final trigger forge trực tiếp: reserve owner/session, biến Crafting Table thành <code>LODESTONE</code>.</div>
+                </div>
+                <div class="todo-item completed">
+                    <div class="checkbox checked">✓</div>
+                    <div class="todo-text">Thêm charge 3s trước forge: Mace particle vòng tròn tụ vào tâm; Spear lightning strike liên tục.</div>
+                </div>
+                <div class="todo-item completed">
+                    <div class="checkbox checked">✓</div>
+                    <div class="todo-text">Nổ lần 1 sau charge, sau đó countdown 5 phút, hoàn tất nổ lần 2 và drop weapon final.</div>
+                </div>
+                <div class="todo-item completed">
+                    <div class="checkbox checked">✓</div>
+                    <div class="todo-text">Cập nhật Spear configs/API theo 1.21.11: dùng <code>NETHERITE_SPEAR</code>, không thay bằng Trident.</div>
+                </div>
+                <div class="todo-item completed">
+                    <div class="checkbox checked">✓</div>
+                    <div class="todo-text">Giải quyết Race Condition an toàn (Reserve Owner & Session trước khi consume nguyên liệu và rollback nếu lỗi).</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MANUAL CHECKLIST -->
+        <section>
+            <h2>Manual Test Checklist Draft <span class="badge badge-warning">Chưa chốt</span></h2>
+            <div class="todo-list">
+                <div class="todo-item">
+                    <div class="checkbox unchecked"></div>
+                    <div class="todo-text">Plugin enable không lỗi.</div>
+                </div>
+                <div class="todo-item">
+                    <div class="checkbox unchecked"></div>
+                    <div class="todo-text"><code>/macee give power_mace|chaos_mace|chronos_anchor_spear</code> hoạt động.</div>
+                </div>
+                <div class="todo-item">
+                    <div class="checkbox unchecked"></div>
+                    <div class="todo-text">PDC nhận dạng item sau restart.</div>
+                </div>
+                <div class="todo-item">
+                    <div class="checkbox unchecked"></div>
+                    <div class="todo-text">Singleton block craft/give khi đã tồn tại nếu bật.</div>
+                </div>
+                <div class="todo-item">
+                    <div class="checkbox unchecked"></div>
+                    <div class="todo-text">Power Mace active chỉ dùng sau smash window và cooldown đúng.</div>
+                </div>
+                <div class="todo-item">
+                    <div class="checkbox unchecked"></div>
+                    <div class="todo-text">Chaos Mace bị giảm max HP khi cầm; vào nước bị backfire; cất đi hồi attribute.</div>
+                </div>
+                <div class="todo-item">
+                    <div class="checkbox unchecked"></div>
+                    <div class="todo-text">Chronos Spear hit gây freeze ngắn; miss tự freeze người dùng.</div>
+                </div>
+                <div class="todo-item">
+                    <div class="checkbox unchecked"></div>
+                    <div class="todo-text">Không có task quét online players high-frequency vô hạn.</div>
+                </div>
+                <div class="todo-item">
+                    <div class="checkbox unchecked"></div>
+                    <div class="todo-text">Strict container block hoạt động với chest/shulker/hopper/crafter.</div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

@@ -1,0 +1,276 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implementation Tickets - Mace-Exclusive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0b0f19;
+            --bg-card: rgba(22, 28, 45, 0.6);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --color-accent: #a855f7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(168, 85, 247, 0.03) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.03) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        header {
+            margin-bottom: 32px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 24px;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.3rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(to right, #f8fafc, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+        }
+
+        section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+            backdrop-filter: blur(8px);
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--color-accent);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .meta-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .meta-item {
+            font-size: 0.9rem;
+        }
+
+        .meta-label {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .meta-val {
+            color: var(--text-secondary);
+        }
+
+        .meta-val code {
+            font-family: 'Fira Code', monospace;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        .ticket-details {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .detail-block-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            font-family: 'Outfit', sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-block-content {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 4px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="plan.html" class="back-link">← Quay lại Bản kế hoạch chính</a>
+        <header>
+            <h1>Implementation Tickets</h1>
+            <div class="subtitle">Danh sách các vé triển khai kỹ thuật cho hệ thống Mace-Exclusive. Phân tích chi tiết mục tiêu, file chỉnh sửa, ràng buộc và điều kiện hoàn thành (DoD).</div>
+        </header>
+
+        <!-- AGENT PROMPT CALLOUT -->
+        <div class="callout callout-review" style="border-left-color: #a855f7; background-color: rgba(168, 85, 247, 0.04); margin-bottom: 32px;">
+            <div class="callout-title" style="font-size: 1.1rem; color: #fff; font-weight: bold; display: flex; align-items: center; gap: 8px;">🤖 CHỈ DẪN DÀNH CHO CODING AGENT (PROMPT ĐỂ REFAC & CODE)</div>
+            <p style="margin-top: 8px; font-size: 0.95rem; color: var(--text-primary);"><strong>Mục tiêu:</strong> Tái cấu trúc (Refactor) lại dự án theo chuẩn thiết kế sạch và giải quyết triệt để các sai sót kiến trúc của phiên bản cũ.</p>
+            <ul style="margin-top: 10px; margin-left: 20px; list-style-type: decimal; color: var(--text-secondary); font-size: 0.9rem;">
+                <li style="margin-bottom: 6px;"><strong>Loại bỏ hardcode & Legacy Code:</strong> Xóa bỏ hoàn toàn lớp deprecated <code>MaceType</code> và <code>MaceFactory</code> cũ để tránh nhầm lẫn luồng dữ liệu.</li>
+                <li style="margin-bottom: 6px;"><strong>Dynamic Registry (SOLID OCP):</strong> Thay thế enum cứng <code>ExclusiveItemId</code>. Chuyển sang Registry động dựa trên String ID, tự động quét và nạp file từ <code>items/*.yml</code> và <code>cores/*.yml</code> khi khởi chạy plugin để đăng ký vật phẩm thô và vật phẩm hoàn chỉnh.</li>
+                <li style="margin-bottom: 6px;"><strong>Sửa lỗi namespace & PDC key lộn xộn:</strong> Kiểm tra toàn bộ tệp cấu hình và mã nguồn Java, chuyển đổi tất cả các namespace không nhất quán (ví dụ: tag <code>egosmp:dark_ego</code> trong <code>chaos_mace.yml</code>) hoặc các tag PDC cũ về chuẩn duy nhất: <code>mace_exclusive:item_id</code> và <code>mace_exclusive:core_id</code>.</li>
+                <li style="margin-bottom: 6px;"><strong>Triển khai Core & Ritual Engine:</strong> Triển khai package <code>vn.nirussv.maceexclusive.core</code> để nạp file lõi, viết <code>CoreCraftListener</code> xử lý chế tạo Core (tỉ lệ fail 30%, lockout 15 phút, freeze 3s, tạo Ruined Core) và <code>RitualService</code> lắng nghe nghi lễ thế giới.</li>
+                <li style="margin-bottom: 6px;"><strong>Tránh Code lồng chéo (Coupling):</strong> Tách biệt hoàn toàn phần xử lý logic kỹ năng (Abilities) khỏi Listener chính. Mỗi kỹ năng phải là một class riêng triển khai interface <code>ActiveAbility</code> hoặc <code>PassiveAbility</code>. Áp dụng Guard Clauses tích cực để làm phẳng luồng xử lý, không lồng <code>if-else</code> quá 3 cấp độ.</li>
+            </ul>
+        </div>
+
+        <!-- [Phase 1 Completed & Archived] Tickets 1-2 have been archived in docs/archive/implementation_tickets.md -->
+        <!-- TICKET 3 -->
+        <section>
+            <h2>Ticket 3: Forge Pipeline</h2>
+            <div class="meta-group">
+                <div class="meta-item">
+                    <span class="meta-label">Mục tiêu (Target)</span>
+                    <span class="meta-val">Hệ thống đúc và thức tỉnh vũ khí trực tiếp.</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Files liên quan</span>
+                    <span class="meta-val">
+                        <code>forge/ForgeService.java</code>, 
+                        <code>forge/ForgeListener.java</code>, 
+                        <code>forge/ForgeVisualService.java</code>, 
+                        <code>persistence/ForgeSessionStore.java</code>
+                    </span>
+                </div>
+            </div>
+            <div class="ticket-details">
+                <div>
+                    <div class="detail-block-title">Mục đích (Goal)</div>
+                    <div class="detail-block-content">Thiết lập luồng chốt: Player lấy result craft vũ khí -> atomic reserve owner/session -> bàn chế tạo biến thành Lodestone -> charge particle 3s theo loại vũ khí -> nổ lần 1 -> đếm ngược 5 phút -> nổ lần 2 -> drop vũ khí final. Không còn item unawakened/dormant và không dùng Redstone Block.</div>
+                </div>
+                <div>
+                    <div class="detail-block-title">Ràng buộc (Constraints)</div>
+                    <div class="detail-block-content">
+                        <ul>
+                            <li>Phiên đúc (Session) phải được lưu trữ kiên định qua các đợt restart/reload server.</li>
+                            <li>Ngăn chặn nhân bản vật phẩm (Dupe) nếu server restart đúng khoảnh khắc đúc hoàn thành.</li>
+                            <li>Xử lý dọn dẹp (Cleanup) hologram TextDisplay khi phiên đúc bị hủy hoặc hoàn thành.</li>
+                            <li>Không tạo item <code>unawakened_*</code> hoặc Awakening Stone riêng. Recipe vũ khí final sẽ trigger forge session trực tiếp.</li>
+                            <li>Mọi forge block là <code>LODESTONE</code>. Không dùng Redstone Block.</li>
+                            <li>Paper/Minecraft target là 1.21.11; Spear item dùng đúng <code>NETHERITE_SPEAR</code>, không đổi sang Trident.</li>
+                            <li>Recipe transaction phải atomic, chống hai player craft cùng item trong cùng tick/millisecond.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <div class="detail-block-title">Điều kiện hoàn thành (Definition of Done)</div>
+                    <div class="detail-block-content">
+                        <ul>
+                            <li>Lấy result craft hợp lệ không đưa item vào inventory ngay, mà biến bàn chế tạo thành Lodestone và reserve owner/session.</li>
+                            <li>Nếu item đã có owner/session active, craft result bị chặn và người chơi nhận thông báo đã có chủ sở hữu/đang được đúc.</li>
+                            <li>Mace charge 3s có particle vòng tròn tụ vào tâm rồi nổ lần 1.</li>
+                            <li>Spear charge 3s có sấm sét visual đánh liên tục vào Lodestone rồi nổ lần 1.</li>
+                            <li>Phiên Lodestone forge chạy ổn định 5 phút, phá/nổ block sẽ abort và mất nguyên liệu.</li>
+                            <li>Hoàn thành forge gây nổ lần 2 và drop đúng vũ khí final đã đăng ký owner.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- [Phase 1 Completed & Archived] Tickets 4-6 have been archived in docs/archive/implementation_tickets.md -->
+        <!-- TICKET 7 -->
+        <section>
+            <h2>Ticket 7: Atomic Craft Reservation & Abuse Tests</h2>
+            <div class="meta-group">
+                <div class="meta-item">
+                    <span class="meta-label">Mục tiêu (Target)</span>
+                    <span class="meta-val">Chống lợi dụng craft đồng thời, lệch tick/millisecond, shift-click và restart edge cases.</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Files liên quan</span>
+                    <span class="meta-val"><code>recipe/RecipeRegistry.java</code>, <code>forge/ForgeService.java</code>, <code>mace/MaceRepository.java</code>, <code>tests/manual/*</code></span>
+                </div>
+            </div>
+            <div class="ticket-details">
+                <div><div class="detail-block-title">Goal</div><div class="detail-block-content">Mọi craft vũ khí độc quyền phải reserve item trước khi consume nguyên liệu. Nếu có owner/session/reservation thì craft bị cancel an toàn.</div></div>
+                <div><div class="detail-block-title">Constraints</div><div class="detail-block-content"><ul>
+                    <li>Lock theo <code>item_id</code> trong main thread khi xử lý CraftItemEvent.</li>
+                    <li>Reservation phải có trạng thái rõ: <code>available</code>, <code>reserved</code>, <code>forging</code>, <code>owned</code>, <code>aborted</code>.</li>
+                    <li>Không consume nguyên liệu nếu reserve thất bại hoặc forge block không thể tạo.</li>
+                    <li>Không cho shift-click/number-key/double-click tạo nhiều session trong một transaction.</li>
+                </ul></div></div>
+                <div><div class="detail-block-title">Tests to add</div><div class="detail-block-content"><ul>
+                    <li>Hai player craft cùng <code>power_mace</code> trong cùng tick: chỉ một Lodestone session được tạo.</li>
+                    <li>Player A craft, player B craft lệch 1 tick/50ms: B bị chặn và không mất nguyên liệu.</li>
+                    <li>Shift-click result: không tạo nhiều session, không dupe nguyên liệu/item.</li>
+                    <li>Restart trong 3s charge, trong countdown, đúng tick hoàn thành: không duplicate drop.</li>
+                    <li>Forge abort: trạng thái singleton được giải phóng hay giữ khóa theo config; phải rõ ràng và test được.</li>
+                </ul></div></div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
