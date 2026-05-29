@@ -107,8 +107,19 @@ public final class AbilityService {
     }
 
     public void handleDeath(EntityDeathEvent event) {
-        AbilityContext context = new AbilityContext(null, event.getEntity().getLocation(), null, null, event.getEntity(), null);
-        for (List<PassiveAbility> abilities : passiveAbilities.values()) for (PassiveAbility ability : abilities) ability.onDeath(context, event);
+        Player killer = event.getEntity().getKiller();
+        ItemStack weapon = null;
+        String weaponId = null;
+        if (killer != null) {
+            weapon = killer.getInventory().getItemInMainHand();
+            weaponId = itemMatcher.match(weapon).orElse(null);
+        }
+        AbilityContext context = new AbilityContext(killer, event.getEntity().getLocation(), weapon, weaponId, event.getEntity(), null);
+        for (List<PassiveAbility> abilities : passiveAbilities.values()) {
+            for (PassiveAbility ability : abilities) {
+                ability.onDeath(context, event);
+            }
+        }
     }
 
     private void registerDefaults(ConfigManager configManager, FreezeService freezeService) {

@@ -189,7 +189,7 @@ public final class ChaosMaceAbility implements ActiveAbility, PassiveAbility {
         if (killer == null) return;
         
         // Ensure killer is holding Chaos Mace
-        if (!context.weaponId().equals("chaos_mace")) return;
+        if (!"chaos_mace".equals(context.weaponId())) return;
 
         UUID uuid = killer.getUniqueId();
 
