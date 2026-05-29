@@ -11,13 +11,16 @@ lore:
 recipe:
   enabled: true
   shape:
-    - " C "
-    - " B "
-    - " F "
+    - "FCF"
+    - "GBS"
+    - "FNF"
   ingredients:
     C: soulfire_core
     B: BREEZE_ROD
     F: SOUL_CAMPFIRE
+    S: ZOMBIE_SKULL
+    G: GHAST_TEAR
+    N: NETHERITE_INGOT
 cooldowns:
   fire_storm: 40
 effects:

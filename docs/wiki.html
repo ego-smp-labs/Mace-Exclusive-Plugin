@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cẩm Nang Cổ Vật Mace Exclusive — Player Wiki</title>
+  <meta name="description" content="Hướng dẫn chi tiết về chế tạo, kỹ năng active, nội tại và lời nguyền cân bằng cho các vũ khí Mace Exclusive huyền thoại.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=VT323&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #140e18;
+      --panel: #241c30;
+      --panel-dark: #120b1a;
+      --border-mc: #4a3b5c;
+      --text: #e0d7ec;
+      --text-light: #ffffff;
+      
+      /* Colors */
+      --color-rare: #55ffff;
+      --color-epic: #ff55ff;
+      --color-gold: #ffaa00;
+      --color-curse: #ff5555;
+      --color-green: #55ff55;
+      --color-gray: #aaaaaa;
+      --color-dark-gray: #555555;
+    }
+
+    * {
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      background-image: radial-gradient(circle at 50% 50%, #221533 0%, #0c0712 100%);
+      background-attachment: fixed;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      color: var(--text-light);
+      margin: 0;
+    }
+
+    /* Layout */
+    .app-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      background: #0f0716;
+      border-right: 3px solid var(--border-mc);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--border-mc);
+    }
+
+    .brand-icon {
+      font-size: 1.5rem;
+      animation: spin-glow 4s infinite linear;
+    }
+
+    @keyframes spin-glow {
+      0% { transform: rotate(0deg) scale(1); filter: drop-shadow(0 0 2px var(--color-epic)); }
+      50% { transform: rotate(180deg) scale(1.1); filter: drop-shadow(0 0 8px var(--color-rare)); }
+      100% { transform: rotate(360deg) scale(1); filter: drop-shadow(0 0 2px var(--color-epic)); }
+    }
+
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--color-epic);
+      text-shadow: 0 0 5px rgba(255, 85, 255, 0.4);
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--panel-dark);
+      border: 2px solid var(--border-mc);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: var(--text-light);
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--color-epic);
+      box-shadow: 0 0 8px rgba(255, 85, 255, 0.3);
+    }
+
+    .nav-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #7b6299;
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .nav-link:hover {
+      background: rgba(74, 59, 92, 0.3);
+      color: var(--text-light);
+      transform: translateX(4px);
+    }
+
+    .nav-link.active {
+      background: rgba(255, 85, 255, 0.15);
+      border-color: rgba(255, 85, 255, 0.3);
+      color: var(--color-epic);
+      font-weight: 600;
+    }
+
+    /* Main Container */
+    .main-content {
+      padding: 40px 50px;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(255, 85, 255, 0.08) 0%, rgba(85, 255, 255, 0.04) 50%, rgba(0, 0, 0, 0) 100%);
+      border: 3px solid var(--border-mc);
+      border-radius: 16px;
+      padding: 36px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-title {
+      font-size: 2.4rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+      background: linear-gradient(to right, #ffffff, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 15px rgba(192, 132, 252, 0.2);
+    }
+
+    .hero-subtitle {
+      font-size: 1.05rem;
+      color: #b7a9ca;
+      max-width: 800px;
+      margin-bottom: 20px;
+    }
+
+    .hero-badges {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: rgba(36, 28, 48, 0.6);
+      border: 2px solid var(--border-mc);
+      border-radius: 4px;
+      padding: 4px 12px;
+      font-size: 0.8rem;
+      color: var(--text-light);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .badge.highlight {
+      background: rgba(85, 255, 255, 0.15);
+      border-color: rgba(85, 255, 255, 0.4);
+      color: var(--color-rare);
+      font-weight: 600;
+      box-shadow: 0 0 8px rgba(85, 255, 255, 0.2);
+    }
+
+    /* Sections */
+    .section-title {
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 2px solid var(--border-mc);
+      padding-bottom: 8px;
+    }
+
+    .card-panel {
+      background: var(--panel);
+      border: 3px solid var(--border-mc);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+
+    /* Minecraft Styled Grid */
+    .mc-crafting-table-ui {
+      background: #c6c6c6;
+      border: 3px solid;
+      border-color: #ffffff #555555 #555555 #ffffff;
+      padding: 14px;
+      border-radius: 2px;
+      display: inline-flex;
+      align-items: center;
+      gap: 18px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+      user-select: none;
+    }
+
+    .mc-grid-3x3 {
+      display: grid;
+      grid-template-columns: repeat(3, 44px);
+      grid-template-rows: repeat(3, 44px);
+      gap: 2px;
+      background: #8b8b8b;
+      border: 2px solid #555555;
+    }
+
+    .mc-slot {
+      width: 44px;
+      height: 44px;
+      background: #8b8b8b;
+      border: 3px solid;
+      border-color: #373737 #ffffff #ffffff #373737;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'VT323', monospace;
+      font-weight: bold;
+      font-size: 1.6rem;
+      color: #fff;
+      text-shadow: 2px 2px 0px #373737;
+      position: relative;
+      cursor: help;
+    }
+
+    .mc-slot.empty {
+      background: #8b8b8b;
+      cursor: default;
+    }
+
+    .mc-arrow-icon {
+      font-family: 'VT323', monospace;
+      font-size: 2.2rem;
+      color: #373737;
+      text-shadow: 1px 1px 0px #ffffff;
+    }
+
+    .mc-result-wrap {
+      background: #8b8b8b;
+      border: 2px solid #555555;
+      padding: 2px;
+    }
+
+    .mc-slot.mc-result {
+      width: 52px;
+      height: 52px;
+      font-size: 2.1rem;
+      border-width: 4px;
+    }
+
+    /* Enchantment Glow Effect */
+    .enchanted {
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
+    }
+
+    .enchanted::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%; right: -50%; bottom: -50%;
+      background: linear-gradient(135deg, rgba(255, 85, 255, 0) 30%, rgba(255, 85, 255, 0.3) 50%, rgba(255, 85, 255, 0) 70%);
+      background-size: 200% 200%;
+      animation: enchant-shimmer 2.5s infinite linear;
+      pointer-events: none;
+    }
+
+    @keyframes enchant-shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Minecraft Tooltip Statically Displayed inside Item Cards */
+    .mc-tooltip-box {
+      background: #100010;
+      border: 2px solid #2e0066;
+      border-radius: 4px;
+      padding: 12px 16px;
+      font-family: 'VT323', monospace;
+      font-size: 1.15rem;
+      line-height: 1.3;
+      letter-spacing: 0.5px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.8), inset 0 0 6px rgba(46, 0, 102, 0.5);
+      max-width: 420px;
+      width: 100%;
+      height: fit-content;
+    }
+
+    /* Minecraft Colors styling */
+    .mcc-text { display: block; }
+    .mcc-title { font-size: 1.3rem; margin-bottom: 6px; display: block; }
+    .mcc-section { margin-top: 8px; display: block; }
+
+    /* Custom cells colors helper */
+    .c-gold { color: var(--color-gold) !important; }
+    .c-epic { color: var(--color-epic) !important; }
+    .c-rare { color: var(--color-rare) !important; }
+    .c-sculk { color: var(--sculk) !important; }
+    .c-blood { color: #ff5555 !important; }
+
+    /* Visual Weapon Cards */
+    .weapon-list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .weapon-row {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 30px;
+      background: var(--panel);
+      border: 3px solid var(--border-mc);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Colors and border overlays for items */
+    .weapon-row.power { border-left: 6px solid var(--color-gold); }
+    .weapon-row.void { border-left: 6px solid var(--color-epic); }
+    .weapon-row.chaos { border-left: 6px solid #b5179e; }
+    .weapon-row.vampiric { border-left: 6px solid #e63946; }
+    .weapon-row.gravity { border-left: 6px solid #48cae4; }
+    .weapon-row.sonic { border-left: 6px solid #00b4d8; }
+    .weapon-row.soulfire { border-left: 6px solid #00f5d4; }
+
+    .weapon-info-left {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .weapon-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .weapon-name {
+      font-size: 1.6rem;
+      font-weight: 800;
+    }
+
+    .weapon-desc {
+      color: #b7a9ca;
+      font-size: 0.95rem;
+    }
+
+    .weapon-meta-specs {
+      font-family: 'VT323', monospace;
+      font-size: 1.1rem;
+      color: #9d85c1;
+      background: var(--panel-dark);
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: 1px solid var(--border-mc);
+      width: fit-content;
+    }
+
+    .weapon-visuals-right {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      border-left: 2px solid var(--border-mc);
+      padding-left: 30px;
+    }
+
+    /* Cores table & items visualization */
+    .mc-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      background: var(--panel-dark);
+    }
+
+    .mc-table th, .mc-table td {
+      border: 2px solid var(--border-mc);
+      padding: 14px;
+      text-align: left;
+    }
+
+    .mc-table th {
+      background: rgba(74, 59, 92, 0.4);
+      color: var(--text-light);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+    }
+
+    .mc-table tr {
+      transition: background 0.2s ease;
+    }
+
+    .mc-table tr:hover {
+      background: rgba(74, 59, 92, 0.15);
+    }
+
+    /* General Mouse Tooltip Element */
+    .mc-tooltip-interactive {
+      position: absolute;
+      background: #100010;
+      border: 2px solid #2e0066;
+      border-radius: 4px;
+      padding: 10px 14px;
+      font-family: 'VT323', monospace;
+      font-size: 1.2rem;
+      line-height: 1.35;
+      color: #aaaaaa;
+      pointer-events: none;
+      z-index: 9999;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+      display: none;
+    }
+
+    /* Ritual progress visualization */
+    .ritual-visual-guide {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .ritual-card {
+      background: var(--panel-dark);
+      border: 2px solid var(--border-mc);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .ritual-icon {
+      font-size: 1.8rem;
+      width: 48px;
+      height: 48px;
+      background: var(--panel);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--border-mc);
+    }
+
+    .ritual-card-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text-light);
+    }
+
+    .ritual-card-desc {
+      font-size: 0.75rem;
+      color: #b7a9ca;
+      margin: 0;
+    }
+
+    /* Key Ingredients Badge UI */
+    .ingredient-key-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .ingredient-badge {
+      background: var(--panel-dark);
+      border: 1px solid var(--border-mc);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      font-family: 'VT323', monospace;
+      font-size: 0.95rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ingredient-key-symbol {
+      font-weight: 800;
+      color: var(--color-epic);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      .app-layout {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        display: none;
+      }
+      .weapon-row {
+        grid-template-columns: 1fr;
+      }
+      .weapon-visuals-right {
+        border-left: none;
+        border-top: 2px solid var(--border-mc);
+        padding-left: 0;
+        padding-top: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Global Tooltip Element -->
+  <div id="global-tooltip" class="mc-tooltip-interactive"></div>
+
+  <div class="app-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-icon">🔮</span>
+        <span class="brand-title">Mace Exclusive</span>
+      </div>
+
+      <div class="search-box">
+        <input type="text" id="mace-search" class="search-input" placeholder="Tìm cổ vật/kỹ năng..." onkeyup="searchMaces()">
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-label">Cơ bản</span>
+        <a href="#about" class="nav-link active" onclick="activateLink(this)">📖 Hướng Dẫn Kích Hoạt</a>
+        <a href="#lodestone-forge" class="nav-link" onclick="activateLink(this)">⚡ Lò Rèn Cổ Vật</a>
+        <a href="#cores" class="nav-link" onclick="activateLink(this)">💎 Lõi Cổ Vật (Cores)</a>
+        <a href="#materials" class="nav-link" onclick="activateLink(this)">🔮 Vật Liệu Dị Biệt</a>
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-label">Vũ khí (Maces)</span>
+        <a href="#w-power" class="nav-link" onclick="activateLink(this)">⚡ Búa Quyền Năng</a>
+        <a href="#w-void" class="nav-link" onclick="activateLink(this)">🌀 Búa Vực Thẳm</a>
+        <a href="#w-chaos" class="nav-link" onclick="activateLink(this)">🎲 Búa Hỗn Loạn</a>
+        <a href="#w-vampiric" class="nav-link" onclick="activateLink(this)">🩸 Búa Huyết Ma</a>
+        <a href="#w-gravity" class="nav-link" onclick="activateLink(this)">🌌 Búa Trọng Lực</a>
+        <a href="#w-sonic" class="nav-link" onclick="activateLink(this)">🔊 Búa Tiếng Vọng</a>
+        <a href="#w-soulfire" class="nav-link" onclick="activateLink(this)">🔥 Búa Hỏa Thiêu Hồn</a>
+      </div>
+    </aside>
+
+    <!-- Main Container -->
+    <main class="main-content">
+      
+      <!-- Hero Banner -->
+      <section class="hero-banner" id="about">
+        <h1 class="hero-title">BẢN ĐỒ CỔ VẬT MACE EXCLUSIVE</h1>
+        <p class="hero-subtitle">Cẩm nang hướng dẫn đầy đủ về cách rèn các lõi cổ vật ma pháp, chiêu thức active đặc trưng, hiệu ứng nội tại và lời nguyền ràng buộc wielder.</p>
+        <div class="hero-badges">
+          <span class="badge highlight">🎮 Thao tác active: Sneak + Left-Click</span>
+          <span class="badge">⚔ Bản quyền duy nhất (Singleton)</span>
+          <span class="badge">💎 Rèn Lodestone Forge</span>
+        </div>
+      </section>
+
+      <!-- How to play Section -->
+      <section class="card-panel">
+        <h2 class="section-title">📖 HƯỚNG DẪN KÍCH HOẠT KỸ NĂNG</h2>
+        <p>Để giải phóng năng lượng phong ấn của các vũ khí cổ vật này, bạn phải thực hiện tổ hợp phím:</p>
+        <div style="background: var(--panel-dark); border: 2px solid var(--border-mc); padding: 14px; text-align: center; border-radius: 6px; font-weight: bold; font-size: 1.1rem; color: var(--color-epic); margin-bottom: 12px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);">
+          Ngồi (Sneak) + Click Chuột Trái (Left-Click) vào Entity/Mục Tiêu
+        </div>
+        <p style="font-size: 0.9rem; color: #b7a9ca;">
+          * <strong>Cảnh Báo:</strong> Nếu click chuột phải hoặc tấn công thông thường, búa chỉ gây sát thương vật lý cơ bản. Việc click hụt hoặc gõ vào không khí/block có thể gây ra <strong>Hiệu ứng phản phệ (Curse Backfire)</strong> từ lời nguyền tích tụ trong búa (gây slowness hoặc tự rút máu wielder).
+        </p>
+      </section>
+
+      <!-- Lodestone Forge Section -->
+      <section class="card-panel" id="lodestone-forge">
+        <h2 class="section-title">⚡ NGHI THỨC LÒ RÈN LODESTONE</h2>
+        <p>Các vũ khí này quá nặng và ma pháp quá lớn để có thể đúc trực tiếp bằng bàn chế tạo thường. Quá trình chế tạo phải thông qua một nghi thức rèn nhiệt đặc thù:</p>
+        
+        <div class="ritual-visual-guide">
+          <div class="ritual-card">
+            <div class="ritual-icon">🛠</div>
+            <div class="ritual-card-title">1. Bắt đầu nghi thức</div>
+            <p class="ritual-card-desc">Xếp nguyên liệu vào Bàn Chế Tạo thường và lấy thành phẩm tạm ra.</p>
+          </div>
+          <div class="ritual-card">
+            <div class="ritual-icon">🌀</div>
+            <div class="ritual-card-title">2. Chuyển hóa & Hút hạt</div>
+            <p class="ritual-card-desc">Bàn Chế Tạo biến thành <strong>LODESTONE</strong>. Luồng hạt ma thuật xoáy tụ trong 3 giây.</p>
+          </div>
+          <div class="ritual-card">
+            <div class="ritual-icon">💥</div>
+            <div class="ritual-card-title">3. Vụ nổ giai đoạn 1</div>
+            <p class="ritual-card-desc">Hấp thụ năng lượng phát nổ (Lực nổ 2.0). Bắt đầu đếm ngược nung búa nóng.</p>
+          </div>
+          <div class="ritual-card">
+            <div class="ritual-icon">⏳</div>
+            <div class="ritual-card-title">4. Nung nóng (5 Phút)</div>
+            <p class="ritual-card-desc">Hologram đếm ngược hiển thị trên Lodestone. Người rèn phải bảo vệ lò rèn này.</p>
+          </div>
+          <div class="ritual-card">
+            <div class="ritual-icon">🔮</div>
+            <div class="ritual-card-title">5. Nổ giai đoạn 2 & Drop</div>
+            <p class="ritual-card-desc">Nổ kết thúc (Lực nổ 4.0). Thả ra vũ khí Mace hoàn tất liên kết linh hồn.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Artifact Cores -->
+      <section class="card-panel" id="cores">
+        <h2 class="section-title">💎 LÕI CỔ VẬT MA PHÁP (ARTIFACT CORES)</h2>
+        <p>Cầm các lõi ma thuật này trong người sẽ gây ra những tác động tiêu cực (Instability) lên wielder:</p>
+        
+        <table class="mc-table">
+          <thead>
+            <tr>
+              <th style="width: 160px;">Lõi Cổ Vật</th>
+              <th>Mô tả Đặc Tính & Sự Bất Ổn (Instability)</th>
+              <th style="width: 250px;">Công Thức / Nghi thức Thu Thập</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="c-epic" style="font-weight: bold;">🔮 Ego Core<br><span style="font-size: 0.75rem; color: var(--color-gray);">ego_core</span></td>
+              <td><strong>Bất ổn:</strong> Bản ngã kiêu ngạo từ chối sự thăng tiến tầm thường. Không thể nhặt ngọc kinh nghiệm (XP) và nhận thêm sát thương từ những kẻ có ít máu tối đa hơn wielder.</td>
+              <td>
+                <div class="mc-crafting-table-ui" style="scale: 0.85; margin: -10px 0;">
+                  <div class="mc-grid-3x3">
+                    <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
+                    <div class="mc-slot" data-mc-tooltip="&fWither Rose">R</div>
+                    <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
+                    <div class="mc-slot" data-mc-tooltip="&fWither Rose">R</div>
+                    <div class="mc-slot" data-mc-tooltip="&fHeavy Core">H</div>
+                    <div class="mc-slot" data-mc-tooltip="&fWither Rose">R</div>
+                    <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
+                    <div class="mc-slot" data-mc-tooltip="&fWither Rose">R</div>
+                    <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="c-rare" style="font-weight: bold;">🔥 Soulfire Core<br><span style="font-size: 0.75rem; color: var(--color-gray);">soulfire_core</span></td>
+              <td><strong>Bất ổn:</strong> Nhiệt lượng ma quái cháy liên hồi. Sức nóng lớn được phong ấn và giải phóng trực tiếp thông qua búa hỏa thiêu.</td>
+              <td>
+                <div class="mc-crafting-table-ui" style="scale: 0.85; margin: -10px 0;">
+                  <div class="mc-grid-3x3">
+                    <div class="mc-slot" data-mc-tooltip="&fSoul Lantern">L</div>
+                    <div class="mc-slot" data-mc-tooltip="&fMagma Block">M</div>
+                    <div class="mc-slot" data-mc-tooltip="&fSoul Lantern">L</div>
+                    <div class="mc-slot" data-mc-tooltip="&fMagma Block">M</div>
+                    <div class="mc-slot" data-mc-tooltip="&fHeavy Core">H</div>
+                    <div class="mc-slot" data-mc-tooltip="&fMagma Block">M</div>
+                    <div class="mc-slot" data-mc-tooltip="&fSoul Lantern">L</div>
+                    <div class="mc-slot" data-mc-tooltip="&fMagma Block">M</div>
+                    <div class="mc-slot" data-mc-tooltip="&fSoul Lantern">L</div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="c-blood" style="font-weight: bold;">🩸 Blood Core<br><span style="font-size: 0.75rem; color: var(--color-gray);">blood_core</span></td>
+              <td><strong>Bất ổn (Rút máu):</strong> Mỗi 10 giây khi ở trong túi đồ wielder, có 10% cơ hội gây <strong>2 HP (1 tim) sát thương trực tiếp</strong> xuyên giáp.</td>
+              <td>
+                <strong>Nghi thức Hiến tế Máu tại Nether:</strong><br>
+                1. Thả một vật phẩm <strong>Heavy Core</strong> được đặt trên một khối cỏ địa ngục đỏ <strong>Crimson Nylium</strong> ở thế giới Nether.<br>
+                2. Cầm <strong>Kiếm Netherite (Netherite Sword)</strong> trên tay chính, tìm và click chuột phải vào đối tượng hiến tế (là <strong>Piglin</strong>, <strong>Piglin Brute</strong>, hoặc <strong>Người chơi khác</strong>) đứng gần khối Heavy Core (trong vòng 6 khối).<br>
+                3. Kết quả: Sét đánh xuống mục tiêu, mục tiêu chịu sát thương hoặc biến mất (nếu là người chơi dính 6 HP sát thương; quái vật bị xóa sổ), và khối Heavy Core trên đất biến đổi thành **Blood Core**.
+              </td>
+            </tr>
+            <tr>
+              <td class="c-sculk" style="font-weight: bold;">💀 Sculk Core<br><span style="font-size: 0.75rem; color: var(--color-gray);">sculk_core</span></td>
+              <td><strong>Bất ổn (Bóng tối):</strong> Cầm trên tay (chính/phụ) mỗi 10s có 19% cơ hội nhận bóng tối <strong>Darkness/Blindness trong 29 giây</strong>.</td>
+              <td>
+                <strong>Nghi thức Sóng Âm Trầm Tích:</strong><br>
+                Thả một vật phẩm <strong>Heavy Core</strong> được đặt trên một khối <strong>Sculk Catalyst</strong>.<br>
+                Tiêu diệt một <strong>Warden</strong> gần đó (bán kính 5.0 khối) để Lõi hấp thụ chấn động và biến thành **Sculk Core**.
+              </td>
+            </tr>
+            <tr>
+              <td class="c-epic" style="font-weight: bold;">🌀 End Core<br><span style="font-size: 0.75rem; color: var(--color-gray);">end_core</span></td>
+              <td><strong>Bất ổn (Méo mó không gian):</strong> Mỗi 60 giây có 10% cơ hội tự động dịch chuyển wielder ngẫu nhiên đến vùng an toàn lân cận.</td>
+              <td>
+                <strong>Nghi thức Khe Nứt Không Gian:</strong><br>
+                Ném một vật phẩm <strong>Heavy Core</strong> bay trực tiếp xuyên qua luồng cổng <strong>End Portal</strong> đang hoạt động.<br>
+                Có <strong>20% cơ hội</strong> biến đổi thành **End Core** và <strong>80% cơ hội</strong> hỏng thành **Ruined Core**.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Materials -->
+      <section class="card-panel" id="materials">
+        <h2 class="section-title">🔮 VẬT LIỆU DỊ BIỆT ĐẶC BIỆT</h2>
+        <div class="grid-container">
+          <div class="card-panel" style="background: var(--panel-dark);">
+            <h3 class="c-epic">Obsidian Chaos</h3>
+            <p style="font-family: 'VT323', monospace; font-size: 1.1rem; color: var(--color-gray);">ID: obsidian_chaos · CMD: 4001</p>
+            <p>Hắc diện thạch nhiễm năng lượng hỗn mang vụ nổ.</p>
+            <p style="font-size: 0.85rem; border-top: 1px solid var(--border-mc); padding-top: 8px;">
+              <strong>Cách lấy:</strong> Cầm Obsidian trên tay chính khi bị một Creeper nổ nổ chết. Có <strong>5% cơ hội</strong> tiêu thụ khối Obsidian, wielder chết và rơi ra Obsidian Chaos tại mộ phần.
+            </p>
+          </div>
+
+          <div class="card-panel" style="background: var(--panel-dark);">
+            <h3 class="c-rare">Challenger's Eye</h3>
+            <p style="font-family: 'VT323', monospace; font-size: 1.1rem; color: var(--color-gray);">ID: challenger_eye · CMD: 4002</p>
+            <p>Cái nhìn cuối cùng của Enderman đông kết khi phá hủy Totem.</p>
+            <p style="font-size: 0.85rem; border-top: 1px solid var(--border-mc); padding-top: 8px;">
+              <strong>Cách lấy:</strong> Bị một **Enderman** đánh chí mạng. Nghi thức sẽ cưỡng chế bỏ qua Totem hồi sinh của bạn (bạn sẽ thực sự chết), đổi lại Challenger's Eye rơi ra trong hòm đồ chết.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- The 7 Weapons Wiki Cards -->
+      <section>
+        <h2 class="section-title">⚔ DANH SÁCH 7 CỔ VẬT MACE EXCLUSIVE</h2>
+        
+        <div class="weapon-list-container">
+          
+          <!-- 1. Power Mace -->
+          <div class="weapon-row power" id="w-power">
+            <div class="weapon-info-left">
+              <div class="weapon-header">
+                <span style="font-size: 1.8rem;">⚡</span>
+                <h3 class="weapon-name c-gold">Búa Quyền Năng (Mace of Power)</h3>
+              </div>
+              <p class="weapon-desc">Cổ vật cuồng phong được rèn trong tâm bão, dồn mọi áp lực cơ học hất tung kẻ thù lên mây xanh.</p>
+              
+              <!-- Minecraft Static Tooltip representation -->
+              <div class="mc-tooltip-box">
+                <span class="mcc-title" style="color: var(--color-rare);">Mace of Power</span>
+                <span class="mcc-text" style="color: var(--color-gray);">A heavy storm-forged mace that turns clean hits into upward force.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-gold); font-weight: bold;">⚡ Active — Power Strike:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Ngồi + Đánh trúng kẻ địch. 10% cơ hội nổ đẩy tung toàn bộ sinh vật bán kính 10 khối lên trời. (Hồi chiêu 8 giây)</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-green);">⭐ Passive — Momentum:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Đòn trúng tăng +5% tốc chạy trong 10s. Đòn Smash đập từ trên cao nhân x1.10 sát thương và +0.35 đẩy lùi.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-curse);">☠ Curse — Vung búa hụt:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Nếu đánh air/block hụt, chịu Slowness trong 60 giây. Cầm búa trên tay bị trừ 10% tốc chạy.</span>
+              </div>
+              
+              <div class="weapon-meta-specs">Custom Model Data: 2001</div>
+            </div>
+            
+            <div class="weapon-visuals-right">
+              <div class="mc-crafting-table-ui">
+                <div class="mc-grid-3x3">
+                  <div class="mc-slot empty"></div>
+                  <div class="mc-slot" data-mc-tooltip="&fHeavy Core">H</div>
+                  <div class="mc-slot empty"></div>
+                  
+                  <div class="mc-slot empty"></div>
+                  <div class="mc-slot" data-mc-tooltip="&fBreeze Rod">B</div>
+                  <div class="mc-slot empty"></div>
+                  
+                  <div class="mc-slot empty"></div>
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
+                  <div class="mc-slot empty"></div>
+                </div>
+                <div class="mc-arrow-icon">➔</div>
+                <div class="mc-result-wrap">
+                  <div class="mc-slot mc-result enchanted" data-mc-tooltip="&b&lMace of Power">⚒</div>
+                </div>
+              </div>
+              <div class="ingredient-key-list">
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">H</span> Heavy Core</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">B</span> Breeze Rod</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Ingot</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Void Mace -->
+          <div class="weapon-row void" id="w-void">
+            <div class="weapon-info-left">
+              <div class="weapon-header">
+                <span style="font-size: 1.8rem;">🌀</span>
+                <h3 class="weapon-name c-epic">Búa Vực Thẳm (Abyssal Void Mace)</h3>
+              </div>
+              <p class="weapon-desc">Cổ vật bẻ cong hư vô, thương thảo với tử thần để trao cho wielder cơ hội hồi sinh từ địa ngục.</p>
+              
+              <div class="mc-tooltip-box">
+                <span class="mcc-title" style="color: var(--color-epic);">Abyssal Void Mace</span>
+                <span class="mcc-text" style="color: var(--color-gray);">An abyssal mace that devours matter and bargains with fatal End damage.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-gold); font-weight: bold;">⚡ Active — Mind Detachment:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Khi ở trạng thái Abyss State sau hồi sinh, đòn đánh Sneak+Left Click có 50% cơ hội áp bóng tối Darkness và Đóng Băng mục tiêu đứng yên trong 5 giây.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-green);">⭐ Passive — Abyss Resurrect & Devour:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">10% cơ hội đòn đánh thường khóa 2 ô Hotbar đối phương trong 5s. Khi chịu sát thương chí mạng, có 5% cơ hội cứu mạng (hồi chiêu 10 phút), cấp 10 tim ảo và bật Abyss State 30 giây. Hết thời gian chịu Weakness II 20s và khóa Totem 15s.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-curse);">☠ Curse — Khô cạn:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Hồi máu tự nhiên giảm 60%, hiệu quả thuốc hồi máu giảm 35%, thanh đói cạn nhanh +50%. Mang búa chạm nước bị dính Wither II trong 3 giây.</span>
+              </div>
+              
+              <div class="weapon-meta-specs">Custom Model Data: 2003</div>
+            </div>
+            
+            <div class="weapon-visuals-right">
+              <div class="mc-crafting-table-ui">
+                <div class="mc-grid-3x3">
+                  <div class="mc-slot" data-mc-tooltip="&fEnchanted Golden Apple">A</div>
+                  <div class="mc-slot" data-mc-tooltip="&dEnd Core">E</div>
+                  <div class="mc-slot" data-mc-tooltip="&fEnchanted Golden Apple">A</div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="&fEnchanted Golden Apple">A</div>
+                  <div class="mc-slot" data-mc-tooltip="&fWither Rose">W</div>
+                  <div class="mc-slot" data-mc-tooltip="&fEnchanted Golden Apple">A</div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="&fEnchanted Golden Apple">A</div>
+                  <div class="mc-slot" data-mc-tooltip="&dChallenger&apos;s Eye">C</div>
+                  <div class="mc-slot" data-mc-tooltip="&fEnchanted Golden Apple">A</div>
+                </div>
+                <div class="mc-arrow-icon">➔</div>
+                <div class="mc-result-wrap">
+                  <div class="mc-slot mc-result enchanted" data-mc-tooltip="&d&lAbyssal Void Mace">⚒</div>
+                </div>
+              </div>
+              <div class="ingredient-key-list">
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">E</span> End Core</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">A</span> Enchanted Golden Apple x6</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">C</span> Challenger's Eye</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">W</span> Wither Rose</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Chaos Mace -->
+          <div class="weapon-row chaos" id="w-chaos">
+            <div class="weapon-info-left">
+              <div class="weapon-header">
+                <span style="font-size: 1.8rem;">🎲</span>
+                <h3 class="weapon-name" style="color: #f72585;">Búa Hỗn Loạn (Chaos Mace | GLITCH)</h3>
+              </div>
+              <p class="weapon-desc">Cổ vật tối thượng cuối game, thao túng và bóp méo không gian chứa đồ của nạn nhân.</p>
+              
+              <div class="mc-tooltip-box">
+                <span class="mcc-title" style="color: #ff007f;">Mace of Chaos | GLITCH</span>
+                <span class="mcc-text" style="color: var(--color-gray);">A late-game void weapon crafted directly from unstable chaos ingredients.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-gold); font-weight: bold;">⚡ Active — Madness Release:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Tích lũy 10 Rage. Thực hiện Sneak+Left Click kích hoạt trạng thái cuồng điên 2 phút. Nhận 3 đòn empowered hits áp hiệu ứng Hỗn Loạn (Chaos Effect) 10 giây lên mục tiêu và buff wielder tốc độ/sức mạnh.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-green);">⭐ Passive — Chaos Shift:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Đòn đánh thường có 10% cơ hội teleport ngẫu nhiên kẻ thù quanh vùng cũ 2-4m. Bị kẻ thù đánh có 10% phản phệ dính Chaos 1 giây lên kẻ địch.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-curse);">☠ Curse — Khủng hoảng tinh thần:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Lần đầu cầm bị dính Chaos 10s. Khi kết thúc Madness mà wielder không giết ai, chịu tự Chaos 30s. Gặp nước chịu Wither II 3s.</span>
+              </div>
+              
+              <div class="weapon-meta-specs">Custom Model Data: 2002</div>
+            </div>
+            
+            <div class="weapon-visuals-right">
+              <div class="mc-crafting-table-ui">
+                <div class="mc-grid-3x3">
+                  <div class="mc-slot" data-mc-tooltip="&5Obsidian Chaos">O</div>
+                  <div class="mc-slot" data-mc-tooltip="&cBlood Core">B</div>
+                  <div class="mc-slot" data-mc-tooltip="&5Obsidian Chaos">O</div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="&5Obsidian Chaos">O</div>
+                  <div class="mc-slot" data-mc-tooltip="&fWither Rose">W</div>
+                  <div class="mc-slot" data-mc-tooltip="&5Obsidian Chaos">O</div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="&5Obsidian Chaos">O</div>
+                  <div class="mc-slot" data-mc-tooltip="&dVoid Mace">V</div>
+                  <div class="mc-slot" data-mc-tooltip="&5Obsidian Chaos">O</div>
+                </div>
+                <div class="mc-arrow-icon">➔</div>
+                <div class="mc-result-wrap">
+                  <div class="mc-slot mc-result enchanted" data-mc-tooltip="&d&lMace of Chaos | GLITCH">⚒</div>
+                </div>
+              </div>
+              <div class="ingredient-key-list">
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">O</span> Obsidian Chaos x6</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">B</span> Blood Core</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">V</span> Void Mace</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">W</span> Wither Rose</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Vampiric Mace -->
+          <div class="weapon-row vampiric" id="w-vampiric">
+            <div class="weapon-info-left">
+              <div class="weapon-header">
+                <span style="font-size: 1.8rem;">🩸</span>
+                <h3 class="weapon-name" style="color: #e63946;">Búa Huyết Ma (Mace of Vampirism)</h3>
+              </div>
+              <p class="weapon-desc">Cổ vật ký sinh đói khát, hút cạn từng giọt huyết mạch của kẻ thù để bồi đắp vào máu wielder.</p>
+              
+              <div class="mc-tooltip-box">
+                <span class="mcc-title" style="color: #ff2a2a;">Mace of Vampirism</span>
+                <span class="mcc-text" style="color: var(--color-gray);">A blood-bound mace that feeds through wounds but gnaws at its wielder.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-gold); font-weight: bold;">⚡ Active — Blood Siphon:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Ngồi + Đánh trúng kẻ địch. Hồi lập tức 6 HP. Đối với player địch, rút tạm thời 1 tim tối đa (2 HP) của địch trong 90s để cộng vào máu tối đa caster (tối đa +4 HP). Hồi chiêu 75s.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-green);">⭐ Passive — Lifesteal:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Melee thường hồi máu bằng 12% sát thương gây ra (tối đa 2 HP/hit). Dưới 30% HP tăng sát thương gây ra.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-curse);">☠ Curse — Suy kiệt linh hồn:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Khi mang búa bị trừ vĩnh viễn 4 HP máu tối đa. Click active hụt tự gánh 6 sát thương thẳng lên bản thân. Nhận thêm +10% sát thương từ lửa, fall, và projectile.</span>
+              </div>
+              
+              <div class="weapon-meta-specs">Custom Model Data: 10002</div>
+            </div>
+            
+            <div class="weapon-visuals-right">
+              <div class="mc-crafting-table-ui">
+                <div class="mc-grid-3x3">
+                  <div class="mc-slot" data-mc-tooltip="&fMagma Block">M</div>
+                  <div class="mc-slot" data-mc-tooltip="&cBlood Core">B</div>
+                  <div class="mc-slot" data-mc-tooltip="&fMagma Block">M</div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
+                  <div class="mc-slot" data-mc-tooltip="&fSkeleton Skull">S</div>
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="&fMagma Block">M</div>
+                  <div class="mc-slot" data-mc-tooltip="&fNether Wart">W</div>
+                  <div class="mc-slot" data-mc-tooltip="&fMagma Block">M</div>
+                </div>
+                <div class="mc-arrow-icon">➔</div>
+                <div class="mc-result-wrap">
+                  <div class="mc-slot mc-result enchanted" data-mc-tooltip="&c&lMace of Vampirism">⚒</div>
+                </div>
+              </div>
+              <div class="ingredient-key-list">
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">B</span> Blood Core</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Ingot</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">W</span> Nether Wart</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Skeleton Skull</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">M</span> Magma Block</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. Gravity Mace -->
+          <div class="weapon-row gravity" id="w-gravity">
+            <div class="weapon-info-left">
+              <div class="weapon-header">
+                <span style="font-size: 1.8rem;">🌌</span>
+                <h3 class="weapon-name" style="color: #48cae4;">Búa Trọng Lực Kỳ Dị (Gravity Mace)</h3>
+              </div>
+              <p class="weapon-desc">Cổ vật hấp thụ sao sụp đổ, khóa chân và giam cầm đối thủ trong hố đen trọng lực.</p>
+              
+              <div class="mc-tooltip-box">
+                <span class="mcc-title" style="color: #5bc0be;">Singularity Gravity Mace</span>
+                <span class="mcc-text" style="color: var(--color-gray);">A collapsed-star mace that bends weight, falling, and enemy position.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-gold); font-weight: bold;">⚡ Active — Singularity Well:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Ngồi + Đánh hướng nhìn (tối đa 10 khối). Mở hố đen hút toàn bộ sinh vật sống trong 8 khối về tâm, áp dụng Slowness III trong 3 giây. Sau 3s hố sụp đổ gây sát thương diện rộng 2 HP + 1.5 HP/mục tiêu (tối đa 15 HP). Hồi chiêu 60s.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-green);">⭐ Passive — Gravity Anchor:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Giảm 70% sát thương rơi tự do. Đòn cận chiến thường hút nhẹ kẻ địch về phía wielder trong tầm 2.5m.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-curse);">☠ Curse — Khối lượng nặng:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Mang búa nhận Slowness I và cạn thanh đói x2. Nếu hố active hút từ 4 mục tiêu trở lên, wielder chịu phản lực dính Mining Fatigue II trong 12s và tổn hao 3 HP.</span>
+              </div>
+              
+              <div class="weapon-meta-specs">Custom Model Data: 10004</div>
+            </div>
+            
+            <div class="weapon-visuals-right">
+              <div class="mc-crafting-table-ui">
+                <div class="mc-grid-3x3">
+                  <div class="mc-slot" data-mc-tooltip="&fCrying Obsidian">C</div>
+                  <div class="mc-slot" data-mc-tooltip="&fObsidian">O</div>
+                  <div class="mc-slot" data-mc-tooltip="&fCrying Obsidian">C</div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="&3Sculk Core">S</div>
+                  <div class="mc-slot" data-mc-tooltip="&dEnd Core">E</div>
+                  <div class="mc-slot" data-mc-tooltip="&3Sculk Core">S</div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Block">N</div>
+                  <div class="mc-slot" data-mc-tooltip="&fBreeze Rod">R</div>
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Block">N</div>
+                </div>
+                <div class="mc-arrow-icon">➔</div>
+                <div class="mc-result-wrap">
+                  <div class="mc-slot mc-result enchanted" data-mc-tooltip="&b&lSingularity Gravity Mace">⚒</div>
+                </div>
+              </div>
+              <div class="ingredient-key-list">
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">E</span> End Core</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Sculk Core</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Block</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">R</span> Breeze Rod</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">C</span> Crying Obsidian</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">O</span> Obsidian</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Sonic Mace -->
+          <div class="weapon-row sonic" id="w-sonic">
+            <div class="weapon-info-left">
+              <div class="weapon-header">
+                <span style="font-size: 1.8rem;">🔊</span>
+                <h3 class="weapon-name" style="color: #00b4d8;">Búa Tiếng Vọng Warden (Sonic Mace)</h3>
+              </div>
+              <p class="weapon-desc">Cổ vật mang dư chấn lòng đất, bắn sóng âm nén phá tan mọi rào cản phòng ngự.</p>
+              
+              <div class="mc-tooltip-box">
+                <span class="mcc-title" style="color: #00b4d8;">Echoing Warden Mace</span>
+                <span class="mcc-text" style="color: var(--color-gray);">A deep-dark mace resonating with Warden pressure waves.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-gold); font-weight: bold;">⚡ Active — Sonic Boom:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Ngồi + Đánh hướng nhìn. Bắn sóng âm nén xa 12 khối, mục tiêu đầu tiên nhận 14 sát thương chuẩn và đẩy lùi mạnh 2.0. Trả giá wielder mất 4 HP (không tự tử). Hồi chiêu 35s.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-green);">⭐ Passive — Quiet step:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Đi trên/gần Sculk giảm âm thanh. Đòn đập rơi tự do (Smash) được +1.5 sát thương mỗi 4 khối độ cao (cộng tối đa +6 HP).</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-curse);">☠ Curse — Quá tải phản âm:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Sau active wielder bị Mù lòa (Blindness) 1.5 giây và Slowness II 2 giây. Mang búa liên tục phát sáng Glowing làm lộ vị trí.</span>
+              </div>
+              
+              <div class="weapon-meta-specs">Custom Model Data: 10005</div>
+            </div>
+            
+            <div class="weapon-visuals-right">
+              <div class="mc-crafting-table-ui">
+                <div class="mc-grid-3x3">
+                  <div class="mc-slot" data-mc-tooltip="&fSculk Catalyst">S</div>
+                  <div class="mc-slot" data-mc-tooltip="&3Sculk Core">C</div>
+                  <div class="mc-slot" data-mc-tooltip="&fEnchanted Golden Apple">G</div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
+                  <div class="mc-slot" data-mc-tooltip="&fBreeze Rod">B</div>
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="&fEnchanted Golden Apple">G</div>
+                  <div class="mc-slot" data-mc-tooltip="&fEcho Shard">E</div>
+                  <div class="mc-slot" data-mc-tooltip="&fSculk Catalyst">S</div>
+                </div>
+                <div class="mc-arrow-icon">➔</div>
+                <div class="mc-result-wrap">
+                  <div class="mc-slot mc-result enchanted" data-mc-tooltip="&9&lEchoing Warden Mace">⚒</div>
+                </div>
+              </div>
+              <div class="ingredient-key-list">
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">C</span> Sculk Core</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">B</span> Breeze Rod</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">E</span> Echo Shard</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Ingot</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Sculk Catalyst</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">G</span> Enchanted Golden Apple</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. Soulfire Mace -->
+          <div class="weapon-row soulfire" id="w-soulfire">
+            <div class="weapon-info-left">
+              <div class="weapon-header">
+                <span style="font-size: 1.8rem;">🔥</span>
+                <h3 class="weapon-name" style="color: #00f5d4;">Búa Hỏa Thiêu Hồn (Soulfire Mace)</h3>
+              </div>
+              <p class="weapon-desc">Lò nung di động tích tụ hỏa nhiệt xanh của địa ngục Nether, thiêu rụi sinh mạng kẻ địch.</p>
+              
+              <div class="mc-tooltip-box">
+                <span class="mcc-title" style="color: #00f5d4;">Soulfire Pyre Mace</span>
+                <span class="mcc-text" style="color: var(--color-gray);">A soul-forged mace wreathed in blue flame and rising spirits.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-gold); font-weight: bold;">⚡ Active — Soulfire Storm:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Ngồi + Đánh. Triệu hồi bão lửa xanh lan tỏa bán kính 5 khối trong 5 giây. Kẻ thù trong bão nhận 3 HP sát thương mỗi giây và Wither I. Giá caster mất 4 HP. Cooldown 40s.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-green);">⭐ Passive — Hỏa kháng:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Cầm búa wielder được miễn hoặc giảm sát thương dung nham/lửa. Đòn đánh cận chiến thiêu cháy đối phương 3s.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-curse);">☠ Curse — Khát đói:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Thanh đói cạn gấp đôi (x2). Giá kích hoạt active (4 HP) luôn luôn bị trừ bất chấp việc bão lửa có trúng đối thủ nào hay không.</span>
+              </div>
+              
+              <div class="weapon-meta-specs">Custom Model Data: 10011</div>
+            </div>
+            
+            <div class="weapon-visuals-right">
+              <div class="mc-crafting-table-ui">
+                <div class="mc-grid-3x3">
+                  <div class="mc-slot" data-mc-tooltip="&fSoul Campfire">F</div>
+                  <div class="mc-slot" data-mc-tooltip="&bSoulfire Core">C</div>
+                  <div class="mc-slot" data-mc-tooltip="&fSoul Campfire">F</div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="&fGhast Tear">G</div>
+                  <div class="mc-slot" data-mc-tooltip="&fBreeze Rod">B</div>
+                  <div class="mc-slot" data-mc-tooltip="&fZombie Skull">S</div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="&fSoul Campfire">F</div>
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
+                  <div class="mc-slot" data-mc-tooltip="&fSoul Campfire">F</div>
+                </div>
+                <div class="mc-arrow-icon">➔</div>
+                <div class="mc-result-wrap">
+                  <div class="mc-slot mc-result enchanted" data-mc-tooltip="&b&lSoulfire Pyre Mace">⚒</div>
+                </div>
+              </div>
+              <div class="ingredient-key-list">
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">C</span> Soulfire Core</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">B</span> Breeze Rod</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">F</span> Soul Campfire</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Zombie Skull</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">G</span> Ghast Tear</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Ingot</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // Activate sidebar link visually
+    function activateLink(element) {
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+      element.classList.add('active');
+    }
+
+    // Search and filter weapons
+    function searchMaces() {
+      const input = document.getElementById('mace-search').value.toLowerCase();
+      const rows = document.querySelectorAll('.weapon-row');
+      rows.forEach(row => {
+        const name = row.querySelector('.weapon-name').textContent.toLowerCase();
+        const desc = row.querySelector('.weapon-desc').textContent.toLowerCase();
+        if (name.includes(input) || desc.includes(input)) {
+          row.style.display = 'grid';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    // Custom Robust Minecraft Tooltip Engine
+    const tooltipEl = document.getElementById('global-tooltip');
+    
+    function formatMinecraftText(text) {
+      const colorCodes = {
+        '0': '#000000', '1': '#0000aa', '2': '#00aa00', '3': '#00aaaa',
+        '4': '#aa0000', '5': '#aa00aa', '6': '#ffaa00', '7': '#aaaaaa',
+        '8': '#555555', '9': '#5555ff', 'a': '#55ff55', 'b': '#55ffff',
+        'c': '#ff5555', 'd': '#ff55ff', 'e': '#ffff55', 'f': '#ffffff'
+      };
+      
+      let html = '';
+      let i = 0;
+      let activeSpans = 0;
+      
+      // Split lines by custom separator or newline
+      const lines = text.split('|');
+      
+      lines.forEach((line, index) => {
+        if (index > 0) {
+          // Close active spans before starting a new line
+          while (activeSpans > 0) {
+            html += '</span>';
+            activeSpans--;
+          }
+          html += '<br>';
+        }
+        
+        let charIdx = 0;
+        while (charIdx < line.length) {
+          if (line[charIdx] === '&' && charIdx + 1 < line.length) {
+            let code = line[charIdx+1].toLowerCase();
+            if (colorCodes[code]) {
+              while (activeSpans > 0) {
+                html += '</span>';
+                activeSpans--;
+              }
+              html += `<span style="color: ${colorCodes[code]};">`;
+              activeSpans++;
+              charIdx += 2;
+              continue;
+            } else if (code === 'l') {
+              html += '<span style="font-weight: bold;">';
+              activeSpans++;
+              charIdx += 2;
+              continue;
+            } else if (code === 'o') {
+              html += '<span style="font-style: italic;">';
+              activeSpans++;
+              charIdx += 2;
+              continue;
+            } else if (code === 'r') {
+              while (activeSpans > 0) {
+                html += '</span>';
+                activeSpans--;
+              }
+              charIdx += 2;
+              continue;
+            }
+          }
+          html += line[charIdx];
+          charIdx++;
+        }
+      });
+      
+      while (activeSpans > 0) {
+        html += '</span>';
+        activeSpans--;
+      }
+      return html;
+    }
+
+    // Register event listeners on slots for interactive tooltips
+    document.querySelectorAll('.mc-slot').forEach(slot => {
+      const tooltipText = slot.getAttribute('data-mc-tooltip');
+      if (!tooltipText) return;
+      
+      slot.addEventListener('mouseenter', (e) => {
+        tooltipEl.innerHTML = formatMinecraftText(tooltipText);
+        tooltipEl.style.display = 'block';
+      });
+      
+      slot.addEventListener('mousemove', (e) => {
+        tooltipEl.style.left = (e.pageX + 15) + 'px';
+        tooltipEl.style.top = (e.pageY - 15) + 'px';
+      });
+      
+      slot.addEventListener('mouseleave', () => {
+        tooltipEl.style.display = 'none';
+      });
+    });
+  </script>
+</body>
+</html>

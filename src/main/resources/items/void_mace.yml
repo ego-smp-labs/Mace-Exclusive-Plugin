@@ -12,8 +12,8 @@ recipe:
   enabled: true
   shape:
     - "AEA"
-    - "ACA"
     - "AWA"
+    - "ACA"
   ingredients:
     E: end_core
     A: ENCHANTED_GOLDEN_APPLE

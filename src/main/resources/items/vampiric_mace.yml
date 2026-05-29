@@ -11,12 +11,12 @@ lore:
 recipe:
   enabled: true
   shape:
+    - "NHN"
+    - "BSB"
     - "NWN"
-    - "BHB"
-    - "NSN"
   ingredients:
-    H: HEAVY_CORE
-    B: blood_core
+    H: blood_core
+    B: NETHERITE_INGOT
     W: NETHER_WART
     S: SKELETON_SKULL
     N: MAGMA_BLOCK

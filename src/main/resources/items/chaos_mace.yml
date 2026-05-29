@@ -11,9 +11,9 @@ lore:
 recipe:
   enabled: true
   shape:
-    - "OOO"
-    - "BVO"
+    - "OBO"
     - "OWO"
+    - "OVO"
   ingredients:
     O: obsidian_chaos
     B: blood_core
