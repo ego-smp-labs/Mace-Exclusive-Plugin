@@ -46,11 +46,11 @@ public final class CursedSwordListener implements Listener {
 
             // Roll for curse
             double roll = random.nextDouble();
-            if (roll < 0.005) { // 0.5% chance to curse victim
+            if (roll < 0.50) { // 50% chance to curse victim
                 lockoutService.applyCursed(victim.getUniqueId(), configManager.getCoreCraftLockoutSeconds());
                 victim.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize("&cBạn đã bị nguyền rủa từ thanh kiếm Cursed Sword!"));
                 attacker.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize("&aThành công! Bạn đã nguyền rủa đối thủ."));
-            } else { // 99.5% chance to curse attacker
+            } else { // 50% chance to curse attacker
                 lockoutService.applyCursed(attacker.getUniqueId(), configManager.getCoreCraftLockoutSeconds());
                 attacker.sendMessage(LegacyComponentSerializer.legacyAmpersand().deserialize("&cThất bại! Sức mạnh nguyền rủa phản phệ, bạn đã bị nguyền rủa!"));
             }
@@ -62,7 +62,7 @@ public final class CursedSwordListener implements Listener {
         Player victim = event.getEntity();
         if (lockoutService.isCursed(victim)) {
             double roll = random.nextDouble();
-            if (roll < 0.002) { // 0.2% chance to drop head
+            if (roll < 0.20) { // 20% chance to drop head
                 ItemStack head = new ItemStack(Material.PLAYER_HEAD);
                 SkullMeta skullMeta = (SkullMeta) head.getItemMeta();
                 if (skullMeta != null) {
