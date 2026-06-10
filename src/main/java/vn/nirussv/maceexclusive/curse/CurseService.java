@@ -170,6 +170,8 @@ public final class CurseService implements Listener {
             attributeLease.revoke(player, Attribute.GENERIC_MAX_HEALTH);
             heldCursePlayers.remove(uuid);
             waterBackfirePlayers.remove(uuid);
+            player.removePotionEffect(PotionEffectType.WEAKNESS);
+            player.removePotionEffect(PotionEffectType.SLOWNESS);
             return;
         }
 
@@ -182,6 +184,10 @@ public final class CurseService implements Listener {
             waterBackfirePlayers.add(uuid);
         } else {
             waterBackfirePlayers.remove(uuid);
+        }
+        if (!itemId.equals("cursed_sword")) {
+            player.removePotionEffect(PotionEffectType.WEAKNESS);
+            player.removePotionEffect(PotionEffectType.SLOWNESS);
         }
     }
 
@@ -223,9 +229,15 @@ public final class CurseService implements Listener {
 
     private void refreshEventDrivenHoldingEffects(Player player, String itemId) {
         PerformanceConfig performance = configManager.getPerformanceConfig();
-        boolean maceGlowing = itemId.contains("mace") && configManager.getItemCurseBoolean(itemId, "hold.glowing", true);
+        vn.nirussv.maceexclusive.config.ItemConfig itemCfg = configManager.getItemConfig(itemId);
+        boolean isMace = itemId.contains("mace") && (itemCfg == null || itemCfg.material() != Material.TRIDENT);
+        boolean maceGlowing = isMace && configManager.getItemCurseBoolean(itemId, "hold.glowing", true);
         if (maceGlowing) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 40, 0, false, false, false));
+        }
+        if ("cursed_sword".equals(itemId)) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 40, 0, false, false, true));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 40, 0, false, false, true));
         }
         if (performance.holdingSoulParticles()) {
             player.getWorld().spawnParticle(
@@ -244,6 +256,22 @@ public final class CurseService implements Listener {
         coreCurseTickCounter += environmentIntervalTicks;
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             if (!player.isOnline() || player.isDead()) continue;
+
+            // 0. Void Mace Totem Curse (Drop all totems from inventory if void_mace is carried)
+            if (hasItemInInventory(player, "void_mace")) {
+                boolean dropped = false;
+                for (int i = 0; i < player.getInventory().getSize(); i++) {
+                    ItemStack item = player.getInventory().getItem(i);
+                    if (item != null && item.getType() == Material.TOTEM_OF_UNDYING) {
+                        player.getInventory().setItem(i, null);
+                        player.getWorld().dropItemNaturally(player.getLocation(), item);
+                        dropped = true;
+                    }
+                }
+                if (dropped) {
+                    player.sendMessage(configManager.getMessage("special.totem-dropped"));
+                }
+            }
 
             // 1. Water contact check (Wither II for 3s)
             if (player.isInWater() || player.getLocation().getBlock().getType() == org.bukkit.Material.WATER) {

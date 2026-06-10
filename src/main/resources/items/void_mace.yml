@@ -12,13 +12,14 @@ recipe:
   enabled: true
   shape:
     - "AEA"
-    - "AWA"
+    - "HWH"
     - "ACA"
   ingredients:
     E: end_core
     A: ENCHANTED_GOLDEN_APPLE
     C: challenger_eye
     W: WITHER_ROSE
+    H: cursed_player_head
 cooldowns:
   resurrection: 600
 effects:
@@ -38,3 +39,7 @@ effects:
 messages:
   skill-resurrect: "&d[Void Mace] &fPurple totem particles and dragon breath pull you back from the Abyss."
   skill-mind-detached: "&d[Void Mace] &fA violet ring splits from the target's head: Darkness and freeze applied."
+  hotbar-locked: "&d[Void Mace] 2 Hotbar slots have been devoured by the Void!"
+  hotbar-released: "&d[Void Mace] Your inventory has been freed from the Void."
+  totem-stolen: "&d[Void Mace] A dark force from the Abyss seized your Totem!"
+  placeholder-name: "&8&lVOID"

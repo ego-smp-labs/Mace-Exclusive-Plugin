@@ -3,6 +3,7 @@ no-permission: "&cYou do not have permission to use this command."
 only-player: "&cOnly players can use this command."
 config-reloaded: "&aConfiguration reloaded successfully."
 cooldown: "&cPlease wait &e%seconds%s &cbefore using this again."
+
 mace:
   received: "&aYou have received %name%&a!"
   already-exists: "&c%name% already exists! It is held by &e%player%&c."
@@ -19,6 +20,7 @@ mace:
   not-found: "&7No one currently holds %name%."
   reset: "&aThe %name% status has been reset. A new one can be crafted."
   kill-message: "&c%victim% &7was defeated by &b%killer%&7 using %name%."
+
 chaos:
   received: "&5You have received the &5&lMace of Chaos&5!"
   already-exists: "&cThe Mace of Chaos already exists! It is held by &e%player%&c."
@@ -34,6 +36,42 @@ chaos:
   not-found: "&7No one currently holds the Mace of Chaos."
   reset: "&5The Mace of Chaos singleton has been reset."
   kill-message: "&5%victim% &7was corrupted by &5%killer%&7 using &5&lMace of Chaos&7."
+
+cursed_sword:
+  crafted: "&e%player% &ahas crafted %name%&a!"
+  title: "%name%"
+  subtitle: "&7The dark curse calls to you."
+  victim-cursed: "&cYou have been cursed by the Cursed Sword and inflicted with Wither III for 3 seconds!"
+  attacker-success: "&aSuccess! You have cursed your opponent."
+  attacker-backfire: "&cFailed! The curse backfired — you have been cursed for 30 minutes and inflicted with Wither III!"
+  victim-backfire: "&aYour opponent was struck by the Cursed Sword's backfire!"
+  curse-released: "&aThe curse has been released and your head has fallen!"
+  player-head-name: "&cHead of %player%"
+
+forge:
+  take-one-at-a-time: "&cPlease take weapons one at a time."
+  ritual-started: "&aThe crafting table has transformed into Lodestone. The forging ritual begins!"
+  unavailable: "&cForge unavailable: %reason%"
+  lodestone-broken: "&cThe forging session was cancelled — the Lodestone was destroyed!"
+  charging: "&eCHARGING..."
+  charging-format: "&eCHARGING: &f%name% &e- &b%seconds%s"
+  forging-format: "&eFORGING: &f%name% &e- &b%time%"
+
+core:
+  take-one-at-a-time: "&cPlease take cores one at a time."
+  craft-locked: "&cYou are locked out from crafting cores. (Cursed state active)"
+  insufficient-xp: "&cNot enough XP to craft this core."
+  craft-failed: "&8[Core Forge] Core shattered during infusion. Lockout applied. A Ruined Core remains."
+
+special:
+  obsidian-chaos-drop: "&2[Mace-Exclusive] A shard of Obsidian Chaos has fallen from the explosion!"
+  void-totem-blocked: "&d[Void Mace] The Abyss's power refuses and nullifies your Totem!"
+  enderman-totem-blocked: "&d[Mace-Exclusive] The Enderman's challenge rejects your Totem. The Eye will fall with you."
+  totem-dropped: "&d[Void Mace] The Abyss's power rejected your Totem's presence! It has fallen."
+
+nether:
+  cursed-head-forged: "&c[Mace-Exclusive] A dark soul force in the Nether has cursed the player head in your hand!"
+
 help:
   header: "&8&m--------&r &bMace Exclusive &8&m--------"
   link: "&7Website: &b/sabicoder.xyz/"

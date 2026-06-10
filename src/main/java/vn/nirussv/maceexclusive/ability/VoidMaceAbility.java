@@ -80,8 +80,42 @@ public final class VoidMaceAbility implements ActiveAbility, PassiveAbility, Lis
             UUID uuid = player.getUniqueId();
             if (!cooldownService.isReady(player, id())) return;
 
-            double resurrectChance = configManager.getItemEffectDouble("void_mace", "effects.resurrect.chance", 0.05D);
-            if (random.nextDouble() < resurrectChance) {
+            // Must be entity damage. Environmental deaths do not resurrect.
+            if (!(player.getLastDamageCause() instanceof EntityDamageByEntityEvent damageEvent)) return;
+            org.bukkit.entity.Entity damager = damageEvent.getDamager();
+            if (damager instanceof org.bukkit.entity.Projectile proj && proj.getShooter() instanceof org.bukkit.entity.Entity shooter) {
+                damager = shooter;
+            }
+
+            double baseChance = 0.0D;
+            if (damager instanceof Player) {
+                baseChance = 0.25D; // 25% if killed by player
+            } else if (damager instanceof LivingEntity) {
+                baseChance = 0.05D; // 5% if killed by mob
+            } else {
+                return; // Non-living entity or other causes don't resurrect
+            }
+
+            // Check if anyone within 10 blocks is holding a Totem
+            boolean nearbyTotem = false;
+            for (org.bukkit.entity.Entity nearby : player.getNearbyEntities(10.0, 10.0, 10.0)) {
+                if (nearby instanceof Player otherPlayer && !otherPlayer.getUniqueId().equals(player.getUniqueId())) {
+                    ItemStack mainHand = otherPlayer.getInventory().getItemInMainHand();
+                    ItemStack offHand = otherPlayer.getInventory().getItemInOffHand();
+                    if ((mainHand != null && mainHand.getType() == Material.TOTEM_OF_UNDYING)
+                            || (offHand != null && offHand.getType() == Material.TOTEM_OF_UNDYING)) {
+                        nearbyTotem = true;
+                        break;
+                    }
+                }
+            }
+
+            double finalChance = baseChance;
+            if (nearbyTotem) {
+                finalChance += 0.50D; // Boost by +50% if totem nearby
+            }
+
+            if (random.nextDouble() < finalChance) {
                 event.setCancelled(true);
                 player.setHealth(1.0D); // Keep alive
                 
@@ -99,6 +133,29 @@ public final class VoidMaceAbility implements ActiveAbility, PassiveAbility, Lis
                 player.getWorld().playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, 1.0f, 0.8f);
                 net.kyori.adventure.text.Component msg = configManager.getItemMessage("void_mace", "messages.skill-resurrect");
                 if (msg != null) player.sendMessage(msg);
+
+                // Force trigger and consume totem of nearby opponents within 10 blocks
+                for (org.bukkit.entity.Entity nearby : player.getNearbyEntities(10.0, 10.0, 10.0)) {
+                    if (nearby instanceof Player otherPlayer && !otherPlayer.getUniqueId().equals(player.getUniqueId())) {
+                        ItemStack mainHand = otherPlayer.getInventory().getItemInMainHand();
+                        ItemStack offHand = otherPlayer.getInventory().getItemInOffHand();
+                        boolean triggered = false;
+                        if (mainHand != null && mainHand.getType() == Material.TOTEM_OF_UNDYING) {
+                            mainHand.setAmount(mainHand.getAmount() - 1);
+                            otherPlayer.getInventory().setItemInMainHand(mainHand.getAmount() > 0 ? mainHand : null);
+                            triggered = true;
+                        } else if (offHand != null && offHand.getType() == Material.TOTEM_OF_UNDYING) {
+                            offHand.setAmount(offHand.getAmount() - 1);
+                            otherPlayer.getInventory().setItemInOffHand(offHand.getAmount() > 0 ? offHand : null);
+                            triggered = true;
+                        }
+                        if (triggered) {
+                            otherPlayer.playEffect(org.bukkit.EntityEffect.TOTEM_RESURRECT);
+                            net.kyori.adventure.text.Component stolenMsg = configManager.getItemMessage("void_mace", "messages.totem-stolen");
+                            if (stolenMsg != null) otherPlayer.sendMessage(stolenMsg);
+                        }
+                    }
+                }
 
                 // Schedule end of resurrection state
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
@@ -158,13 +215,15 @@ public final class VoidMaceAbility implements ActiveAbility, PassiveAbility, Lis
         ItemStack placeholder = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta meta = placeholder.getItemMeta();
         if (meta != null) {
-            meta.displayName(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&8&lHƯ VÔ"));
+            net.kyori.adventure.text.Component displayName = configManager.getItemMessage("void_mace", "messages.placeholder-name");
+            meta.displayName(displayName != null ? displayName : net.kyori.adventure.text.Component.text("VOID", net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY));
             placeholder.setItemMeta(meta);
         }
 
         player.getInventory().setItem(slot1, placeholder);
         player.getInventory().setItem(slot2, placeholder);
-        player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&d[Void Mace] 2 ô Hotbar của bạn đã bị nuốt chửng bởi Hư Vô!"));
+        net.kyori.adventure.text.Component lockMsg = configManager.getItemMessage("void_mace", "messages.hotbar-locked");
+        if (lockMsg != null) player.sendMessage(lockMsg);
         player.playSound(player.getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_DEPLETE, 0.8f, 0.5f);
 
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
@@ -188,7 +247,8 @@ public final class VoidMaceAbility implements ActiveAbility, PassiveAbility, Lis
                 }
             }
         }
-        player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&a[Void Mace] Túi đồ của bạn đã được Hư Vô giải phóng."));
+        net.kyori.adventure.text.Component releaseMsg = configManager.getItemMessage("void_mace", "messages.hotbar-released");
+        if (releaseMsg != null) player.sendMessage(releaseMsg);
     }
 
     private boolean isPlaceholder(ItemStack item) {

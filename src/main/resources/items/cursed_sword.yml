@@ -4,17 +4,18 @@ name: "&c&lCursed Sword"
 material: NETHERITE_SWORD
 custom-model-data: 5001
 lore:
-  - "&7A dark blade forged from a ruined core."
-  - "&7Hitting another player has a 0.5% chance to curse them."
-  - "&7Otherwise, curses the wielder."
-  - "&cCurse: &fBreaks immediately after a single hit."
+  - "&7Cầm trên tay sẽ bị suy yếu và đi chậm."
+  - "&7Cận chiến gây sát thương sẽ phá hủy kiếm lập tức,"
+  - "&7hồi lại lượng máu bằng sát thương gây ra."
+  - "&750% nguyền rủa đối thủ 30 phút + Wither III trong 3s,"
+  - "&750% phản phệ ngược lại người cầm."
 recipe:
   enabled: true
   shape:
-    - " N "
-    - " R "
+    - " W "
+    - " P "
     - " S "
   ingredients:
-    N: NETHERITE_INGOT
-    R: ruined_core
+    W: WITHER_SKELETON_SKULL
+    P: POTION
     S: STICK

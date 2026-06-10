@@ -58,7 +58,8 @@ public final class VampiricMaceAbility implements ActiveAbility, PassiveAbility,
         Player player = context.player();
         LivingEntity target = context.target();
         if (target == null) {
-            player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&cVui lòng nhìn thẳng vào một mục tiêu để hút máu!"));
+            net.kyori.adventure.text.Component msg = configManager.getItemMessage("vampiric_mace", "messages.no-target");
+            if (msg != null) player.sendMessage(msg);
             return false;
         }
         return true;

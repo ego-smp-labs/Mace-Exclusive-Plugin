@@ -24,7 +24,8 @@ public final class ResourceBootstrap {
         "items/challenger_eye.yml",
         "items/obsidian_chaos.yml",
         "items/chronos_anchor_spear.yml",
-        "items/cursed_sword.yml"
+        "items/cursed_sword.yml",
+        "items/cursed_player_head.yml"
     );
 
     public static final List<String> CORE_RESOURCES = List.of(

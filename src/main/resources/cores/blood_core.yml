@@ -6,12 +6,4 @@ lore:
   - "&7A crimson Heavy Core awakened by Nether sacrifice and bound blood."
   - "&cInstability: &fWhile in inventory, every 10s has 10% chance to deal 2 damage through Bukkit damage."
 recipe:
-  enabled: true
-  shape:
-    - " R "
-    - "PHP"
-    - " R "
-  ingredients:
-    P: PLAYER_HEAD
-    H: HEAVY_CORE
-    R: REDSTONE_BLOCK
+  enabled: false

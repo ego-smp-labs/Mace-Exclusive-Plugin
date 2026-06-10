@@ -1,13 +1,13 @@
 enabled: true
 singleton: true
-name: "&9&lECHOING WARDEN MACE"
-material: MACE
+name: "&9&lWARDEN SPEAR"
+material: TRIDENT
 custom-model-data: 10005
 lore:
-  - "&7A deep-dark mace resonating with Warden pressure waves."
-  - "&eActive: &fSneak + Left-Click fires a 12-block Sonic Boom for 14 true damage at 4 HP cost."
-  - "&aPassive: &fSculk movement is quieter and falling smash damage scales up to +6."
-  - "&cCurse: &fAfter active, Blindness for 1.5s and Slowness II for 2s mark sensory overload."
+  - "&7Cây giáo từ vùng tối sâu thẳm cộng hưởng với áp lực sóng âm của Warden."
+  - "&eActive: &fSneak + Left-Click phóng luồng Sonic Boom 12 block gây 14 sát thương chuẩn (tốn 4 HP)."
+  - "&aPassive: &fDi chuyển trên Sculk êm ái hơn và tăng sát thương khi rơi từ cao xuống (tối đa +6)."
+  - "&cCurse: &fSau khi bắn sóng âm, bị mù 1.5s và đi chậm II trong 2s."
 recipe:
   enabled: true
   shape:
@@ -38,3 +38,4 @@ effects:
     slowness_amplifier: 1
 messages:
   skill-sonic-boom: "&9[Sonic Mace] &fCyan SONIC_BOOM segments travel every 0.5 block with Warden impact sound."
+  insufficient-hp: "&c[Sonic Mace] Không đủ máu để kích hoạt sóng âm!"

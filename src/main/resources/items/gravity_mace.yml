@@ -19,7 +19,7 @@ recipe:
     S: sculk_core
     N: NETHERITE_BLOCK
     R: BREEZE_ROD
-    C: CRYING_OBSIDIAN
+    C: obsidian_chaos
     O: OBSIDIAN
 cooldowns:
   gravity_well: 60
@@ -37,3 +37,5 @@ effects:
     hunger_multiplier: 2.0
 messages:
   skill-gravity-well: "&5[Gravity Mace] &fAsh orbits feed a portal spiral; collapse flashes like a depleted anchor."
+  no-target: "&c[Gravity Mace] No valid location found to create a gravity well!"
+  teleport-blocked: "&c[Gravity Mace] Cannot teleport! Gravity is distorting space."

@@ -18,7 +18,7 @@ recipe:
     H: blood_core
     B: NETHERITE_INGOT
     W: NETHER_WART
-    S: SKELETON_SKULL
+    S: cursed_player_head
     N: MAGMA_BLOCK
 cooldowns:
   siphon: 75
@@ -40,3 +40,4 @@ effects:
       projectile: 1.10
 messages:
   skill-siphon: "&c[Vampiric Mace] &fBlood tethers coil from the target, restoring you while temporary max-health leases are tracked and cleaned up."
+  no-target: "&c[Vampiric Mace] Please look directly at a target to siphon blood!"

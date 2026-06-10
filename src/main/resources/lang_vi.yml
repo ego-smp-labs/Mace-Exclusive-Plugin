@@ -3,6 +3,7 @@ no-permission: "&cBạn không có quyền sử dụng lệnh này."
 only-player: "&cChỉ người chơi mới có thể sử dụng lệnh này."
 config-reloaded: "&aCấu hình đã được tải lại thành công."
 cooldown: "&cVui lòng chờ &e%seconds%s &ctrước khi dùng lại."
+
 mace:
   received: "&aBạn đã nhận được %name%&a!"
   already-exists: "&c%name% đã tồn tại! Nó đang được giữ bởi &e%player%&c."
@@ -19,6 +20,7 @@ mace:
   not-found: "&7Hiện chưa có ai giữ %name%."
   reset: "&aTrạng thái %name% đã được đặt lại. Có thể chế tạo cây mới."
   kill-message: "&c%victim% &7đã bị &b%killer% &7đánh bại bằng %name%."
+
 chaos:
   received: "&5Bạn đã nhận được &5&lMace of Chaos&5!"
   already-exists: "&cMace of Chaos đã tồn tại! Đang được giữ bởi &e%player%&c."
@@ -34,6 +36,42 @@ chaos:
   not-found: "&7Hiện chưa có ai giữ Mace of Chaos."
   reset: "&5Trạng thái Chaos Mace đã được đặt lại."
   kill-message: "&5%victim% &7đã bị &5%killer% &7tiêu diệt bằng &5&lMace of Chaos&7."
+
+cursed_sword:
+  crafted: "&e%player% &ađã chế tạo %name%&a!"
+  title: "%name%"
+  subtitle: "&7Lời nguyền bóng tối đang vẫy gọi bạn."
+  victim-cursed: "&cBạn đã bị nguyền rủa từ thanh kiếm Cursed Sword và dính Wither III trong 3 giây!"
+  attacker-success: "&aThành công! Bạn đã nguyền rủa đối thủ."
+  attacker-backfire: "&cThất bại! Sức mạnh nguyền rủa phản phệ, bạn đã bị nguyền rủa 30 phút và dính Wither III!"
+  victim-backfire: "&aĐối thủ đã bị phản phệ bởi Cursed Sword!"
+  curse-released: "&aLực nguyền rủa đã được giải thoát và đầu của bạn đã rơi ra!"
+  player-head-name: "&cĐầu của %player%"
+
+forge:
+  take-one-at-a-time: "&cHãy lấy vũ khí từng cái một."
+  ritual-started: "&aBàn chế tạo đã biến thành Lodestone. Nghi thức đúc bắt đầu!"
+  unavailable: "&cLò rèn không khả dụng: %reason%"
+  lodestone-broken: "&cPhiên đúc đã bị hủy vì Lodestone bị phá hủy!"
+  charging: "&eĐANG NẠP..."
+  charging-format: "&eĐANG NẠP: &f%name% &e- &b%seconds%s"
+  forging-format: "&eĐANG ĐÚC: &f%name% &e- &b%time%"
+
+core:
+  take-one-at-a-time: "&cHãy lấy core từng cái một."
+  craft-locked: "&cBạn đang trong trạng thái bị khóa chế tạo core. (Trạng thái nguyền rủa đang hoạt động)"
+  insufficient-xp: "&cKhông đủ XP để chế tạo core này."
+  craft-failed: "&8[Core Forge] Core vỡ vụn trong quá trình truyền năng lượng. Lockout được áp dụng. Một Ruined Core đã được tạo ra."
+
+special:
+  obsidian-chaos-drop: "&2[Mace-Exclusive] Một mảnh Obsidian Chaos đã rơi ra từ vụ nổ!"
+  void-totem-blocked: "&d[Void Mace] Sức mạnh Vực Thẳm từ chối và vô hiệu hóa Totem của bạn!"
+  enderman-totem-blocked: "&d[Mace-Exclusive] Thử thách của Enderman từ chối Totem của bạn. Mắt sẽ rơi cùng với bạn."
+  totem-dropped: "&d[Void Mace] Sức mạnh Vực Thẳm từ chối sự hiện diện của Totem! Totem của bạn đã bị rơi ra."
+
+nether:
+  cursed-head-forged: "&c[Mace-Exclusive] Một luồng linh hồn tà ác trong Nether đã ám vào chiếc đầu player bạn đang cầm!"
+
 help:
   header: "&8&m--------&r &bMace Exclusive &8&m--------"
   link: "&7Website: &b/sabicoder.xyz/"

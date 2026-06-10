@@ -74,6 +74,12 @@ public final class ItemRegistry {
             if (spear != null) return spear;
             plugin.getLogger().warning("NETHERITE_SPEAR is not available in this Paper API; using MACE fallback for " + id + ".");
         }
+        if (id.contains("head")) {
+            return Material.PLAYER_HEAD;
+        }
+        if (id.contains("sword")) {
+            return Material.NETHERITE_SWORD;
+        }
         return Material.MACE;
     }
 

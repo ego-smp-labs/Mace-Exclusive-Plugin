@@ -37,6 +37,10 @@ public final class ExclusiveItemFactory {
             meta.lore(componentLore);
         }
         if (itemConfig != null && itemConfig.customModelData() != null) meta.setCustomModelData(itemConfig.customModelData());
+        if (itemConfig != null && itemConfig.enchanted()) {
+            meta.addEnchant(org.bukkit.enchantments.Enchantment.MENDING, 1, true);
+            meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS);
+        }
         meta.getPersistentDataContainer().set(keys.itemId(), PersistentDataType.STRING, definition.id());
         item.setItemMeta(meta);
         return item;

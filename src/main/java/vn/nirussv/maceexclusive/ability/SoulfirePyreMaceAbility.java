@@ -54,7 +54,8 @@ public final class SoulfirePyreMaceAbility implements ActiveAbility, PassiveAbil
         Player player = context.player();
         double cost = configManager.getItemEffectDouble("soulfire_mace", "effects.active.hp_cost", 4.0D);
         if (player.getHealth() <= cost) {
-            player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&cKhông đủ máu để triệu hồi bão lửa linh hồn!"));
+            net.kyori.adventure.text.Component msg = configManager.getItemMessage("soulfire_mace", "messages.insufficient-hp");
+            if (msg != null) player.sendMessage(msg);
             return false;
         }
         return true;

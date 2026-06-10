@@ -17,12 +17,16 @@ import vn.nirussv.maceexclusive.item.ExclusiveItemFactory;
 import vn.nirussv.maceexclusive.item.ItemDefinition;
 import vn.nirussv.maceexclusive.item.ItemRegistry;
 
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import vn.nirussv.maceexclusive.item.ItemMatcher;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-public final class RecipeRegistry {
+public final class RecipeRegistry implements Listener {
 
     private final MaceExclusivePlugin plugin;
     private final ConfigManager configManager;
@@ -30,14 +34,16 @@ public final class RecipeRegistry {
     private final ExclusiveItemFactory itemFactory;
     private final CoreRegistry coreRegistry;
     private final CoreItemFactory coreItemFactory;
+    private final ItemMatcher itemMatcher;
 
-    public RecipeRegistry(MaceExclusivePlugin plugin, ConfigManager configManager, ItemRegistry itemRegistry, ExclusiveItemFactory itemFactory, CoreRegistry coreRegistry, CoreItemFactory coreItemFactory) {
+    public RecipeRegistry(MaceExclusivePlugin plugin, ConfigManager configManager, ItemRegistry itemRegistry, ExclusiveItemFactory itemFactory, CoreRegistry coreRegistry, CoreItemFactory coreItemFactory, ItemMatcher itemMatcher) {
         this.plugin = plugin;
         this.configManager = configManager;
         this.itemRegistry = itemRegistry;
         this.itemFactory = itemFactory;
         this.coreRegistry = coreRegistry;
         this.coreItemFactory = coreItemFactory;
+        this.itemMatcher = itemMatcher;
     }
 
     public void registerAll() {
@@ -111,8 +117,39 @@ public final class RecipeRegistry {
         }
         Material material = Material.matchMaterial(value);
         if (material != null) {
+            if (material == Material.HEAVY_CORE) {
+                return new RecipeChoice.ExactChoice(new ItemStack(Material.HEAVY_CORE));
+            }
+            if (material == Material.PLAYER_HEAD) {
+                return new RecipeChoice.ExactChoice(new ItemStack(Material.PLAYER_HEAD));
+            }
             return new RecipeChoice.MaterialChoice(material);
         }
         return null;
+    }
+
+    @EventHandler
+    public void onPrepareCraft(PrepareItemCraftEvent event) {
+        Recipe recipe = event.getRecipe();
+        if (recipe == null) return;
+
+        ItemStack[] matrix = event.getInventory().getMatrix();
+        for (ItemStack item : matrix) {
+            if (item == null || item.getType() == Material.AIR) continue;
+
+            boolean isCustom = itemMatcher.match(item).isPresent() || itemMatcher.matchCore(item).isPresent();
+            if (isCustom) {
+                if (recipe instanceof Keyed keyed) {
+                    String namespace = plugin.getName().toLowerCase(Locale.ROOT);
+                    if (!keyed.getKey().getNamespace().equals(namespace)) {
+                        event.getInventory().setResult(null);
+                        return;
+                    }
+                } else {
+                    event.getInventory().setResult(null);
+                    return;
+                }
+            }
+        }
     }
 }

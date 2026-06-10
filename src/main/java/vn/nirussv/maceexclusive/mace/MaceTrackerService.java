@@ -17,7 +17,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.config.ItemConfig;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
@@ -62,7 +61,7 @@ public final class MaceTrackerService implements Listener {
         // Create BossBar
         String displayName = getDisplayName(maceId);
         BossBar bossBar = Bukkit.createBossBar(
-            LegacyComponentSerializer.legacyAmpersand().serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(displayName + " (Đang tìm vị trí...)")),
+            displayName + " (&7Đang tìm vị trí...&8)",
             color,
             BarStyle.SOLID
         );
@@ -152,7 +151,7 @@ public final class MaceTrackerService implements Listener {
             titleText = displayName + " &8(&7" + statusLabel + "&8)";
         }
 
-        bossBar.setTitle(LegacyComponentSerializer.legacyAmpersand().serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(titleText)));
+        bossBar.setTitle(titleText);
 
         // Sync players
         for (Player p : Bukkit.getOnlinePlayers()) {

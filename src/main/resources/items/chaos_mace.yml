@@ -40,3 +40,7 @@ messages:
   skill-rage-activate: "&5[Chaos Mace] &fA three-layer portal fractal opens: Madness lasts 2 minutes or 3 empowered hits."
   skill-chaos-inflicted: "&5[Chaos Mace] &fDragon-breath distortion and hotbar shimmer mark the target's Chaos effect."
   skill-lunatic-buff: "&5[Chaos Mace] &fGold-purple runes orbit you: Lunatic buff active for 10 seconds."
+  insufficient-rage: "&c[Chaos Mace] Not enough rage! Current: %points%/10 (Kill mobs or players)."
+  rage-backfire: "&5[Chaos Mace] Backfire! You killed no one during the rage state."
+  rage-points: "&5[Chaos Mace] Rage accumulated: %points%/10"
+  first-hold: "&5[Chaos Mace] Chaotic power is eroding your mind!"

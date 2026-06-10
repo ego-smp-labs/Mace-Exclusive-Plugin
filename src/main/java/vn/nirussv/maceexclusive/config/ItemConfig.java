@@ -16,7 +16,8 @@ public record ItemConfig(
     List<String> lore,
     Integer customModelData,
     RecipeConfig recipe,
-    ConfigurationSection effects
+    ConfigurationSection effects,
+    boolean enchanted
 ) {
 
     public record RecipeConfig(boolean enabled, List<String> shape, Map<Character, String> ingredients) {
@@ -32,7 +33,8 @@ public record ItemConfig(
             : null;
         RecipeConfig recipe = readRecipe(section == null ? null : section.getConfigurationSection("recipe"));
         ConfigurationSection effects = section == null ? null : section.getConfigurationSection("effects");
-        return new ItemConfig(id, enabled, material, name, lore, customModelData, recipe, effects);
+        boolean enchanted = section != null && section.getBoolean("enchanted", false);
+        return new ItemConfig(id, enabled, material, name, lore, customModelData, recipe, effects, enchanted);
     }
 
     private static Material resolveMaterial(ConfigurationSection section, Material fallbackMaterial) {

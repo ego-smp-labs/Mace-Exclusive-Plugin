@@ -52,18 +52,18 @@ public final class CoreCraftListener implements Listener {
 
         event.setCancelled(true);
         if (isUnsafeBulkCraft(event)) {
-            player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&cHãy lấy core từng cái một."));
+            player.sendMessage(configManager.getMessage("core.take-one-at-a-time"));
             return;
         }
         if (isLocked(player)) {
-            player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&cBạn đang bị lockout chế tạo core."));
+            player.sendMessage(configManager.getMessage("core.craft-locked"));
             return;
         }
 
         CoreConfig core = coreRegistry.find(craftedCore.get()).orElse(null);
         if (core == null) return;
         if (!hasEnoughXp(player, core.xpCost())) {
-            player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&cKhông đủ XP để chế tạo core này."));
+            player.sendMessage(configManager.getMessage("core.insufficient-xp"));
             return;
         }
 
@@ -119,7 +119,7 @@ public final class CoreCraftListener implements Listener {
 
     private ItemStack fail(Player player) {
         lockoutService.applyCursed(player.getUniqueId(), configManager.getCoreCraftLockoutSeconds());
-        player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&7Core craft failed; lockout applied."));
+        player.sendMessage(configManager.getMessage("core.craft-failed"));
         return coreItemFactory.create("ruined_core");
     }
 

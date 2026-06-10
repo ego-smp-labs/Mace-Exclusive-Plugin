@@ -1,0 +1,10 @@
+enabled: true
+singleton: false
+name: "&c&lĐầu Player Bị Vấy Bẩn"
+material: PLAYER_HEAD
+custom-model-data: 4002
+lore:
+  - "&7Chiếc đầu này đã trở thành nơi trú ngụ của linh hồn."
+recipe:
+  enabled: false
+enchanted: true

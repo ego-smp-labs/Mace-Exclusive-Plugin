@@ -33,3 +33,4 @@ effects:
     hunger_multiplier: 2.0
 messages:
   skill-fire-storm: "&b[Soulfire Mace] &fFive pulses of blue flame expand outward while soul particles rise and crackle."
+  insufficient-hp: "&c[Soulfire Mace] Not enough health to summon the soulfire storm!"

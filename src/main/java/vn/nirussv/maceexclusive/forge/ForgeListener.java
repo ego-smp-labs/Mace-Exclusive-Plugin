@@ -11,6 +11,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
+import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.mace.MaceManager;
 
 import java.util.ArrayList;
@@ -20,10 +21,12 @@ public final class ForgeListener implements Listener {
 
     private final ForgeService forgeService;
     private final MaceManager maceManager;
+    private final ConfigManager configManager;
 
-    public ForgeListener(ForgeService forgeService, MaceManager maceManager) {
+    public ForgeListener(ForgeService forgeService, MaceManager maceManager, ConfigManager configManager) {
         this.forgeService = forgeService;
         this.maceManager = maceManager;
+        this.configManager = configManager;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -34,23 +37,23 @@ public final class ForgeListener implements Listener {
         if (itemId == null) return;
         event.setCancelled(true);
         if (isUnsafeBulkCraft(event)) {
-            player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&cHãy lấy vũ khí từng cái một."));
+            player.sendMessage(configManager.getMessage("forge.take-one-at-a-time"));
             return;
         }
         if (forgeService.tryStartFromCraft(player, event.getInventory(), itemId)) {
-            player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&aBàn chế tạo đã biến thành Lodestone. Quá trình đúc bắt đầu."));
+            player.sendMessage(configManager.getMessage("forge.ritual-started"));
             double damage = (5 + java.util.concurrent.ThreadLocalRandom.current().nextInt(5)) * 2.0D;
             player.damage(damage);
             return;
         }
-        player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&c" + forgeService.unavailableReason(itemId)));
+        player.sendMessage(configManager.getMessage("forge.unavailable", java.util.Map.of("reason", forgeService.unavailableReason(itemId))));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBreakForgeBlock(BlockBreakEvent event) {
         if (!forgeService.isForgeBlock(event.getBlock())) return;
         forgeService.abort(event.getBlock(), true);
-        event.getPlayer().sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&cPhiên đúc đã bị hủy vì Lodestone bị phá."));
+        event.getPlayer().sendMessage(configManager.getMessage("forge.lodestone-broken"));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

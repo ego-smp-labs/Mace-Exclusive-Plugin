@@ -79,7 +79,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
             this.freezeService = new FreezeService(this);
             this.abilityService = new AbilityService(this, configManager, itemMatcher, freezeService);
             // Phase 3 is mace-first: spear gameplay service/listener stays disabled until Phase 4.
-            this.recipeRegistry = new RecipeRegistry(this, configManager, itemRegistry, itemFactory, coreRegistry, coreItemFactory);
+            this.recipeRegistry = new RecipeRegistry(this, configManager, itemRegistry, itemFactory, coreRegistry, coreItemFactory, itemMatcher);
             this.forgeService = new ForgeService(this, configManager, itemFactory, itemRegistry, maceManager, new ForgeSessionStore(this), new ForgeVisualService());
 
             MaceCommand cmd = new MaceCommand(this, maceManager, configManager, itemFactory, itemRegistry);
@@ -91,16 +91,17 @@ public class MaceExclusivePlugin extends JavaPlugin {
             }
 
             getServer().getPluginManager().registerEvents(new MaceListener(maceManager), this);
+            getServer().getPluginManager().registerEvents(recipeRegistry, this);
             getServer().getPluginManager().registerEvents(maceTrackerService, this);
             getServer().getPluginManager().registerEvents(new ContainerGuardListener(maceManager, configManager), this);
             getServer().getPluginManager().registerEvents(new EffectMaceListener(this, maceManager, configManager), this);
             getServer().getPluginManager().registerEvents(new AbilityListener(abilityService), this);
             getServer().getPluginManager().registerEvents(freezeService, this);
-            getServer().getPluginManager().registerEvents(new ForgeListener(forgeService, maceManager), this);
+            getServer().getPluginManager().registerEvents(new ForgeListener(forgeService, maceManager, configManager), this);
             getServer().getPluginManager().registerEvents(new CoreCraftListener(configManager, coreRegistry, coreItemFactory, itemMatcher, freezeService, lockoutService), this);
             getServer().getPluginManager().registerEvents(new CursedSwordListener(lockoutService, configManager, itemMatcher), this);
             getServer().getPluginManager().registerEvents(new RitualService(coreItemFactory, itemMatcher), this);
-            getServer().getPluginManager().registerEvents(new SpecialItemListener(itemFactory, itemMatcher), this);
+            getServer().getPluginManager().registerEvents(new SpecialItemListener(itemFactory, itemMatcher, configManager), this);
 
             try {
                 getServer().getPluginManager().registerEvents(curseService, this);

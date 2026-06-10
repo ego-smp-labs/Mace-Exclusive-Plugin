@@ -57,7 +57,8 @@ public final class GravityMaceAbility implements ActiveAbility, PassiveAbility, 
         // Caster needs to look at a block or target
         Location targetLoc = getTargetLocation(player);
         if (targetLoc == null) {
-            player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&cKhông tìm thấy vị trí chỉ định để tạo hố đen!"));
+            net.kyori.adventure.text.Component msg = configManager.getItemMessage("gravity_mace", "messages.no-target");
+            if (msg != null) player.sendMessage(msg);
             return false;
         }
         return true;
@@ -189,7 +190,8 @@ public final class GravityMaceAbility implements ActiveAbility, PassiveAbility, 
             for (Location well : activeWells) {
                 if (event.getFrom().getWorld().equals(well.getWorld()) && event.getFrom().distanceSquared(well) <= 64.0) {
                     event.setCancelled(true);
-                    event.getPlayer().sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&cKhông thể dịch chuyển! Trọng lực đang bóp méo không gian."));
+                    net.kyori.adventure.text.Component msg = configManager.getItemMessage("gravity_mace", "messages.teleport-blocked");
+                    if (msg != null) event.getPlayer().sendMessage(msg);
                     event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_DEPLETE, 0.6f, 1.2f);
                 }
             }

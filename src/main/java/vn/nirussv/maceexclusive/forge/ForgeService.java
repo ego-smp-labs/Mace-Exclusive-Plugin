@@ -74,7 +74,9 @@ public final class ForgeService {
     }
 
     public boolean isItemReserved(String itemId) {
-        return itemId != null && reservedItemIds.contains(itemId.toLowerCase());
+        if (itemId == null) return false;
+        if (!configManager.isSingletonItem(itemId)) return false;
+        return reservedItemIds.contains(itemId.toLowerCase());
     }
 
     public boolean tryStartFromCraft(Player player, CraftingInventory inventory, String itemId) {
@@ -129,14 +131,18 @@ public final class ForgeService {
     }
 
     private boolean reserve(String itemId) {
-        if (reservedItemIds.contains(itemId)) return false;
-        if (!maceManager.canCreate(itemId)) return false;
-        reservedItemIds.add(itemId);
+        if (configManager.isSingletonItem(itemId)) {
+            if (reservedItemIds.contains(itemId)) return false;
+            if (!maceManager.canCreate(itemId)) return false;
+            reservedItemIds.add(itemId);
+        }
         return true;
     }
 
     private void release(String itemId) {
-        reservedItemIds.remove(itemId);
+        if (configManager.isSingletonItem(itemId)) {
+            reservedItemIds.remove(itemId);
+        }
     }
 
     private Block resolveCraftingBlock(CraftingInventory inventory) {
@@ -306,7 +312,7 @@ public final class ForgeService {
             TextDisplay textDisplay = location.getWorld().spawn(location, TextDisplay.class, display -> {
                 display.setBillboard(Display.Billboard.CENTER);
                 display.setSeeThrough(true);
-                display.text(Component.text("ĐANG NẠP..."));
+                display.text(configManager.getMessage("forge.charging"));
             });
             session.hologram(textDisplay);
         } catch (Throwable ignored) {
@@ -314,7 +320,7 @@ public final class ForgeService {
                 stand.setMarker(true);
                 stand.setInvisible(true);
                 stand.setCustomNameVisible(true);
-                stand.customName(Component.text("ĐANG NẠP..."));
+                stand.customName(configManager.getMessage("forge.charging"));
             });
             session.hologram(armorStand);
         }
@@ -322,14 +328,22 @@ public final class ForgeService {
 
     private void updateChargeHologram(ForgeSession session, long remainingMillis) {
         long seconds = Math.max(1L, (remainingMillis + 999L) / 1000L);
-        String text = "&eĐANG NẠP: &f" + displayName(session.itemId()) + " &e- &b" + String.format("%02ds", seconds);
-        setHologramText(session, net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize(text));
+        String secondsStr = String.format("%02d", seconds);
+        net.kyori.adventure.text.Component text = configManager.getMessage("forge.charging-format", java.util.Map.of(
+            "name", displayName(session.itemId()),
+            "seconds", secondsStr
+        ));
+        setHologramText(session, text);
     }
 
     private void updateForgeHologram(ForgeSession session, long remainingMillis) {
         long seconds = Math.max(1L, (remainingMillis + 999L) / 1000L);
-        String text = "&eĐANG ĐÚC: &f" + displayName(session.itemId()) + " &e- &b" + String.format("%02d:%02d", seconds / 60L, seconds % 60L);
-        setHologramText(session, net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize(text));
+        String timeStr = String.format("%02d:%02d", seconds / 60L, seconds % 60L);
+        net.kyori.adventure.text.Component text = configManager.getMessage("forge.forging-format", java.util.Map.of(
+            "name", displayName(session.itemId()),
+            "time", timeStr
+        ));
+        setHologramText(session, text);
     }
 
     private String displayName(String itemId) {

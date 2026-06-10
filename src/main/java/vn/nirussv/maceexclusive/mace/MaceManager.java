@@ -112,6 +112,17 @@ public class MaceManager {
     }
 
     public void notifyAcquisition(Player player, Location location, String id, AcquisitionReason reason) {
+        if ("cursed_sword".equals(id)) {
+            if (reason == AcquisitionReason.CRAFTED) {
+                broadcastOwnership(player, location, id, reason);
+                Map<String, String> placeholders = Map.of("name", displayName(id), "player", player.getName());
+                Component title = configManager.getMessage("cursed_sword.title", placeholders);
+                Component subtitle = configManager.getMessage("cursed_sword.subtitle", placeholders);
+                player.showTitle(Title.title(title, subtitle, Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofMillis(500))));
+                player.playSound(location, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 0.5f);
+            }
+            return;
+        }
         player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 200, 0, false, false, true));
         player.playSound(location, Sound.UI_TOAST_CHALLENGE_COMPLETE, 1f, 0.5f);
         if (reason == AcquisitionReason.RECEIVED) {
@@ -136,14 +147,22 @@ public class MaceManager {
             case RECEIVED -> "received";
             case CRAFTED -> "crafted";
         };
-        Map<String, String> placeholders = Map.of(
-            "player", playerDisplay,
-            "name", displayName(id),
-            "x", String.valueOf(location.getBlockX()),
-            "y", String.valueOf(location.getBlockY()),
-            "z", String.valueOf(location.getBlockZ()),
-            "world", location.getWorld().getName()
-        );
+        Map<String, String> placeholders;
+        if ("cursed_sword".equals(id)) {
+            placeholders = Map.of(
+                "player", player.getName(),
+                "name", displayName(id)
+            );
+        } else {
+            placeholders = Map.of(
+                "player", playerDisplay,
+                "name", displayName(id),
+                "x", String.valueOf(location.getBlockX()),
+                "y", String.valueOf(location.getBlockY()),
+                "z", String.valueOf(location.getBlockZ()),
+                "world", location.getWorld().getName()
+            );
+        }
         Bukkit.broadcast(configManager.getMessage(messagePrefix(id) + messageAction, placeholders));
     }
 
@@ -162,7 +181,9 @@ public class MaceManager {
     }
 
     private String messagePrefix(String id) {
-        return "chaos_mace".equals(id) ? "chaos." : "mace.";
+        if ("chaos_mace".equals(id)) return "chaos.";
+        if ("cursed_sword".equals(id)) return "cursed_sword.";
+        return "mace.";
     }
 
     public boolean reset(String id) {

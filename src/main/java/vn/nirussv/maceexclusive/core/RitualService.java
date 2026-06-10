@@ -66,11 +66,11 @@ public final class RitualService implements Listener {
         ItemStack hand = event.getPlayer().getInventory().getItem(event.getHand());
         if (hand == null || hand.getType() != Material.NETHERITE_SWORD) return;
         if (event.getPlayer().getWorld().getEnvironment() != World.Environment.NETHER) return;
-        Optional<Item> heavyCore = nearestHeavyCore(clicked.getLocation(), 6.0D, Material.CRIMSON_NYLIUM);
-        if (heavyCore.isEmpty()) return;
+        Optional<Item> cursedHead = nearestCursedPlayerHead(clicked.getLocation(), 6.0D, Material.CRIMSON_NYLIUM);
+        if (cursedHead.isEmpty()) return;
         clicked.getWorld().strikeLightningEffect(clicked.getLocation());
         if (clicked instanceof Player victim) victim.damage(6.0D, event.getPlayer()); else clicked.remove();
-        if (transformOne(heavyCore.get(), "blood_core")) event.setCancelled(true);
+        if (transformOne(cursedHead.get(), "blood_core")) event.setCancelled(true);
     }
 
     private boolean isBloodSacrificeEntity(Entity entity) {
@@ -84,6 +84,17 @@ public final class RitualService implements Listener {
             .map(Item.class::cast)
             .filter(item -> item.isValid() && !item.isDead())
             .filter(item -> item.getItemStack().getType() == Material.HEAVY_CORE)
+            .filter(item -> isOnAltar(item, altarMaterial))
+            .min(Comparator.comparingDouble(item -> item.getLocation().distanceSquared(center)));
+    }
+
+    private Optional<Item> nearestCursedPlayerHead(Location center, double radius, Material altarMaterial) {
+        if (center == null || center.getWorld() == null) return Optional.empty();
+        return center.getWorld().getNearbyEntities(center, radius, radius, radius, entity -> entity instanceof Item)
+            .stream()
+            .map(Item.class::cast)
+            .filter(item -> item.isValid() && !item.isDead())
+            .filter(item -> itemMatcher.is(item.getItemStack(), "cursed_player_head"))
             .filter(item -> isOnAltar(item, altarMaterial))
             .min(Comparator.comparingDouble(item -> item.getLocation().distanceSquared(center)));
     }
