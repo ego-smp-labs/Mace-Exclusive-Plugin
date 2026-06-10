@@ -63,7 +63,7 @@ public final class ChaosMaceAbility implements ActiveAbility, PassiveAbility {
 
         int points = ragePoints.getOrDefault(uuid, 0);
         if (points < 10) {
-            player.sendMessage("§cChưa đủ nộ! Tích nộ: " + points + "/10 (Tiêu diệt quái vật hoặc người chơi).");
+            player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&cChưa đủ nộ! Tích nộ: " + points + "/10 (Tiêu diệt quái vật hoặc người chơi)."));
             return false;
         }
 
@@ -112,7 +112,7 @@ public final class ChaosMaceAbility implements ActiveAbility, PassiveAbility {
                 rageKills.remove(uuid);
 
                 if (kills == 0) {
-                    player.sendMessage("§5[Chaos Mace] Phản vệ! Bạn không tiêu diệt được ai trong lúc nộ.");
+                    player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&5[Chaos Mace] Phản vệ! Bạn không tiêu diệt được ai trong lúc nộ."));
                     int backfireDuration = configManager.getItemEffectInt("chaos_mace", "effects.curses.fail_kill_duration", 30);
                     inflictChaos(player, backfireDuration);
                 }
@@ -154,7 +154,10 @@ public final class ChaosMaceAbility implements ActiveAbility, PassiveAbility {
                 attacker.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, skillDur * 20, 1, false, false, true));
                 // Heal the extra health immediately
                 double healAmount = 20.0;
-                attacker.setHealth(Math.min(attacker.getMaxHealth(), attacker.getHealth() + healAmount));
+                double maxHealth = attacker.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH) != null 
+                    ? attacker.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).getValue() 
+                    : 20.0D;
+                attacker.setHealth(Math.min(maxHealth, attacker.getHealth() + healAmount));
 
                 lunaticEnds.put(uuid, System.currentTimeMillis() + (skillDur * 1000L));
 
@@ -204,7 +207,7 @@ public final class ChaosMaceAbility implements ActiveAbility, PassiveAbility {
                 if (points < 10) {
                     points++;
                     ragePoints.put(uuid, points);
-                    killer.sendMessage("§5[Chaos Mace] Tích nộ: " + points + "/10");
+                    killer.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&5[Chaos Mace] Tích nộ: " + points + "/10"));
                     killer.playSound(killer.getLocation(), Sound.BLOCK_NOTE_BLOCK_CHIME, 0.5f, 1.0f + (points * 0.1f));
                 }
             }
@@ -227,7 +230,7 @@ public final class ChaosMaceAbility implements ActiveAbility, PassiveAbility {
             player.getPersistentDataContainer().set(key, PersistentDataType.BOOLEAN, true);
             
             int firstHoldDuration = configManager.getItemEffectInt("chaos_mace", "effects.curses.first_hold_duration", 10);
-            player.sendMessage("§5[Chaos Mace] Sức mạnh Hỗn Loạn đang ăn mòn tâm trí bạn!");
+            player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&5[Chaos Mace] Sức mạnh Hỗn Loạn đang ăn mòn tâm trí bạn!"));
             inflictChaos(player, firstHoldDuration);
         }
     }

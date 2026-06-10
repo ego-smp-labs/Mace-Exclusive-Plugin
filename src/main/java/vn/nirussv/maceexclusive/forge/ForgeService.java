@@ -320,16 +320,18 @@ public final class ForgeService {
 
     private void updateChargeHologram(ForgeSession session, long remainingMillis) {
         long seconds = Math.max(1L, (remainingMillis + 999L) / 1000L);
-        setHologramText(session, Component.text("ĐANG NẠP: " + displayName(session.itemId()) + " - " + String.format("%02ds", seconds)));
+        String text = "&eĐANG NẠP: &f" + displayName(session.itemId()) + " &e- &b" + String.format("%02ds", seconds);
+        setHologramText(session, net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize(text));
     }
 
     private void updateForgeHologram(ForgeSession session, long remainingMillis) {
         long seconds = Math.max(1L, (remainingMillis + 999L) / 1000L);
-        setHologramText(session, Component.text("ĐANG ĐÚC: " + displayName(session.itemId()) + " - " + String.format("%02d:%02d", seconds / 60L, seconds % 60L)));
+        String text = "&eĐANG ĐÚC: &f" + displayName(session.itemId()) + " &e- &b" + String.format("%02d:%02d", seconds / 60L, seconds % 60L);
+        setHologramText(session, net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize(text));
     }
 
     private String displayName(String itemId) {
-        return itemRegistry.find(itemId).map(definition -> definition.name().replace("&", "§")).orElse(itemId);
+        return itemRegistry.find(itemId).map(definition -> definition.name()).orElse(itemId);
     }
 
     private void setHologramText(ForgeSession session, Component text) {

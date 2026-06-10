@@ -75,10 +75,22 @@ public class EffectMaceListener implements Listener {
 
         if (killer != null) {
              ItemStack weapon = killer.getInventory().getItemInMainHand();
-             if (maceManager.isRegisteredMace(weapon)) {
-                 Component msg = configManager.getPrefixedMessage("mace.kill-message", 
-                     java.util.Map.of("killer", killer.getName(), "victim", victim.getName()));
-                 event.deathMessage(msg);
+             java.util.Optional<String> matched = maceManager.getExclusiveItemKey(weapon);
+             if (matched.isPresent()) {
+                 String id = matched.get();
+                 if ("chaos_mace".equals(id)) {
+                     String obfuscatedKiller = "&k" + killer.getName() + "&r";
+                     String obfuscatedVictim = "&k" + victim.getName() + "&r";
+                     Component msg = configManager.getPrefixedMessage("chaos.kill-message", 
+                         java.util.Map.of("killer", obfuscatedKiller, "victim", obfuscatedVictim, 
+                                          "user", obfuscatedKiller, "player", obfuscatedKiller, "name", maceManager.displayName(id)));
+                     event.deathMessage(msg);
+                 } else {
+                     Component msg = configManager.getPrefixedMessage("mace.kill-message", 
+                         java.util.Map.of("killer", killer.getName(), "victim", victim.getName(), 
+                                          "user", killer.getName(), "player", killer.getName(), "name", maceManager.displayName(id)));
+                     event.deathMessage(msg);
+                 }
              }
         }
     }

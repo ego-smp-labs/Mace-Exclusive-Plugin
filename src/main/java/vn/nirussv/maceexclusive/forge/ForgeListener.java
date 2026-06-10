@@ -34,21 +34,21 @@ public final class ForgeListener implements Listener {
         if (itemId == null) return;
         event.setCancelled(true);
         if (isUnsafeBulkCraft(event)) {
-            player.sendMessage("§cHãy lấy vũ khí từng cái một.");
+            player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&cHãy lấy vũ khí từng cái một."));
             return;
         }
         if (forgeService.tryStartFromCraft(player, event.getInventory(), itemId)) {
-            player.sendMessage("§aBàn chế tạo đã biến thành Lodestone. Quá trình đúc bắt đầu.");
+            player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&aBàn chế tạo đã biến thành Lodestone. Quá trình đúc bắt đầu."));
             return;
         }
-        player.sendMessage("§c" + forgeService.unavailableReason(itemId));
+        player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&c" + forgeService.unavailableReason(itemId)));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBreakForgeBlock(BlockBreakEvent event) {
         if (!forgeService.isForgeBlock(event.getBlock())) return;
         forgeService.abort(event.getBlock(), true);
-        event.getPlayer().sendMessage("§cPhiên đúc đã bị hủy vì Lodestone bị phá.");
+        event.getPlayer().sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&cPhiên đúc đã bị hủy vì Lodestone bị phá."));
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

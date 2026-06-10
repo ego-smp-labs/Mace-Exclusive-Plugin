@@ -58,7 +58,7 @@ public final class VampiricMaceAbility implements ActiveAbility, PassiveAbility,
         Player player = context.player();
         LivingEntity target = context.target();
         if (target == null) {
-            player.sendMessage("§cVui lòng nhìn thẳng vào một mục tiêu để hút máu!");
+            player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&cVui lòng nhìn thẳng vào một mục tiêu để hút máu!"));
             return false;
         }
         return true;
@@ -135,7 +135,10 @@ public final class VampiricMaceAbility implements ActiveAbility, PassiveAbility,
 
         // Heal caster
         double healAmount = configManager.getItemEffectDouble("vampiric_mace", "siphon.immediate_heal", 6.0D);
-        player.setHealth(Math.min(player.getMaxHealth(), player.getHealth() + healAmount));
+        double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null 
+            ? player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() 
+            : 20.0D;
+        player.setHealth(Math.min(maxHealth, player.getHealth() + healAmount));
 
         cooldownService.setCooldown(player, id(), cooldownSeconds * 1000L);
 
@@ -179,12 +182,18 @@ public final class VampiricMaceAbility implements ActiveAbility, PassiveAbility,
         double damage = event.getFinalDamage();
         double heal = Math.min(maxHeal, damage * percent);
         
-        attacker.setHealth(Math.min(attacker.getMaxHealth(), attacker.getHealth() + heal));
+        double maxHealthAttr = attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null 
+            ? attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() 
+            : 20.0D;
+        attacker.setHealth(Math.min(maxHealthAttr, attacker.getHealth() + heal));
         attacker.getWorld().spawnParticle(org.bukkit.Particle.DAMAGE_INDICATOR, target.getLocation().add(0.0, 1.0, 0.0), 3);
         attacker.getWorld().playSound(attacker.getLocation(), Sound.ENTITY_PLAYER_HURT_SWEET_BERRY_BUSH, 0.6f, 1.5f);
 
         // Low health damage boost: +20% damage if health < 30%
-        if (attacker.getHealth() / attacker.getMaxHealth() < 0.30) {
+        double maxHealthVal = attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH) != null 
+            ? attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() 
+            : 20.0D;
+        if (attacker.getHealth() / maxHealthVal < 0.30) {
             event.setDamage(event.getDamage() * 1.20D);
         }
     }

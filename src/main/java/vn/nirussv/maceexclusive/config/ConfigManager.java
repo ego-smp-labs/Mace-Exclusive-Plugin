@@ -150,7 +150,13 @@ public class ConfigManager {
 
     public Component getMessage(String key, Map<String, String> placeholders) {
         String msg = getRawMessage(key);
-        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+        java.util.Map<String, String> expanded = new java.util.HashMap<>(placeholders);
+        if (expanded.containsKey("player") && !expanded.containsKey("user")) {
+            expanded.put("user", expanded.get("player"));
+        } else if (expanded.containsKey("user") && !expanded.containsKey("player")) {
+            expanded.put("player", expanded.get("user"));
+        }
+        for (Map.Entry<String, String> entry : expanded.entrySet()) {
             msg = msg.replace("%" + entry.getKey() + "%", entry.getValue());
         }
         return toComponent(msg);
@@ -162,7 +168,13 @@ public class ConfigManager {
 
     public Component getPrefixedMessage(String key, Map<String, String> placeholders) {
         String msg = getRawMessage(key);
-        for (Map.Entry<String, String> entry : placeholders.entrySet()) {
+        java.util.Map<String, String> expanded = new java.util.HashMap<>(placeholders);
+        if (expanded.containsKey("player") && !expanded.containsKey("user")) {
+            expanded.put("user", expanded.get("player"));
+        } else if (expanded.containsKey("user") && !expanded.containsKey("player")) {
+            expanded.put("player", expanded.get("user"));
+        }
+        for (Map.Entry<String, String> entry : expanded.entrySet()) {
             msg = msg.replace("%" + entry.getKey() + "%", entry.getValue());
         }
         return toComponent(getRawMessage("prefix") + msg);
@@ -230,6 +242,16 @@ public class ConfigManager {
         return effectCurse == null ? fallback : effectCurse.getDouble(path, fallback);
     }
 
+    public boolean getItemCurseBoolean(String itemId, String path, boolean fallback) {
+        ConfigurationSection itemSection = getItemSection(itemId, "items." + itemId);
+        ConfigurationSection curse = itemSection == null ? null : itemSection.getConfigurationSection("curse");
+        if (curse != null && curse.contains(path)) return curse.getBoolean(path, fallback);
+        ItemConfig weaponConfig = getItemConfig(itemId);
+        ConfigurationSection effects = weaponConfig == null ? null : weaponConfig.effects();
+        ConfigurationSection effectCurse = effects == null ? null : effects.getConfigurationSection("curse");
+        return effectCurse == null ? fallback : effectCurse.getBoolean(path, fallback);
+    }
+
     public int getEnvironmentCurseIntervalTicks() { return Math.max(1, plugin.getConfig().getInt("performance.environment-curse-interval-ticks", 20)); }
 
     public Component getItemMessage(String itemId, String path) { return getItemMessage(itemId, path, Map.of()); }
@@ -238,7 +260,13 @@ public class ConfigManager {
         if (itemSection == null || !itemSection.contains(path)) return null;
         String msg = itemSection.getString(path);
         if (msg == null || msg.isBlank()) return null;
-        for (Map.Entry<String, String> entry : placeholders.entrySet()) msg = msg.replace("%" + entry.getKey() + "%", entry.getValue());
+        java.util.Map<String, String> expanded = new java.util.HashMap<>(placeholders);
+        if (expanded.containsKey("player") && !expanded.containsKey("user")) {
+            expanded.put("user", expanded.get("player"));
+        } else if (expanded.containsKey("user") && !expanded.containsKey("player")) {
+            expanded.put("player", expanded.get("user"));
+        }
+        for (Map.Entry<String, String> entry : expanded.entrySet()) msg = msg.replace("%" + entry.getKey() + "%", entry.getValue());
         return toComponent(msg);
     }
 

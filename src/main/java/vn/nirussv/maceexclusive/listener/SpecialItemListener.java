@@ -71,7 +71,7 @@ public final class SpecialItemListener implements Listener {
                         }
                     }
                     player.getWorld().dropItemNaturally(player.getLocation(), itemFactory.create("obsidian_chaos"));
-                    player.sendMessage("§5[Mace-Exclusive] Một mảnh Obsidian Chaos đã rơi ra từ vụ nổ!");
+                    player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&5[Mace-Exclusive] Một mảnh Obsidian Chaos đã rơi ra từ vụ nổ!"));
                     player.damage(Math.max(1000.0D, player.getHealth() + player.getAbsorptionAmount() + 100.0D), event.getEntity());
                     if (!player.isDead()) {
                         player.setHealth(0.0D);
@@ -89,7 +89,7 @@ public final class SpecialItemListener implements Listener {
             if (damageEvent.getDamager().getType() == EntityType.ENDERMAN) {
                 pendingChallengerEyeDeaths.add(player.getUniqueId());
                 event.setCancelled(true);
-                player.sendMessage("§d[Mace-Exclusive] The Enderman's challenge rejects your Totem. The Eye will fall with you.");
+                player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&d[Mace-Exclusive] The Enderman's challenge rejects your Totem. The Eye will fall with you."));
             }
         }
     }

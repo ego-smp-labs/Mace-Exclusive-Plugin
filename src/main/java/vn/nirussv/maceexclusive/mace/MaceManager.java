@@ -77,17 +77,20 @@ public class MaceManager {
         String id = matched.get();
         if (!configManager.isSingletonItem(id)) return ClaimResult.ALREADY_OWNER;
         UUID holder = repository.getHolder(id);
-        if (holder == null) return register(item, player.getUniqueId(), id) ? ClaimResult.NEWLY_CLAIMED : ClaimResult.DENIED;
-        return holder.equals(player.getUniqueId()) ? ClaimResult.ALREADY_OWNER : ClaimResult.DENIED;
+        if (holder == null || !holder.equals(player.getUniqueId())) {
+            ItemMeta meta = item.getItemMeta();
+            if (meta == null) return ClaimResult.DENIED;
+            meta.getPersistentDataContainer().set(keys.itemId(), PersistentDataType.STRING, id.toLowerCase());
+            meta.getPersistentDataContainer().set(keys.owner(), PersistentDataType.STRING, player.getUniqueId().toString());
+            item.setItemMeta(meta);
+            repository.setHolder(id, player.getUniqueId());
+            return ClaimResult.NEWLY_CLAIMED;
+        }
+        return ClaimResult.ALREADY_OWNER;
     }
 
     public boolean canPickup(ItemStack item, Player player) {
-        Optional<String> matched = getExclusiveItemKey(item);
-        if (matched.isEmpty()) return true;
-        String id = matched.get();
-        if (!configManager.isSingletonItem(id)) return true;
-        UUID holder = repository.getHolder(id);
-        return holder == null || holder.equals(player.getUniqueId());
+        return true;
     }
 
     public boolean isOwnedByAnother(ItemStack item, Player player) {

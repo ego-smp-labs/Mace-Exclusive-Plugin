@@ -33,6 +33,7 @@ chaos:
   holder-info: "&7The current Chaos Mace holder is: &5%player%"
   not-found: "&7No one currently holds the Mace of Chaos."
   reset: "&5The Mace of Chaos singleton has been reset."
+  kill-message: "&5%victim% &7was corrupted by &5%killer%&7 using &5&lMace of Chaos&7."
 help:
   header: "&8&m--------&r &bMace Exclusive &8&m--------"
   link: "&7Website: &b/sabicoder.xyz/"

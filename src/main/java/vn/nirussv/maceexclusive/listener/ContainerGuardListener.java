@@ -30,27 +30,7 @@ public final class ContainerGuardListener implements Listener {
         this.configManager = configManager;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onPlayerPickup(EntityPickupItemEvent event) {
-        if (!(event.getEntity() instanceof Player player)) {
-            return;
-        }
-        ItemStack item = event.getItem().getItemStack();
-        java.util.Optional<String> optId = maceManager.getExclusiveItemKey(item);
-        if (optId.isEmpty()) {
-            return;
-        }
-        
-        if (!maceManager.canPickup(item, player)) {
-            event.setCancelled(true);
-            String id = optId.get();
-            String holderName = maceManager.getHolderName(id);
-            if (holderName == null) holderName = "Unknown";
-            
-            String msgPath = id.contains("chaos") ? "chaos.already-exists" : "mace.already-exists";
-            player.sendMessage(configManager.getMessage(msgPath, java.util.Map.of("player", holderName, "name", maceManager.displayName(id))));
-        }
-    }
+
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onCrafterCraft(CrafterCraftEvent event) {

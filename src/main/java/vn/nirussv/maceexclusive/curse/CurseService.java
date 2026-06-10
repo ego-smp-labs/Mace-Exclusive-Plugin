@@ -175,7 +175,7 @@ public final class CurseService implements Listener {
 
         String itemId = heldItem.get();
         applyHoldCurse(player, itemId);
-        refreshEventDrivenHoldingEffects(player);
+        refreshEventDrivenHoldingEffects(player, itemId);
 
         heldCursePlayers.add(uuid);
         if (itemId.equals("chaos_mace")) {
@@ -221,9 +221,10 @@ public final class CurseService implements Listener {
         attributeLease.revoke(player, Attribute.GENERIC_MAX_HEALTH);
     }
 
-    private void refreshEventDrivenHoldingEffects(Player player) {
+    private void refreshEventDrivenHoldingEffects(Player player, String itemId) {
         PerformanceConfig performance = configManager.getPerformanceConfig();
-        if (performance.holdingGlowing()) {
+        boolean maceGlowing = itemId.contains("mace") && configManager.getItemCurseBoolean(itemId, "hold.glowing", true);
+        if (maceGlowing) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 40, 0, false, false, false));
         }
         if (performance.holdingSoulParticles()) {
@@ -263,6 +264,9 @@ public final class CurseService implements Listener {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 0, false, false, false));
                 }
             }
+
+            // 3. Periodic holding effects refresh (glowing / particles)
+            heldExclusiveItem(player).ifPresent(itemId -> refreshEventDrivenHoldingEffects(player, itemId));
 
             tickCoreInstability(player);
         }

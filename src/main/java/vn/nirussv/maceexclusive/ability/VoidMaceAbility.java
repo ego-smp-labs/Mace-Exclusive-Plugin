@@ -158,13 +158,13 @@ public final class VoidMaceAbility implements ActiveAbility, PassiveAbility, Lis
         ItemStack placeholder = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
         ItemMeta meta = placeholder.getItemMeta();
         if (meta != null) {
-            meta.displayName(net.kyori.adventure.text.Component.text("§8§lHƯ VÔ"));
+            meta.displayName(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&8&lHƯ VÔ"));
             placeholder.setItemMeta(meta);
         }
 
         player.getInventory().setItem(slot1, placeholder);
         player.getInventory().setItem(slot2, placeholder);
-        player.sendMessage("§d[Void Mace] 2 ô Hotbar của bạn đã bị nuốt chửng bởi Hư Vô!");
+        player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&d[Void Mace] 2 ô Hotbar của bạn đã bị nuốt chửng bởi Hư Vô!"));
         player.playSound(player.getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_DEPLETE, 0.8f, 0.5f);
 
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
@@ -188,12 +188,17 @@ public final class VoidMaceAbility implements ActiveAbility, PassiveAbility, Lis
                 }
             }
         }
-        player.sendMessage("§a[Void Mace] Túi đồ của bạn đã được Hư Vô giải phóng.");
+        player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&a[Void Mace] Túi đồ của bạn đã được Hư Vô giải phóng."));
     }
 
     private boolean isPlaceholder(ItemStack item) {
-        return item != null && item.getType() == Material.GRAY_STAINED_GLASS_PANE && item.hasItemMeta() && 
-               item.getItemMeta().getDisplayName().contains("HƯ VÔ");
+        if (item == null || item.getType() != Material.GRAY_STAINED_GLASS_PANE || !item.hasItemMeta()) return false;
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return false;
+        net.kyori.adventure.text.Component nameComponent = meta.displayName();
+        if (nameComponent == null) return false;
+        String name = net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer.plainText().serialize(nameComponent);
+        return name.contains("HƯ VÔ");
     }
 
     @EventHandler

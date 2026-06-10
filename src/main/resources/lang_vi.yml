@@ -33,6 +33,7 @@ chaos:
   holder-info: "&7Người giữ Chaos Mace hiện tại là: &5%player%"
   not-found: "&7Hiện chưa có ai giữ Mace of Chaos."
   reset: "&5Trạng thái Chaos Mace đã được đặt lại."
+  kill-message: "&5%victim% &7đã bị &5%killer% &7tiêu diệt bằng &5&lMace of Chaos&7."
 help:
   header: "&8&m--------&r &bMace Exclusive &8&m--------"
   link: "&7Website: &b/sabicoder.xyz/"
