@@ -1,0 +1,20 @@
+enabled: true
+singleton: false
+name: "&c&lCursed Sword"
+material: NETHERITE_SWORD
+custom-model-data: 5001
+lore:
+  - "&7A dark blade forged from a ruined core."
+  - "&7Hitting another player has a 0.5% chance to curse them."
+  - "&7Otherwise, curses the wielder."
+  - "&cCurse: &fBreaks immediately after a single hit."
+recipe:
+  enabled: true
+  shape:
+    - " N "
+    - " R "
+    - " S "
+  ingredients:
+    N: NETHERITE_INGOT
+    R: ruined_core
+    S: STICK

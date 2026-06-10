@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.effect.FreezeService;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
+import vn.nirussv.maceexclusive.curse.LockoutService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,15 +29,16 @@ public final class CoreCraftListener implements Listener {
     private final CoreItemFactory coreItemFactory;
     private final ItemMatcher itemMatcher;
     private final FreezeService freezeService;
+    private final LockoutService lockoutService;
     private final Random random = new Random();
-    private final Map<UUID, Long> lockouts = new HashMap<>();
 
-    public CoreCraftListener(ConfigManager configManager, CoreRegistry coreRegistry, CoreItemFactory coreItemFactory, ItemMatcher itemMatcher, FreezeService freezeService) {
+    public CoreCraftListener(ConfigManager configManager, CoreRegistry coreRegistry, CoreItemFactory coreItemFactory, ItemMatcher itemMatcher, FreezeService freezeService, LockoutService lockoutService) {
         this.configManager = configManager;
         this.coreRegistry = coreRegistry;
         this.coreItemFactory = coreItemFactory;
         this.itemMatcher = itemMatcher;
         this.freezeService = freezeService;
+        this.lockoutService = lockoutService;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -86,11 +88,7 @@ public final class CoreCraftListener implements Listener {
     }
 
     private boolean isLocked(Player player) {
-        Long endsAt = lockouts.get(player.getUniqueId());
-        if (endsAt == null) return false;
-        if (System.currentTimeMillis() < endsAt) return true;
-        lockouts.remove(player.getUniqueId());
-        return false;
+        return lockoutService.isCursed(player);
     }
 
     private boolean hasEnoughXp(Player player, int xpCost) {
@@ -117,7 +115,7 @@ public final class CoreCraftListener implements Listener {
     }
 
     private ItemStack fail(Player player) {
-        lockouts.put(player.getUniqueId(), System.currentTimeMillis() + configManager.getCoreCraftLockoutSeconds() * 1000L);
+        lockoutService.applyCursed(player.getUniqueId(), configManager.getCoreCraftLockoutSeconds());
         player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&7Core craft failed; lockout applied."));
         return coreItemFactory.create("ruined_core");
     }

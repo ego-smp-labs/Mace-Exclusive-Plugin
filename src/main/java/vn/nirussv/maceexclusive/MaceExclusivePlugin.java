@@ -10,6 +10,8 @@ import vn.nirussv.maceexclusive.core.CoreItemFactory;
 import vn.nirussv.maceexclusive.core.CoreRegistry;
 import vn.nirussv.maceexclusive.core.RitualService;
 import vn.nirussv.maceexclusive.curse.CurseService;
+import vn.nirussv.maceexclusive.curse.LockoutService;
+import vn.nirussv.maceexclusive.listener.CursedSwordListener;
 import vn.nirussv.maceexclusive.effect.FreezeService;
 import vn.nirussv.maceexclusive.forge.ForgeListener;
 import vn.nirussv.maceexclusive.forge.ForgeService;
@@ -36,6 +38,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
     private MaceRepository maceRepository;
     private MaceManager maceManager;
     private CurseService curseService;
+    private LockoutService lockoutService;
     private AbilityService abilityService;
     private FreezeService freezeService;
     private RecipeRegistry recipeRegistry;
@@ -66,6 +69,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
             CoreItemFactory coreItemFactory = new CoreItemFactory(coreRegistry, configManager, pdcKeys);
             this.maceRepository = new MaceRepository(this);
             this.maceManager = new MaceManager(maceRepository, configManager, itemMatcher, itemRegistry, pdcKeys);
+            this.lockoutService = new LockoutService();
             this.curseService = new CurseService(this, configManager, itemMatcher);
             this.freezeService = new FreezeService(this);
             this.abilityService = new AbilityService(this, configManager, itemMatcher, freezeService);
@@ -87,7 +91,8 @@ public class MaceExclusivePlugin extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new AbilityListener(abilityService), this);
             getServer().getPluginManager().registerEvents(freezeService, this);
             getServer().getPluginManager().registerEvents(new ForgeListener(forgeService, maceManager), this);
-            getServer().getPluginManager().registerEvents(new CoreCraftListener(configManager, coreRegistry, coreItemFactory, itemMatcher, freezeService), this);
+            getServer().getPluginManager().registerEvents(new CoreCraftListener(configManager, coreRegistry, coreItemFactory, itemMatcher, freezeService, lockoutService), this);
+            getServer().getPluginManager().registerEvents(new CursedSwordListener(lockoutService, configManager, itemMatcher), this);
             getServer().getPluginManager().registerEvents(new RitualService(coreItemFactory, itemMatcher), this);
             getServer().getPluginManager().registerEvents(new SpecialItemListener(itemFactory, itemMatcher), this);
 
