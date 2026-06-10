@@ -39,6 +39,8 @@ public final class ForgeListener implements Listener {
         }
         if (forgeService.tryStartFromCraft(player, event.getInventory(), itemId)) {
             player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&aBàn chế tạo đã biến thành Lodestone. Quá trình đúc bắt đầu."));
+            double damage = (5 + java.util.concurrent.ThreadLocalRandom.current().nextInt(5)) * 2.0D;
+            player.damage(damage);
             return;
         }
         player.sendMessage(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize("&c" + forgeService.unavailableReason(itemId)));

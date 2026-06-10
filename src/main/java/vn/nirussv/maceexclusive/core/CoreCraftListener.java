@@ -72,6 +72,9 @@ public final class CoreCraftListener implements Listener {
         freezeService.freeze(player, FREEZE_TICKS);
         ItemStack output = random.nextDouble() < core.failureChance() ? fail(player) : coreItemFactory.create(core.id());
         give(player, output);
+
+        double damage = (5 + random.nextInt(5)) * 2.0D;
+        player.damage(damage);
     }
 
     private boolean isUnsafeBulkCraft(CraftItemEvent event) {
