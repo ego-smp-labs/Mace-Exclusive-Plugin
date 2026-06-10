@@ -18,7 +18,7 @@ recipe:
     C: soulfire_core
     B: BREEZE_ROD
     F: SOUL_CAMPFIRE
-    S: ZOMBIE_SKULL
+    S: ZOMBIE_HEAD
     G: GHAST_TEAR
     N: NETHERITE_INGOT
 cooldowns:

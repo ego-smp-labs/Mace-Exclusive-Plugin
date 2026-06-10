@@ -11,25 +11,26 @@
 </head>
 <body>
 <div class="layout">
-  <aside class="nav">
-    <h1>⚒ Mace Exclusive Wiki</h1>
-    <a href="#status">0. Trạng thái</a>
-    <a href="#vision">1. Tầm nhìn</a>
-    <a href="#scope">2. Scope Phase 3</a>
-    <a href="#architecture">3. Kiến trúc</a>
-    <a href="#identity">4. Item Identity</a>
-    <a href="#forge">5. Lodestone Forge</a>
-    <a href="#cores">6. Cores & Materials</a>
-    <a href="#input">7. Input chuẩn</a>
-    <a href="#balance">8. Luật cân bằng</a>
-    <a href="#weapons">9. Mace Wiki</a>
-    <a href="#particles">10. Particle/Sound</a>
-    <a href="#recipes">11. Recipe summary</a>
-    <a href="#qa">12. QA/Test Matrix</a>
-    <a href="#agent">13. Agent Rules</a>
-    <a href="#roadmap">14. Roadmap</a>
-    <p class="toc-note">Root docs là bản hiện hành. Archive chỉ để tham khảo lịch sử.</p>
-  </aside>
+    <aside class="nav">
+      <h1>⚒ Mace Exclusive Wiki</h1>
+      <a href="#status">0. Trạng thái</a>
+      <a href="#vision">1. Tầm nhìn</a>
+      <a href="#scope">2. Scope Phase 3</a>
+      <a href="#architecture">3. Kiến trúc</a>
+      <a href="#identity">4. Item Identity</a>
+      <a href="#forge">5. Lodestone Forge</a>
+      <a href="#cores">6. Cores & Materials</a>
+      <a href="#input">7. Input chuẩn</a>
+      <a href="#balance">8. Luật cân bằng</a>
+      <a href="#weapons">9. Mace Wiki</a>
+      <a href="#particles">10. Particle/Sound</a>
+      <a href="#recipes">11. Recipe summary</a>
+      <a href="#qa">12. QA/Test Matrix</a>
+      <a href="#agent">13. Agent Rules</a>
+      <a href="#roadmap">14. Roadmap</a>
+      <a href="#phase3-updates">15. Update Phase 3</a>
+      <p class="toc-note">Root docs là bản hiện hành. Archive chỉ để tham khảo lịch sử.</p>
+    </aside>
   <main class="content">
     <div class="hero">
       <h1>Mace Exclusive — Master Project Plan / Wiki</h1>
@@ -211,7 +212,7 @@ G E S</pre><p>S=Sculk Catalyst, C=Sculk Core, G=Enchanted Golden Apple, N=Nether
 
       <section class="card" id="soulfire_mace"><h3>9.7 Soulfire Pyre Mace — Búa Hỏa Thiêu Hồn</h3><p><span class="tag">ID: soulfire_mace</span></p><pre class="recipe">F C F
 G B S
-F N F</pre><p>F=Soul Campfire, C=Soulfire Core, G=Ghast Tear, B=Breeze Rod, S=Zombie Skull, N=Netherite Ingot.</p><p><strong>Active — Soulfire Storm:</strong> Sneak+LeftClick tạo vùng bão lửa linh hồn bán kính 5 trong 5s tại vị trí wielder/hit. Enemy trong vùng nhận 3 HP/s và Wither I; wielder trả 4 HP hiện tại; cooldown 40s.</p><p><strong>Passive:</strong> khi cầm được miễn/giảm fire-lava damage, melee đốt target bằng soul fire 3s.</p><p><strong>Curse:</strong> hunger drain x2 vì linh hồn cháy liên tục; active luôn thu wielder health cost (4 HP), kể cả khi không trúng nhiều target.</p><p><strong>Animation/Particles:</strong> hold effect là <code>SOUL_FIRE_FLAME</code> bám quanh đầu búa như lửa xanh nhỏ; active phát 5 pulse mỗi giây, mỗi pulse là vòng soul flame lan từ tâm ra radius 5, sau đó <code>SOUL</code> bay lên; sound firecharge mở màn, campfire crackle nền, extinguish nhỏ khi hết TTL. Task phải dừng đúng sau 5s.</p><p><strong>Lore chuẩn:</strong> 1) Búa hỏa thiêu hồn đổi máu chủ lấy lửa xanh nuốt linh hồn. 2) Active: ngồi + đánh tạo bão soul fire 5s radius 5, tốn 4 HP. 3) Passive: kháng lửa/lava và melee đốt soul fire. 4) Curse: đói nhanh, active luôn thu máu hiện tại.</p></section>
+F N F</pre><p>F=Soul Campfire, C=Soulfire Core, G=Ghast Tear, B=Breeze Rod, S=Zombie Head, N=Netherite Ingot.</p><p><strong>Active — Soulfire Storm:</strong> Sneak+LeftClick tạo vùng bão lửa linh hồn bán kính 5 trong 5s tại vị trí wielder/hit. Enemy trong vùng nhận 3 HP/s và Wither I; wielder trả 4 HP hiện tại; cooldown 40s.</p><p><strong>Passive:</strong> khi cầm được miễn/giảm fire-lava damage, melee đốt target bằng soul fire 3s.</p><p><strong>Curse:</strong> hunger drain x2 vì linh hồn cháy liên tục; active luôn thu wielder health cost (4 HP), kể cả khi không trúng nhiều target.</p><p><strong>Animation/Particles:</strong> hold effect là <code>SOUL_FIRE_FLAME</code> bám quanh đầu búa như lửa xanh nhỏ; active phát 5 pulse mỗi giây, mỗi pulse là vòng soul flame lan từ tâm ra radius 5, sau đó <code>SOUL</code> bay lên; sound firecharge mở màn, campfire crackle nền, extinguish nhỏ khi hết TTL. Task phải dừng đúng sau 5s.</p><p><strong>Lore chuẩn:</strong> 1) Búa hỏa thiêu hồn đổi máu chủ lấy lửa xanh nuốt linh hồn. 2) Active: ngồi + đánh tạo bão soul fire 5s radius 5, tốn 4 HP. 3) Passive: kháng lửa/lava và melee đốt soul fire. 4) Curse: đói nhanh, active luôn thu máu hiện tại.</p></section>
     </section>
 
     <section id="particles">
@@ -274,6 +275,27 @@ F N F</pre><p>F=Soul Campfire, C=Soulfire Core, G=Ghast Tear, B=Breeze Rod, S=Zo
       <h3>Phase 3C — Gameplay Mechanics</h3><ul><li>Chaos/Void deep mechanics.</li><li>Other wielder balance validation.</li></ul>
       <h3>Phase 3D — Particle & QA</h3><ul><li>Full particle/sound profile coverage.</li><li>Forge wielder tests and hotbar safety tests.</li></ul>
       <h3>Phase 4 — Spear</h3><ul><li>Only after Phase 3 Mace passes.</li><li>Re-enable spear gameplay intentionally with new docs.</li></ul>
+    </section>
+
+    <section id="phase3-updates">
+      <h2>15. Phase 3 Updates & Hotfixes</h2>
+      <h3>15.1 Kiếm Cổ Nguyền (Cursed Sword) & Trạng Thái Nguyền Rủa</h3>
+      <ul>
+        <li><strong>Vũ khí Cursed Sword (PDC: <code>item_id: cursed_sword</code>):</strong> Rèn từ Ruined Core + Netherite Ingot + Stick.</li>
+        <li><strong>Gameplay:</strong> Khi cận chiến đánh người chơi khác, có <strong>0.5% cơ hội</strong> truyền trạng thái nguyền rủa (Curse State) cho nạn nhân. Ngược lại (<strong>99.5% cơ hội</strong>), bản thân wielder sẽ nhận lời nguyền. Kiếm gãy lập tức sau 1 hit (durability = 1).</li>
+        <li><strong>Trạng thái nguyền rủa (Cursed State):</strong> Khi bị nguyền rủa, nếu người chơi bị giết sẽ có <strong>0.2% cơ hội</strong> rơi ra đầu người chơi (<code>PLAYER_HEAD</code>). Khi rơi đầu thành công, trạng thái nguyền rủa sẽ biến mất ngay lập tức.</li>
+      </ul>
+      <h3>15.2 Hệ thống Định Vị Cổ Vật (Mace Tracker BossBar)</h3>
+      <ul>
+        <li><strong>Cơ chế:</strong> Khi một vũ khí Mace độc quyền (Singleton) được rèn thành công, một thanh <strong>BossBar đếm ngược 5 phút</strong> sẽ xuất hiện cho toàn server để theo dõi vị trí của mace.</li>
+        <li><strong>Cập nhật vị trí:</strong> BossBar sẽ liên tục hiển thị tọa độ X, Y, Z và World của người chơi đang cầm mace (hoặc tọa độ của vật phẩm thực thể rơi trên đất).</li>
+      </ul>
+      <h3>15.3 Discord Webhook & Explosion Upgrades</h3>
+      <ul>
+        <li><strong>Discord Webhook:</strong> Gửi thông báo chi tiết, định dạng embed premium đẹp mắt về Discord khi có người chơi chế tạo thành công hoặc nhặt được các vũ khí Mace cổ vật.</li>
+        <li><strong>Bảo vệ Thùng Đồ (Strict Drop Explode):</strong> Nếu người chơi cố tình cất giấu mace vào hòm đồ, shulker box, dispenser... hoặc drop ra đất (chủ động hay bị động), một vụ nổ <strong>lực nổ 2.0F</strong> sẽ kích hoạt (phá khối, gây damage nhưng bảo vệ vật phẩm mace không bị phá hủy).</li>
+        <li><strong>Lò rèn hoàn tất (Lodestone Forge Upgrade):</strong> Khi đếm ngược nung búa hoàn tất, một tia sét đánh xuống trước, sau đó kích hoạt vụ nổ <strong>lực nổ 6.0F</strong> mạnh mẽ phá hủy khối xung quanh và tạo lửa cháy dữ dội.</li>
+      </ul>
     </section>
   </main>
 </div>

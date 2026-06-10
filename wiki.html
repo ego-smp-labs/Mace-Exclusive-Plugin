@@ -393,6 +393,7 @@
     .weapon-row.gravity { border-left: 6px solid #48cae4; }
     .weapon-row.sonic { border-left: 6px solid #00b4d8; }
     .weapon-row.soulfire { border-left: 6px solid #00f5d4; }
+    .weapon-row.cursedsword { border-left: 6px solid #7209b7; }
 
     .weapon-info-left {
       display: flex;
@@ -597,12 +598,13 @@
         <span class="nav-label">Cơ bản</span>
         <a href="#about" class="nav-link active" onclick="activateLink(this)">📖 Hướng Dẫn Kích Hoạt</a>
         <a href="#lodestone-forge" class="nav-link" onclick="activateLink(this)">⚡ Lò Rèn Cổ Vật</a>
+        <a href="#curse-state" class="nav-link" onclick="activateLink(this)">☠ Trạng Thái Nguyền Rủa</a>
         <a href="#cores" class="nav-link" onclick="activateLink(this)">💎 Lõi Cổ Vật (Cores)</a>
         <a href="#materials" class="nav-link" onclick="activateLink(this)">🔮 Vật Liệu Dị Biệt</a>
       </div>
 
       <div class="nav-group">
-        <span class="nav-label">Vũ khí (Maces)</span>
+        <span class="nav-label">Vũ khí & Cổ vật</span>
         <a href="#w-power" class="nav-link" onclick="activateLink(this)">⚡ Búa Quyền Năng</a>
         <a href="#w-void" class="nav-link" onclick="activateLink(this)">🌀 Búa Vực Thẳm</a>
         <a href="#w-chaos" class="nav-link" onclick="activateLink(this)">🎲 Búa Hỗn Loạn</a>
@@ -610,6 +612,7 @@
         <a href="#w-gravity" class="nav-link" onclick="activateLink(this)">🌌 Búa Trọng Lực</a>
         <a href="#w-sonic" class="nav-link" onclick="activateLink(this)">🔊 Búa Tiếng Vọng</a>
         <a href="#w-soulfire" class="nav-link" onclick="activateLink(this)">🔥 Búa Hỏa Thiêu Hồn</a>
+        <a href="#w-cursed-sword" class="nav-link" onclick="activateLink(this)">☠ Kiếm Cổ Nguyền</a>
       </div>
     </aside>
 
@@ -673,6 +676,30 @@
         </div>
       </section>
 
+      <!-- Curse State Section -->
+      <section class="card-panel" id="curse-state">
+        <h2 class="section-title" style="color: var(--color-curse);">☠ TRẠNG THÁI NGUYỀN RỦA (CURSED STATE)</h2>
+        <p>Trạng thái nguyền rủa là một hiệu ứng tiêu cực kéo dài ám ảnh người chơi khi họ tiếp xúc hoặc thất bại trong việc kiểm soát các ma pháp cổ vật mạnh mẽ.</p>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+          <div class="card-panel" style="background: var(--panel-dark); margin: 0;">
+            <h3 style="color: var(--color-curse); font-size: 1.1rem; margin-bottom: 8px;">🔥 Cách thức dính Lời Nguyền:</h3>
+            <ul style="padding-left: 20px; margin: 0; font-size: 0.9rem; color: #b7a9ca;">
+              <li><strong>Chế tạo thất bại:</strong> Rèn lỗi lõi ma thuật (như thất bại 80% khi chế tạo End Core).</li>
+              <li><strong>Sử dụng Kiếm Cổ Nguyền:</strong> Tấn công bằng Kiếm Cổ Nguyền có 99.5% cơ hội tự nguyền rủa bản thân, hoặc 0.5% cơ hội truyền lời nguyền cho nạn nhân bị chém.</li>
+            </ul>
+          </div>
+          <div class="card-panel" style="background: var(--panel-dark); margin: 0;">
+            <h3 style="color: var(--color-green); font-size: 1.1rem; margin-bottom: 8px;">💀 Rơi đầu người chơi & Giải lời nguyền:</h3>
+            <ul style="padding-left: 20px; margin: 0; font-size: 0.9rem; color: #b7a9ca;">
+              <li><strong>Rơi đầu khi chết:</strong> Khi người chơi đang bị nguyền rủa chết đi, có <strong>0.2% cơ hội</strong> rơi ra vật phẩm đầu của chính mình (<code>Player Head</code>).</li>
+              <li><strong>Hóa giải lập tức:</strong> Nếu đầu người chơi rơi thành công khi chết, Lời nguyền trên người chơi đó sẽ <strong>biến mất ngay lập tức</strong>.</li>
+              <li><strong>Nguyên liệu quý:</strong> Đầu người chơi thu thập được từ lời nguyền là nguyên liệu bắt buộc để chế tạo <strong>Lõi Huyết Ma (Blood Core)</strong>.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
       <!-- Artifact Cores -->
       <section class="card-panel" id="cores">
         <h2 class="section-title">💎 LÕI CỔ VẬT MA PHÁP (ARTIFACT CORES)</h2>
@@ -729,10 +756,31 @@
               <td class="c-blood" style="font-weight: bold;">🩸 Blood Core<br><span style="font-size: 0.75rem; color: var(--color-gray);">blood_core</span></td>
               <td><strong>Bất ổn (Rút máu):</strong> Mỗi 10 giây khi ở trong túi đồ wielder, có 10% cơ hội gây <strong>2 HP (1 tim) sát thương trực tiếp</strong> xuyên giáp.</td>
               <td>
-                <strong>Nghi thức Hiến tế Máu tại Nether:</strong><br>
-                1. Thả một vật phẩm <strong>Heavy Core</strong> được đặt trên một khối cỏ địa ngục đỏ <strong>Crimson Nylium</strong> ở thế giới Nether.<br>
-                2. Cầm <strong>Kiếm Netherite (Netherite Sword)</strong> trên tay chính, tìm và click chuột phải vào đối tượng hiến tế (là <strong>Piglin</strong>, <strong>Piglin Brute</strong>, hoặc <strong>Người chơi khác</strong>) đứng gần khối Heavy Core (trong vòng 6 khối).<br>
-                3. Kết quả: Sét đánh xuống mục tiêu, mục tiêu chịu sát thương hoặc biến mất (nếu là người chơi dính 6 HP sát thương; quái vật bị xóa sổ), và khối Heavy Core trên đất biến đổi thành **Blood Core**.
+                <strong style="color: var(--color-gold);">Cách 1: Chế Tạo Bàn Chế Tạo</strong><br>
+                <div class="mc-crafting-table-ui" style="scale: 0.85; margin: 5px 0;">
+                  <div class="mc-grid-3x3">
+                    <div class="mc-slot" data-mc-tooltip="Không có"></div>
+                    <div class="mc-slot" data-mc-tooltip="&fRedstone Block">R</div>
+                    <div class="mc-slot" data-mc-tooltip="Không có"></div>
+                    
+                    <div class="mc-slot" data-mc-tooltip="&fPlayer Head">P</div>
+                    <div class="mc-slot" data-mc-tooltip="&fHeavy Core">H</div>
+                    <div class="mc-slot" data-mc-tooltip="&fPlayer Head">P</div>
+                    
+                    <div class="mc-slot" data-mc-tooltip="Không có"></div>
+                    <div class="mc-slot" data-mc-tooltip="&fRedstone Block">R</div>
+                    <div class="mc-slot" data-mc-tooltip="Không có"></div>
+                  </div>
+                </div>
+                <div style="font-size: 0.75rem; color: #b7a9ca; margin-bottom: 10px;">
+                  P = Player Head, H = Heavy Core, R = Redstone Block
+                </div>
+                <strong style="color: var(--color-gold);">Cách 2: Nghi thức Hiến tế Nether</strong><br>
+                <span style="font-size: 0.75rem; line-height: 1.4; display: block; color: #b7a9ca;">
+                  1. Thả <strong>Heavy Core</strong> trên cỏ địa ngục đỏ <strong>Crimson Nylium</strong> ở Nether.<br>
+                  2. Cầm <strong>Kiếm Netherite</strong> chuột phải vào đối tượng hiến tế (Piglin/Piglin Brute/Người chơi) gần khối (bán kính 6).<br>
+                  3. Sét đánh xuống mục tiêu chịu sát thương, biến đổi Heavy Core thành Blood Core.
+                </span>
               </td>
             </tr>
             <tr>
@@ -751,6 +799,13 @@
                 <strong>Nghi thức Khe Nứt Không Gian:</strong><br>
                 Ném một vật phẩm <strong>Heavy Core</strong> bay trực tiếp xuyên qua luồng cổng <strong>End Portal</strong> đang hoạt động.<br>
                 Có <strong>20% cơ hội</strong> biến đổi thành **End Core** và <strong>80% cơ hội</strong> hỏng thành **Ruined Core**.
+              </td>
+            </tr>
+            <tr>
+              <td class="c-sculk" style="font-weight: bold; color: var(--color-gray) !important;">💀 Ruined Core<br><span style="font-size: 0.75rem; color: var(--color-gray);">ruined_core</span></td>
+              <td><strong>Bất ổn:</strong> Lõi phế tích sụp đổ từ nghi thức rèn thất bại. Không thể dùng chế tạo các loại búa Mace, nhưng là vật liệu chính để rèn <strong>Kiếm Cổ Nguyền (Cursed Sword)</strong>.</td>
+              <td>
+                Có <strong>80% cơ hội</strong> nhận được khi rèn thất bại lõi <strong>End Core</strong> bằng cách ném Heavy Core qua cổng dịch chuyển End Portal đang hoạt động.
               </td>
             </tr>
           </tbody>
@@ -1157,7 +1212,7 @@
                   
                   <div class="mc-slot" data-mc-tooltip="&fGhast Tear">G</div>
                   <div class="mc-slot" data-mc-tooltip="&fBreeze Rod">B</div>
-                  <div class="mc-slot" data-mc-tooltip="&fZombie Skull">S</div>
+                  <div class="mc-slot" data-mc-tooltip="&fZombie Head">S</div>
                   
                   <div class="mc-slot" data-mc-tooltip="&fSoul Campfire">F</div>
                   <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
@@ -1172,9 +1227,63 @@
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">C</span> Soulfire Core</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">B</span> Breeze Rod</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">F</span> Soul Campfire</span>
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Zombie Skull</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Zombie Head</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">G</span> Ghast Tear</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Ingot</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 8. Cursed Sword -->
+          <div class="weapon-row cursedsword" id="w-cursed-sword">
+            <div class="weapon-info-left">
+              <div class="weapon-header">
+                <span style="font-size: 1.8rem;">☠</span>
+                <h3 class="weapon-name" style="color: #f72585;">Kiếm Cổ Nguyền (Cursed Sword)</h3>
+              </div>
+              <p class="weapon-desc">Thanh kiếm rèn từ một lõi phế tích bị hỏng. Đòn đánh duy nhất găm sâu nguyền rủa đen tối lên mục tiêu hoặc phản phệ dữ dội lên chính chủ nhân.</p>
+              
+              <div class="mc-tooltip-box">
+                <span class="mcc-title" style="color: #f72585;">Cursed Sword</span>
+                <span class="mcc-text" style="color: var(--color-gray);">A dark blade forged from a ruined core.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-gold); font-weight: bold;">⚡ Đòn đánh nguyền rủa:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Khi tấn công người chơi khác, có <strong>0.5% cơ hội</strong> truyền trạng thái nguyền rủa cho mục tiêu.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-curse); font-weight: bold;">☠ Curse — Phản phệ nguyền rủa:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Nếu không trúng 0.5% truyền cho đối phương, người sử dụng kiếm (99.5%) sẽ lập tức bị dính <strong>Trạng thái Nguyền Rủa</strong>.</span>
+                <br>
+                <span class="mcc-text" style="color: #ff0000; font-weight: bold;">⚠️ Đặc tính gãy kiếm:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Thanh kiếm cực kỳ mỏng manh và sẽ <strong>gãy nát lập tức</strong> ngay sau một đòn đánh duy nhất bất kể trúng mục tiêu nào.</span>
+              </div>
+              
+              <div class="weapon-meta-specs">Custom Model Data: 5001</div>
+            </div>
+            
+            <div class="weapon-visuals-right">
+              <div class="mc-crafting-table-ui">
+                <div class="mc-grid-3x3">
+                  <div class="mc-slot" data-mc-tooltip="Không có"></div>
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
+                  <div class="mc-slot" data-mc-tooltip="Không có"></div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="Không có"></div>
+                  <div class="mc-slot" data-mc-tooltip="&8Ruined Core">R</div>
+                  <div class="mc-slot" data-mc-tooltip="Không có"></div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="Không có"></div>
+                  <div class="mc-slot" data-mc-tooltip="&fStick">S</div>
+                  <div class="mc-slot" data-mc-tooltip="Không có"></div>
+                </div>
+                <div class="mc-arrow-icon">➔</div>
+                <div class="mc-result-wrap">
+                  <div class="mc-slot mc-result enchanted" data-mc-tooltip="&c&lCursed Sword">⚒</div>
+                </div>
+              </div>
+              <div class="ingredient-key-list">
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Ingot</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">R</span> Ruined Core</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Stick</span>
               </div>
             </div>
           </div>
