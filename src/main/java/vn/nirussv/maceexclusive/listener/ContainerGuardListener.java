@@ -19,6 +19,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.mace.MaceManager;
+import org.bukkit.event.player.PlayerDropItemEvent;
 
 public final class ContainerGuardListener implements Listener {
 
@@ -94,8 +95,50 @@ public final class ContainerGuardListener implements Listener {
             || event.getClickedInventory() == topInventory
             || maceManager.isExclusiveItem(cursor)
             || maceManager.isExclusiveItem(hotbar)) {
+            
             event.setCancelled(true);
-            player.sendMessage(configManager.getPrefixedMessage("mace.cannot-move"));
+
+            if (configManager.isStrictModeDrop()) {
+                ItemStack exclusiveItem = null;
+                if (maceManager.isExclusiveItem(cursor)) {
+                    exclusiveItem = cursor.clone();
+                    event.setCursor(null);
+                } else if (event.isShiftClick() && maceManager.isExclusiveItem(current)) {
+                    exclusiveItem = current.clone();
+                    event.setCurrentItem(null);
+                } else if (maceManager.isExclusiveItem(current) && event.getClickedInventory() == topInventory) {
+                    exclusiveItem = current.clone();
+                    event.setCurrentItem(null);
+                } else if (maceManager.isExclusiveItem(hotbar)) {
+                    exclusiveItem = hotbar.clone();
+                    player.getInventory().setItem(event.getHotbarButton(), null);
+                }
+
+                if (exclusiveItem != null) {
+                    player.getWorld().dropItemNaturally(player.getLocation(), exclusiveItem);
+                    player.getWorld().createExplosion(player.getLocation(), 2.0F, false, true);
+                    player.sendMessage(configManager.getPrefixedMessage("mace.strict-mode-drop"));
+                }
+            } else {
+                player.sendMessage(configManager.getPrefixedMessage("mace.cannot-move"));
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        ItemStack item = event.getItemDrop().getItemStack();
+        if (maceManager.isExclusiveItem(item)) {
+            Player player = event.getPlayer();
+            if (!configManager.isDropAllowed()) {
+                event.setCancelled(true);
+                player.sendMessage(configManager.getPrefixedMessage("mace.cannot-drop"));
+                return;
+            }
+            if (configManager.isStrictMode()) {
+                org.bukkit.entity.Item itemDrop = event.getItemDrop();
+                itemDrop.getWorld().createExplosion(itemDrop.getLocation(), 2.0F, false, true);
+            }
         }
     }
 

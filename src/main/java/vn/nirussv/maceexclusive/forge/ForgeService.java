@@ -280,7 +280,9 @@ public final class ForgeService {
                 + " owner=" + session.owner() + " location=" + formatLocation(spawnLocation));
             return;
         }
-        if (configManager.getCompletionExplosionPower() > 0f) world.createExplosion(spawnLocation, configManager.getCompletionExplosionPower(), false, false);
+        world.strikeLightning(spawnLocation);
+        float explosionPower = Math.max(6.0f, configManager.getCompletionExplosionPower());
+        world.createExplosion(spawnLocation, explosionPower, true, true);
         visualService.playCompletion(session.blockLocation().getBlock());
         Item item = world.dropItem(spawnLocation, result);
         item.setInvulnerable(true);

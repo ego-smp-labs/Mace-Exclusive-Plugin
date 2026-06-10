@@ -15,6 +15,7 @@ import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
 import vn.nirussv.maceexclusive.item.ItemRegistry;
 import vn.nirussv.maceexclusive.item.PdcKeys;
+import vn.nirussv.maceexclusive.discord.DiscordWebhookService;
 
 import java.time.Duration;
 import java.util.Map;
@@ -31,13 +32,17 @@ public class MaceManager {
     private final ItemMatcher itemMatcher;
     private final ItemRegistry itemRegistry;
     private final PdcKeys keys;
+    private final MaceTrackerService trackerService;
+    private final DiscordWebhookService webhookService;
 
-    public MaceManager(MaceRepository repository, ConfigManager configManager, ItemMatcher itemMatcher, ItemRegistry itemRegistry, PdcKeys keys) {
+    public MaceManager(MaceRepository repository, ConfigManager configManager, ItemMatcher itemMatcher, ItemRegistry itemRegistry, PdcKeys keys, MaceTrackerService trackerService, DiscordWebhookService webhookService) {
         this.repository = repository;
         this.configManager = configManager;
         this.itemMatcher = itemMatcher;
         this.itemRegistry = itemRegistry;
         this.keys = keys;
+        this.trackerService = trackerService;
+        this.webhookService = webhookService;
     }
 
     public Optional<String> getExclusiveItemKey(ItemStack item) {
@@ -113,6 +118,12 @@ public class MaceManager {
             player.sendMessage(configManager.getPrefixedMessage(messagePrefix(id) + "received", Map.of("name", displayName(id), "player", player.getName())));
         } else {
             broadcastOwnership(player, location, id, reason);
+            if (configManager.isSingletonItem(id)) {
+                if (reason == AcquisitionReason.CRAFTED) {
+                    trackerService.startTracking(id);
+                }
+                webhookService.sendMaceNotification(player.getName(), displayName(id), reason.name(), location, id);
+            }
         }
         showAcquisitionUI(player, id);
     }

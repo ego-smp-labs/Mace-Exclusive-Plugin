@@ -58,3 +58,8 @@ forge:
   duration-seconds: 300
   completion-explosion-power: 4.0
   abort-explosion-power: 1.5
+
+discord:
+  enabled: false
+  webhook-url: ""
+

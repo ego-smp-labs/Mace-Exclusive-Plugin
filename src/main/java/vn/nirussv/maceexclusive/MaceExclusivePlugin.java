@@ -27,6 +27,8 @@ import vn.nirussv.maceexclusive.listener.MaceListener;
 import vn.nirussv.maceexclusive.listener.SpecialItemListener;
 import vn.nirussv.maceexclusive.mace.MaceManager;
 import vn.nirussv.maceexclusive.mace.MaceRepository;
+import vn.nirussv.maceexclusive.mace.MaceTrackerService;
+import vn.nirussv.maceexclusive.discord.DiscordWebhookService;
 import vn.nirussv.maceexclusive.persistence.ForgeSessionStore;
 import vn.nirussv.maceexclusive.recipe.RecipeRegistry;
 
@@ -39,6 +41,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
     private MaceManager maceManager;
     private CurseService curseService;
     private LockoutService lockoutService;
+    private MaceTrackerService maceTrackerService;
     private AbilityService abilityService;
     private FreezeService freezeService;
     private RecipeRegistry recipeRegistry;
@@ -68,7 +71,9 @@ public class MaceExclusivePlugin extends JavaPlugin {
             this.itemFactory = new ExclusiveItemFactory(configManager, pdcKeys, itemRegistry);
             CoreItemFactory coreItemFactory = new CoreItemFactory(coreRegistry, configManager, pdcKeys);
             this.maceRepository = new MaceRepository(this);
-            this.maceManager = new MaceManager(maceRepository, configManager, itemMatcher, itemRegistry, pdcKeys);
+            this.maceTrackerService = new MaceTrackerService(this, configManager, maceRepository, itemMatcher);
+            DiscordWebhookService discordWebhookService = new DiscordWebhookService(this);
+            this.maceManager = new MaceManager(maceRepository, configManager, itemMatcher, itemRegistry, pdcKeys, maceTrackerService, discordWebhookService);
             this.lockoutService = new LockoutService();
             this.curseService = new CurseService(this, configManager, itemMatcher);
             this.freezeService = new FreezeService(this);
@@ -86,6 +91,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
             }
 
             getServer().getPluginManager().registerEvents(new MaceListener(maceManager), this);
+            getServer().getPluginManager().registerEvents(maceTrackerService, this);
             getServer().getPluginManager().registerEvents(new ContainerGuardListener(maceManager, configManager), this);
             getServer().getPluginManager().registerEvents(new EffectMaceListener(this, maceManager, configManager), this);
             getServer().getPluginManager().registerEvents(new AbilityListener(abilityService), this);
@@ -113,6 +119,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (maceTrackerService != null) maceTrackerService.shutdown();
         if (curseService != null) curseService.shutdown();
         if (freezeService != null) freezeService.shutdown();
         if (forgeService != null) forgeService.shutdown();
