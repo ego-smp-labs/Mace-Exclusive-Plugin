@@ -18,10 +18,13 @@ You are a **Senior Software Engineer & Architect** with 10+ years of experience 
   - Identify custom items using the Spigot PDC API instead of parsing display names or lore.
   - Create unique `NamespacedKey` instances using the plugin instance.
   - Examples: `mace_power_item`, `mace_chaos_item`, and `<mace_type>_owner`.
+- **Offhand Slot Validation**:
+  - Always check/scan the offhand slot (`player.getInventory().getItemInOffHand()`) during player inventory validation, carry restrictions, and totem checks, since `getContents()` does not include the offhand or armor slots.
 - **Event Listeners**:
   - Always register listeners in `onEnable` via Spigot's `PluginManager`.
   - Annotate event handlers with appropriate `@EventHandler` priorities. Use `ignoreCancelled = true` when monitoring/altering results to preserve compatibility with other plugins.
   - Do NOT run blocking code (such as database calls or synchronous I/O) inside event handlers.
+  - When enforcing weapon or item limits in `InventoryClickEvent`, handle `ClickType.SWAP_OFFHAND` specifically to block players from swapping restricted items directly into their offhand slot.
 - **Bukkit Scheduler / Runnables**:
   - Use `BukkitRunnable` subclassing for repeating or delayed tasks (e.g. `MaceEffectTask`, `InventoryShuffleTask`).
   - Keep task logic lightweight. In high-frequency tasks (e.g., running every 1-5 ticks), avoid heavy collections iteration, allocations, or reflection.

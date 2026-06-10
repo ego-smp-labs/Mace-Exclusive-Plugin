@@ -14,6 +14,7 @@ mace:
   cannot-shift-click: "&cYou cannot Shift-Click craft this item! Craft one at a time."
   strict-mode-drop: "&cThe weapon refuses to be stored! It has been dropped at your feet."
   warning: "&c&lWARNING: &7Holding this weapon reveals your location!"
+  cannot-carry-multiple: "&cYou cannot carry multiple exclusive weapons!"
   title: "%name%"
   subtitle: "&7The artifact has chosen you."
   holder-info: "&7The current holder of %name% is: &b%player%"
@@ -62,6 +63,9 @@ core:
   craft-locked: "&cYou are locked out from crafting cores. (Cursed state active)"
   insufficient-xp: "&cNot enough XP to craft this core."
   craft-failed: "&8[Core Forge] Core shattered during infusion. Lockout applied. A Ruined Core remains."
+  cannot-place: "&cYou cannot place custom cores on the ground!"
+  ego-backfire: "&cThe Ego Core rejects your Y-altitude! You received %damage% hearts of damage."
+  soulfire-burn: "&cThe Soulfire Core bursts into flames!"
 
 special:
   obsidian-chaos-drop: "&2[Mace-Exclusive] A shard of Obsidian Chaos has fallen from the explosion!"

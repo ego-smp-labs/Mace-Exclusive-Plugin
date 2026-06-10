@@ -22,7 +22,7 @@ import java.util.UUID;
 
 public final class CoreCraftListener implements Listener {
 
-    private static final int FREEZE_TICKS = 60;
+    private static final int FREEZE_TICKS = 100;
 
     private final ConfigManager configManager;
     private final CoreRegistry coreRegistry;

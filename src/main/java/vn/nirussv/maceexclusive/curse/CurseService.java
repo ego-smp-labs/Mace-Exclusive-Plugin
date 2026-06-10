@@ -29,6 +29,10 @@ import org.bukkit.scheduler.BukkitTask;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.config.PerformanceConfig;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
+import org.bukkit.Sound;
+import org.bukkit.World;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -52,6 +56,7 @@ public final class CurseService implements Listener {
     private long coreCurseTickCounter;
     private long environmentIntervalTicks;
     private BukkitTask environmentTask;
+    private BukkitTask particleTask;
 
     public CurseService(Plugin plugin, ConfigManager configManager, ItemMatcher itemMatcher) {
         this.plugin = plugin;
@@ -69,12 +74,23 @@ public final class CurseService implements Listener {
             environmentIntervalTicks,
             environmentIntervalTicks
         );
+        long particleTickRate = Math.max(1L, configManager.getPerformanceConfig().holdingEffectTickRate());
+        particleTask = plugin.getServer().getScheduler().runTaskTimer(
+            plugin,
+            this::tickFeetParticles,
+            particleTickRate,
+            particleTickRate
+        );
     }
 
     public void shutdown() {
         if (environmentTask != null) {
             environmentTask.cancel();
             environmentTask = null;
+        }
+        if (particleTask != null) {
+            particleTask.cancel();
+            particleTask = null;
         }
         for (UUID uuid : new HashSet<>(heldCursePlayers)) {
             Player player = plugin.getServer().getPlayer(uuid);
@@ -195,6 +211,8 @@ public final class CurseService implements Listener {
         for (ItemStack item : player.getInventory().getContents()) {
             if (item != null && itemMatcher.is(item, id)) return true;
         }
+        ItemStack offHand = player.getInventory().getItemInOffHand();
+        if (offHand != null && itemMatcher.is(offHand, id)) return true;
         return false;
     }
 
@@ -268,6 +286,12 @@ public final class CurseService implements Listener {
                         dropped = true;
                     }
                 }
+                ItemStack offHand = player.getInventory().getItemInOffHand();
+                if (offHand != null && offHand.getType() == Material.TOTEM_OF_UNDYING) {
+                    player.getInventory().setItemInOffHand(null);
+                    player.getWorld().dropItemNaturally(player.getLocation(), offHand);
+                    dropped = true;
+                }
                 if (dropped) {
                     player.sendMessage(configManager.getMessage("special.totem-dropped"));
                 }
@@ -306,12 +330,19 @@ public final class CurseService implements Listener {
                 player.damage(2.0D);
                 player.getWorld().spawnParticle(Particle.DAMAGE_INDICATOR, player.getLocation().add(0, 1.0, 0), 8, 0.3, 0.4, 0.3, 0.02);
             }
-            if (isHoldingCore(player, "sculk_core") && random.nextDouble() < 0.19D) {
+            if (hasCoreInInventory(player, "sculk_core") && random.nextDouble() < 0.19D) {
                 PotionEffectType darkness = PotionEffectType.getByName("DARKNESS");
                 if (darkness == null) darkness = PotionEffectType.BLINDNESS;
                 player.addPotionEffect(new PotionEffect(darkness, 20 * 29, 0, false, true, true));
                 player.getWorld().spawnParticle(Particle.SCULK_SOUL, player.getLocation().add(0, 1.0, 0), 24, 0.5, 0.6, 0.5, 0.03);
                 player.getWorld().playSound(player.getLocation(), org.bukkit.Sound.ENTITY_WARDEN_HEARTBEAT, 0.8f, 0.7f);
+            }
+        }
+        if (coreCurseTickCounter % (20L * 30L) == 0L) {
+            if (hasCoreInInventory(player, "soulfire_core") && random.nextDouble() < 0.10D) {
+                player.setFireTicks(100);
+                player.getWorld().playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.8f, 1.5f);
+                player.sendActionBar(configManager.getMessage("core.soulfire-burn"));
             }
         }
         if (coreCurseTickCounter % (20L * 60L) == 0L && hasCoreInInventory(player, "end_core") && random.nextDouble() < 0.10D) {
@@ -323,6 +354,8 @@ public final class CurseService implements Listener {
         for (ItemStack item : player.getInventory().getContents()) {
             if (item != null && itemMatcher.isCore(item, id)) return true;
         }
+        ItemStack offHand = player.getInventory().getItemInOffHand();
+        if (offHand != null && itemMatcher.isCore(offHand, id)) return true;
         return false;
     }
 
@@ -349,6 +382,140 @@ public final class CurseService implements Listener {
                 player.getWorld().playSound(player.getLocation(), org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 0.8f, 1.0f);
                 return;
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onXpPickup(PlayerExpChangeEvent event) {
+        Player player = event.getPlayer();
+        if (hasCoreInInventory(player, "ego_core")) {
+            event.setAmount(0);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player attacker)) return;
+        if (hasCoreInInventory(attacker, "ego_core")) {
+            double attackerY = attacker.getLocation().getY();
+            double targetY = event.getEntity().getLocation().getY();
+            if (targetY >= attackerY) {
+                double damage = 2.0D + (random.nextDouble() * 2.0D);
+                attacker.damage(damage);
+                attacker.getWorld().spawnParticle(Particle.DAMAGE_INDICATOR, attacker.getLocation().add(0, 1.0, 0), 8, 0.3, 0.4, 0.3, 0.02);
+                attacker.getWorld().playSound(attacker.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.8f, 0.5f);
+                java.util.Map<String, String> placeholders = java.util.Map.of(
+                    "damage", String.format("%.1f", damage / 2.0)
+                );
+                attacker.sendActionBar(configManager.getMessage("core.ego-backfire", placeholders));
+            }
+        }
+    }
+
+    private void tickFeetParticles() {
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            if (!player.isOnline() || player.isDead()) continue;
+            Particle particle = getFeetParticleType(player);
+            if (particle != null) {
+                spawnFeetParticles(player, particle);
+            }
+        }
+    }
+
+    private Particle getFeetParticleType(Player player) {
+        boolean hasPower = false, hasEgo = false;
+        boolean hasSoulfireMace = false, hasSoulfireCore = false;
+        boolean hasSonic = false, hasSculk = false;
+        boolean hasVoid = false, hasEnd = false;
+        boolean hasChaosMace = false, hasChaosCore = false;
+        boolean hasVampiric = false, hasBlood = false;
+        boolean hasCursedSword = false, hasRuined = false;
+        boolean hasChronos = false;
+
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item == null) continue;
+            Optional<String> idOpt = itemMatcher.match(item);
+            if (idOpt.isPresent()) {
+                String id = idOpt.get();
+                switch (id) {
+                    case "power_mace" -> hasPower = true;
+                    case "soulfire_mace" -> hasSoulfireMace = true;
+                    case "sonic_mace" -> hasSonic = true;
+                    case "void_mace" -> hasVoid = true;
+                    case "chaos_mace" -> hasChaosMace = true;
+                    case "vampiric_mace" -> hasVampiric = true;
+                    case "cursed_sword" -> hasCursedSword = true;
+                    case "chronos_anchor_spear" -> hasChronos = true;
+                }
+            }
+            Optional<String> coreOpt = itemMatcher.matchCore(item);
+            if (coreOpt.isPresent()) {
+                String id = coreOpt.get();
+                switch (id) {
+                    case "ego_core" -> hasEgo = true;
+                    case "soulfire_core" -> hasSoulfireCore = true;
+                    case "sculk_core" -> hasSculk = true;
+                    case "end_core" -> hasEnd = true;
+                    case "chaos_core" -> hasChaosCore = true;
+                    case "blood_core" -> hasBlood = true;
+                    case "ruined_core" -> hasRuined = true;
+                }
+            }
+        }
+
+        ItemStack offHand = player.getInventory().getItemInOffHand();
+        if (offHand != null) {
+            Optional<String> idOpt = itemMatcher.match(offHand);
+            if (idOpt.isPresent()) {
+                String id = idOpt.get();
+                switch (id) {
+                    case "power_mace" -> hasPower = true;
+                    case "soulfire_mace" -> hasSoulfireMace = true;
+                    case "sonic_mace" -> hasSonic = true;
+                    case "void_mace" -> hasVoid = true;
+                    case "chaos_mace" -> hasChaosMace = true;
+                    case "vampiric_mace" -> hasVampiric = true;
+                    case "cursed_sword" -> hasCursedSword = true;
+                    case "chronos_anchor_spear" -> hasChronos = true;
+                }
+            }
+            Optional<String> coreOpt = itemMatcher.matchCore(offHand);
+            if (coreOpt.isPresent()) {
+                String id = coreOpt.get();
+                switch (id) {
+                    case "ego_core" -> hasEgo = true;
+                    case "soulfire_core" -> hasSoulfireCore = true;
+                    case "sculk_core" -> hasSculk = true;
+                    case "end_core" -> hasEnd = true;
+                    case "chaos_core" -> hasChaosCore = true;
+                    case "blood_core" -> hasBlood = true;
+                    case "ruined_core" -> hasRuined = true;
+                }
+            }
+        }
+
+        if (hasPower || hasEgo) return Particle.CRIT;
+        if (hasSoulfireMace || hasSoulfireCore) return Particle.SOUL_FIRE_FLAME;
+        if (hasSonic || hasSculk) return Particle.SCULK_SOUL;
+        if (hasVoid || hasEnd) return Particle.PORTAL;
+        if (hasChaosMace || hasChaosCore) return Particle.WITCH;
+        if (hasVampiric || hasBlood) return Particle.DAMAGE_INDICATOR;
+        if (hasCursedSword || hasRuined) return Particle.SMOKE;
+        if (hasChronos) return Particle.GLOW;
+
+        return null;
+    }
+
+    private void spawnFeetParticles(Player player, Particle particle) {
+        Location loc = player.getLocation();
+        World world = loc.getWorld();
+        if (world == null) return;
+        double radius = 0.5;
+        for (int i = 0; i < 8; i++) {
+            double angle = i * (Math.PI / 4.0);
+            double dx = Math.cos(angle) * radius;
+            double dz = Math.sin(angle) * radius;
+            world.spawnParticle(particle, loc.clone().add(dx, 0.05, dz), 1, 0, 0, 0, 0);
         }
     }
 }

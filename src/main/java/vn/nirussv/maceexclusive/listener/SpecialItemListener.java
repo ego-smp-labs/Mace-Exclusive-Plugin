@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 
 public final class SpecialItemListener implements Listener {
 
@@ -117,6 +118,8 @@ public final class SpecialItemListener implements Listener {
         for (ItemStack item : player.getInventory().getContents()) {
             if (item != null && itemMatcher.is(item, "void_mace")) return true;
         }
+        ItemStack offHand = player.getInventory().getItemInOffHand();
+        if (offHand != null && itemMatcher.is(offHand, "void_mace")) return true;
         return false;
     }
 
@@ -182,6 +185,15 @@ public final class SpecialItemListener implements Listener {
                 player.getWorld().playSound(player.getLocation(), org.bukkit.Sound.ENTITY_EVOKER_PREPARE_ATTACK, 1.0f, 0.8f);
                 player.sendMessage(configManager.getMessage("nether.cursed-head-forged"));
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onBlockPlace(BlockPlaceEvent event) {
+        ItemStack item = event.getItemInHand();
+        if (itemMatcher.matchCore(item).isPresent()) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(configManager.getMessage("core.cannot-place"));
         }
     }
 }

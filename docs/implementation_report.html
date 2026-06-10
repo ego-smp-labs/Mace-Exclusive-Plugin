@@ -41,4 +41,24 @@
 <li>Verification: grep for <code>RIGHT_CLICK|PlayerPickupItemEvent|Particle.FLASH|%namey|Xnamey</code> in active source/resources returned no files. Build passed with the required 120000ms timeout. Jar resource listing confirmed config/lang plus all bundled item/core YAMLs.</li>
 <li>Manual QA TODO: delete plugin data folder and start server; verify all files/folders are created, forge charge/complete produces no particle exception, forge complete plus pickup emits one acquisition warning/title/broadcast, clicking owned mace does not replay UI, and use Spark/timings around Gravity/Sonic/Soulfire under load.</li>
 </ul></section>
+<section class="ok"><h2>2026-06-11 Backend pass — 1.0.3 gameplay updates</h2><ul>
+<li>Cursed Player Head Drop: Changed to only drop (20% chance) when killed by another player (PvP only) via <code>PlayerDeathEvent</code>.</li>
+<li>Ego Core: Blocked experience pickup via <code>PlayerExpChangeEvent</code>, and added Y-altitude damage backfire (1-2 hearts of damage when hitting a target at equal/higher altitude, showing Action Bar alerts and playing a tink sound).</li>
+<li>Soulfire Core: Every 30s, 10% chance to set the player on fire for 5s, playing a pling sound and displaying an Action Bar message.</li>
+<li>Sculk Core: Changed darkness instability check to in-inventory wide instead of only when held.</li>
+<li>Core Placement Block: Added <code>BlockPlaceEvent</code> listener in <code>SpecialItemListener</code> to prevent placing custom cores (Ruined, Ego, Soulfire, Sculk, End, Blood) on the ground.</li>
+<li>Core Crafting Timer: Set freeze stationary period to exactly 5 seconds (100 ticks).</li>
+<li>Multi-Weapon Carry Restriction: Expanded the single-slot carry limit to prevent carrying more than one exclusive weapon (Maces, Spears/Tridents, or Cursed Swords) in the same inventory. Checked on pickup, inventory click, drag, and forge start.</li>
+<li>Foot Particles: Added a high-frequency task running at <code>holding-effect-tick-rate</code> to display matching particle effects under the feet of players carrying any custom mace or core in their inventory.</li>
+<li>Terminology &amp; Docs: Updated <code>wiki.html</code> to replace "wielder" with "người dùng" or "người sở hữu", and synchronized all gameplay rules/instability descriptions.</li>
+<li>Verification: Gradle build completed successfully.</li>
+</ul></section>
+<section class="ok"><h2>2026-06-11 Backend pass — 1.0.3 to 1.0.4 updates</h2><ul>
+<li>Bảo vệ Khối Core rơi: Cập nhật <code>onEntityDamage</code> để ngăn chặn lửa/lava/nổ phá hủy các custom Cores rơi trên mặt đất, tương tự như vũ khí đặc biệt.</li>
+<li>Ngăn chặn Lách Túi đồ qua Offhand: Cập nhật <code>hasExclusiveWeapon</code> và <code>countExclusiveWeapons</code> ở các Listener để kiểm tra cả ô tay phụ (Offhand).</li>
+<li>Xử lý Sự kiện click Swap Offhand: Chặn người chơi click phím <code>F</code> (hoặc ClickType.SWAP_OFFHAND) từ rương hoặc container để chuyển vũ khí đặc biệt vào ô tay phụ khi đã có vũ khí đặc biệt khác trong người.</li>
+<li>Sửa lỗi Lách Totem của Búa Void: Cập nhật task thả Totem tự động và kiểm tra hồi sinh để phát hiện cả Totem và Búa Void đang nằm ở ô tay phụ (Offhand).</li>
+<li>Sửa lỗi Lách Hiệu ứng Lõi: Cập nhật quét hòm đồ bao gồm cả tay phụ để các hình phạt của lõi (Ego, Soulfire, Sculk) kích hoạt đầy đủ.</li>
+<li>Bump Version: Nâng phiên bản plugin từ 1.0.3 lên 1.0.4.</li>
+</ul></section>
 </main></body></html>

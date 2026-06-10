@@ -74,7 +74,7 @@ public final class CursedSwordListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onCursedPlayerDeath(PlayerDeathEvent event) {
         Player victim = event.getEntity();
-        if (lockoutService.isCursed(victim)) {
+        if (lockoutService.isCursed(victim) && victim.getKiller() != null) {
             double roll = random.nextDouble();
             if (roll < 0.20) { // 20% chance to drop head
                 ItemStack head = new ItemStack(Material.PLAYER_HEAD);

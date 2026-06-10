@@ -40,6 +40,10 @@ public final class ForgeListener implements Listener {
             player.sendMessage(configManager.getMessage("forge.take-one-at-a-time"));
             return;
         }
+        if (hasExclusiveWeapon(player)) {
+            player.sendMessage(configManager.getPrefixedMessage("mace.cannot-carry-multiple"));
+            return;
+        }
         if (forgeService.tryStartFromCraft(player, event.getInventory(), itemId)) {
             player.sendMessage(configManager.getMessage("forge.ritual-started"));
             double damage = (5 + java.util.concurrent.ThreadLocalRandom.current().nextInt(5)) * 2.0D;
@@ -77,5 +81,30 @@ public final class ForgeListener implements Listener {
             if (forgeService.isForgeBlock(block)) forgeBlocks.add(block);
         }
         for (Block forgeBlock : forgeBlocks) forgeService.abort(forgeBlock, true);
+    }
+
+    private boolean hasExclusiveWeapon(Player player) {
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null) {
+                java.util.Optional<String> idOpt = maceManager.getExclusiveItemKey(item);
+                if (idOpt.isPresent()) {
+                    String id = idOpt.get();
+                    if (id.endsWith("_mace") || id.endsWith("_spear") || id.equals("cursed_sword")) {
+                        return true;
+                    }
+                }
+            }
+        }
+        ItemStack offHand = player.getInventory().getItemInOffHand();
+        if (offHand != null) {
+            java.util.Optional<String> idOpt = maceManager.getExclusiveItemKey(offHand);
+            if (idOpt.isPresent()) {
+                String id = idOpt.get();
+                if (id.endsWith("_mace") || id.endsWith("_spear") || id.equals("cursed_sword")) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

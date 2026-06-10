@@ -14,6 +14,7 @@ mace:
   cannot-shift-click: "&cBạn không thể chế tạo nhanh (Shift-Click) vật phẩm này! Hãy chế từng cái một."
   strict-mode-drop: "&cVũ khí từ chối bị cất giữ! Nó đã rơi dưới chân bạn."
   warning: "&c&lNGUY HIỂM: &7Cầm vũ khí này sẽ làm lộ vị trí của bạn!"
+  cannot-carry-multiple: "&cBạn không thể mang nhiều vũ khí đặc biệt cùng lúc!"
   title: "%name%"
   subtitle: "&7Cổ vật đã chọn bạn."
   holder-info: "&7Người giữ %name% hiện tại là: &b%player%"
@@ -62,6 +63,9 @@ core:
   craft-locked: "&cBạn đang trong trạng thái bị khóa chế tạo core. (Trạng thái nguyền rủa đang hoạt động)"
   insufficient-xp: "&cKhông đủ XP để chế tạo core này."
   craft-failed: "&8[Core Forge] Core vỡ vụn trong quá trình truyền năng lượng. Lockout được áp dụng. Một Ruined Core đã được tạo ra."
+  cannot-place: "&cBạn không thể đặt các lõi (Core) tùy chỉnh xuống đất!"
+  ego-backfire: "&cEgo Core từ chối độ cao của bạn! Bạn nhận %damage% tim sát thương."
+  soulfire-burn: "&cLõi Soulfire bùng cháy!"
 
 special:
   obsidian-chaos-drop: "&2[Mace-Exclusive] Một mảnh Obsidian Chaos đã rơi ra từ vụ nổ!"

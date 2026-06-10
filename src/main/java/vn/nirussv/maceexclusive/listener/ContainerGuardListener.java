@@ -184,8 +184,7 @@ public final class ContainerGuardListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof org.bukkit.entity.Item item) {
-            java.util.Optional<String> id = maceManager.getExclusiveItemKey(item.getItemStack());
-            if (id.isPresent()) {
+            if (maceManager.isExclusiveItem(item.getItemStack())) {
                 if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
                     return; // Let the item be destroyed by the void. Admins will reset it manually if needed.
                 }
@@ -198,6 +197,139 @@ public final class ContainerGuardListener implements Listener {
     public void onItemDespawn(ItemDespawnEvent event) {
         if (maceManager.isExclusiveItem(event.getEntity().getItemStack())) {
             event.setCancelled(true);
+        }
+    }
+
+    private boolean isExclusiveWeapon(ItemStack item) {
+        if (item == null) return false;
+        java.util.Optional<String> idOpt = maceManager.getExclusiveItemKey(item);
+        if (idOpt.isEmpty()) return false;
+        String id = idOpt.get();
+        return id.endsWith("_mace") || id.endsWith("_spear") || id.equals("cursed_sword");
+    }
+
+    private boolean hasExclusiveWeapon(Player player) {
+        return hasExclusiveWeapon(player, true);
+    }
+
+    private boolean hasExclusiveWeapon(Player player, boolean includeOffHand) {
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && isExclusiveWeapon(item)) {
+                return true;
+            }
+        }
+        if (includeOffHand) {
+            ItemStack offHand = player.getInventory().getItemInOffHand();
+            if (offHand != null && isExclusiveWeapon(offHand)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int countExclusiveWeapons(Player player) {
+        return countExclusiveWeapons(player, true);
+    }
+
+    private int countExclusiveWeapons(Player player, boolean includeOffHand) {
+        int count = 0;
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && isExclusiveWeapon(item)) {
+                count++;
+            }
+        }
+        if (includeOffHand) {
+            ItemStack offHand = player.getInventory().getItemInOffHand();
+            if (offHand != null && isExclusiveWeapon(offHand)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onWeaponPickupLimit(EntityPickupItemEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        ItemStack item = event.getItem().getItemStack();
+        if (isExclusiveWeapon(item)) {
+            if (hasExclusiveWeapon(player)) {
+                event.setCancelled(true);
+                player.sendMessage(configManager.getPrefixedMessage("mace.cannot-carry-multiple"));
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onWeaponInventoryClickLimit(InventoryClickEvent event) {
+        if (!(event.getWhoClicked() instanceof Player player)) return;
+
+        ItemStack current = event.getCurrentItem();
+        ItemStack cursor = event.getCursor();
+
+        // 1. Shift-clicking a weapon into the player's inventory
+        if (event.isShiftClick() && event.getClickedInventory() != player.getInventory()) {
+            if (isExclusiveWeapon(current) && hasExclusiveWeapon(player)) {
+                event.setCancelled(true);
+                player.sendMessage(configManager.getPrefixedMessage("mace.cannot-carry-multiple"));
+                return;
+            }
+        }
+
+        // 2. Placing a weapon from cursor into player inventory
+        if (event.getClickedInventory() == player.getInventory()) {
+            if (isExclusiveWeapon(cursor)) {
+                int countInInv = countExclusiveWeapons(player);
+                if (countInInv > 0 && !isExclusiveWeapon(current)) {
+                    event.setCancelled(true);
+                    player.sendMessage(configManager.getPrefixedMessage("mace.cannot-carry-multiple"));
+                    return;
+                }
+            }
+        }
+
+        // 3. Hotbar number key swap from container into hotbar
+        if (event.getClick() == org.bukkit.event.inventory.ClickType.NUMBER_KEY && event.getClickedInventory() != player.getInventory()) {
+            ItemStack hotbarItem = player.getInventory().getItem(event.getHotbarButton());
+            ItemStack targetItem = event.getCurrentItem();
+            if (isExclusiveWeapon(targetItem)) {
+                int countInInv = countExclusiveWeapons(player);
+                if (isExclusiveWeapon(hotbarItem)) {
+                    // Swapping weapon for weapon, net count remains same.
+                } else if (countInInv > 0) {
+                    event.setCancelled(true);
+                    player.sendMessage(configManager.getPrefixedMessage("mace.cannot-carry-multiple"));
+                    return;
+                }
+            }
+        }
+
+        // 4. Swap offhand click from container
+        if (event.getClick() == org.bukkit.event.inventory.ClickType.SWAP_OFFHAND && event.getClickedInventory() != player.getInventory()) {
+            ItemStack targetItem = event.getCurrentItem();
+            if (isExclusiveWeapon(targetItem)) {
+                if (hasExclusiveWeapon(player, false)) {
+                    event.setCancelled(true);
+                    player.sendMessage(configManager.getPrefixedMessage("mace.cannot-carry-multiple"));
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onWeaponInventoryDragLimit(InventoryDragEvent event) {
+        if (!(event.getWhoClicked() instanceof Player player)) return;
+        ItemStack dragItem = event.getOldCursor();
+        if (isExclusiveWeapon(dragItem)) {
+            int topSize = event.getView().getTopInventory().getSize();
+            for (int slot : event.getRawSlots()) {
+                if (slot >= topSize) { // dragging into player inventory
+                    if (hasExclusiveWeapon(player)) {
+                        event.setCancelled(true);
+                        player.sendMessage(configManager.getPrefixedMessage("mace.cannot-carry-multiple"));
+                        return;
+                    }
+                }
+            }
         }
     }
 }
