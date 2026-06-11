@@ -17,7 +17,7 @@ recipe:
   ingredients:
     E: end_core
     S: sculk_core
-    N: NETHERITE_BLOCK
+    N: NETHERITE_INGOT
     R: BREEZE_ROD
     C: obsidian_chaos
     O: OBSIDIAN

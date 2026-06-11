@@ -10,3 +10,4 @@ build/
 **/build/
 !gradle-wrapper.jar
 docs/archive/*
+hoiihesmp-web/

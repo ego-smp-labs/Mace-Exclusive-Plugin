@@ -1,7 +1,7 @@
 enabled: true
 singleton: true
 name: "&9&lWARDEN SPEAR"
-material: TRIDENT
+material: NETHERITE_SPEAR
 custom-model-data: 10005
 lore:
   - "&7Cây giáo từ vùng tối sâu thẳm cộng hưởng với áp lực sóng âm của Warden."
@@ -16,7 +16,7 @@ recipe:
     - "GES"
   ingredients:
     C: sculk_core
-    B: BREEZE_ROD
+    B: NETHERITE_SPEAR
     E: ECHO_SHARD
     N: NETHERITE_INGOT
     S: SCULK_CATALYST

@@ -18,6 +18,8 @@ import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
+import vn.nirussv.maceexclusive.curse.LockoutService;
+import vn.nirussv.maceexclusive.config.ConfigManager;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -33,12 +35,16 @@ public final class RitualService implements Listener {
 
     private final CoreItemFactory coreItemFactory;
     private final ItemMatcher itemMatcher;
+    private final LockoutService lockoutService;
+    private final ConfigManager configManager;
     private final Random random = new Random();
     private final Map<UUID, Long> processingItems = new HashMap<>();
 
-    public RitualService(CoreItemFactory coreItemFactory, ItemMatcher itemMatcher) {
+    public RitualService(CoreItemFactory coreItemFactory, ItemMatcher itemMatcher, LockoutService lockoutService, ConfigManager configManager) {
         this.coreItemFactory = coreItemFactory;
         this.itemMatcher = itemMatcher;
+        this.lockoutService = lockoutService;
+        this.configManager = configManager;
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -55,7 +61,18 @@ public final class RitualService implements Listener {
         if (item.getItemStack().getType() != Material.HEAVY_CORE) return;
         if (event.getTo() == null || event.getTo().getWorld() == null) return;
         if (event.getTo().getWorld().getEnvironment() != World.Environment.THE_END) return;
-        String result = random.nextDouble() < 0.20D ? "end_core" : "ruined_core";
+        String result = "end_core";
+        if (random.nextDouble() >= 0.20D) {
+            result = "ruined_core";
+            UUID throwerUid = item.getThrower();
+            if (throwerUid != null) {
+                Player player = org.bukkit.Bukkit.getPlayer(throwerUid);
+                if (player != null) {
+                    lockoutService.applyCursed(player.getUniqueId(), configManager.getCoreCraftLockoutSeconds());
+                    player.sendMessage(configManager.getMessage("core.craft-failed"));
+                }
+            }
+        }
         if (transformOne(item, result)) event.setCancelled(true);
     }
 
@@ -70,7 +87,15 @@ public final class RitualService implements Listener {
         if (cursedHead.isEmpty()) return;
         clicked.getWorld().strikeLightningEffect(clicked.getLocation());
         if (clicked instanceof Player victim) victim.damage(6.0D, event.getPlayer()); else clicked.remove();
-        if (transformOne(cursedHead.get(), "blood_core")) event.setCancelled(true);
+        
+        Player player = event.getPlayer();
+        String result = "blood_core";
+        if (random.nextDouble() < 0.20D) {
+            result = "ruined_core";
+            lockoutService.applyCursed(player.getUniqueId(), configManager.getCoreCraftLockoutSeconds());
+            player.sendMessage(configManager.getMessage("core.craft-failed"));
+        }
+        if (transformOne(cursedHead.get(), result)) event.setCancelled(true);
     }
 
     private boolean isBloodSacrificeEntity(Entity entity) {

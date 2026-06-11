@@ -12,13 +12,14 @@ recipe:
   enabled: true
   shape:
     - "OBO"
-    - "OWO"
+    - "HWH"
     - "OVO"
   ingredients:
     O: obsidian_chaos
     B: blood_core
     V: void_mace
     W: WITHER_ROSE
+    H: cursed_player_head
 cooldowns:
   rage: 300
 effects:

@@ -394,6 +394,7 @@
     .weapon-row.sonic { border-left: 6px solid #00b4d8; }
     .weapon-row.soulfire { border-left: 6px solid #00f5d4; }
     .weapon-row.cursedsword { border-left: 6px solid #7209b7; }
+    .weapon-row.chronos { border-left: 6px solid #e29578; }
 
     .weapon-info-left {
       display: flex;
@@ -613,6 +614,7 @@
         <a href="#w-sonic" class="nav-link" onclick="activateLink(this)">🔊 Búa Tiếng Vọng</a>
         <a href="#w-soulfire" class="nav-link" onclick="activateLink(this)">🔥 Búa Hỏa Thiêu Hồn</a>
         <a href="#w-cursed-sword" class="nav-link" onclick="activateLink(this)">☠ Kiếm Cổ Nguyền</a>
+        <a href="#w-chronos" class="nav-link" onclick="activateLink(this)">⏳ Giáo Thời Gian Chronos</a>
       </div>
     </aside>
 
@@ -765,30 +767,12 @@
               <td class="c-blood" style="font-weight: bold;">🩸 Blood Core<br><span style="font-size: 0.75rem; color: var(--color-gray);">blood_core</span></td>
               <td><strong>Bất ổn (Rút máu):</strong> Mỗi 10 giây khi ở trong túi đồ người sở hữu, có 10% cơ hội gây <strong>2 HP (1 tim) sát thương trực tiếp</strong> xuyên giáp.</td>
               <td>
-                <strong style="color: var(--color-gold);">Cách 1: Chế Tạo Bàn Chế Tạo</strong><br>
-                <div class="mc-crafting-table-ui" style="scale: 0.85; margin: 5px 0;">
-                  <div class="mc-grid-3x3">
-                    <div class="mc-slot" data-mc-tooltip="Không có"></div>
-                    <div class="mc-slot" data-mc-tooltip="&fRedstone Block">R</div>
-                    <div class="mc-slot" data-mc-tooltip="Không có"></div>
-                    
-                    <div class="mc-slot" data-mc-tooltip="&fPlayer Head">P</div>
-                    <div class="mc-slot" data-mc-tooltip="&fHeavy Core">H</div>
-                    <div class="mc-slot" data-mc-tooltip="&fPlayer Head">P</div>
-                    
-                    <div class="mc-slot" data-mc-tooltip="Không có"></div>
-                    <div class="mc-slot" data-mc-tooltip="&fRedstone Block">R</div>
-                    <div class="mc-slot" data-mc-tooltip="Không có"></div>
-                  </div>
-                </div>
-                <div style="font-size: 0.75rem; color: #b7a9ca; margin-bottom: 10px;">
-                  P = Player Head, H = Heavy Core, R = Redstone Block
-                </div>
-                <strong style="color: var(--color-gold);">Cách 2: Nghi thức Hiến tế Nether</strong><br>
+                <strong style="color: var(--color-gold);">Nghi thức Hiến tế Nether:</strong><br>
                 <span style="font-size: 0.75rem; line-height: 1.4; display: block; color: #b7a9ca;">
-                  1. Thả <strong>Heavy Core</strong> trên cỏ địa ngục đỏ <strong>Crimson Nylium</strong> ở Nether.<br>
+                  1. Thả <strong>Đầu Player Bị Vấy Bẩn (Cursed Player Head)</strong> trên cỏ địa ngục đỏ <strong>Crimson Nylium</strong> ở Nether.<br>
                   2. Cầm <strong>Kiếm Netherite</strong> chuột phải vào đối tượng hiến tế (Piglin/Piglin Brute/Người chơi) gần khối (bán kính 6).<br>
-                  3. Sét đánh xuống mục tiêu chịu sát thương, biến đổi Heavy Core thành Blood Core.
+                  3. Sét đánh xuống mục tiêu chịu sát thương, biến đổi Đầu Player thành <strong>Blood Core</strong> (80% tỉ lệ thành công).<br>
+                  4. Có <strong>20% tỉ lệ thất bại</strong>: rơi ra <strong>Ruined Core</strong> và người thực hiện bị dính <strong>Trạng thái Nguyền rủa</strong> (Craft Lockout 15 phút).
                 </span>
               </td>
             </tr>
@@ -807,14 +791,14 @@
               <td>
                 <strong>Nghi thức Khe Nứt Không Gian:</strong><br>
                 Ném một vật phẩm <strong>Heavy Core</strong> bay trực tiếp xuyên qua luồng cổng <strong>End Portal</strong> đang hoạt động.<br>
-                Có <strong>20% cơ hội</strong> biến đổi thành **End Core** và <strong>80% cơ hội</strong> hỏng thành **Ruined Core**.
+                Có <strong>20% cơ hội</strong> biến đổi thành **End Core** và <strong>80% cơ hội</strong> hỏng thành **Ruined Core** đồng thời người ném bị dính **Trạng thái Nguyền rủa** (Craft Lockout 15 phút).
               </td>
             </tr>
             <tr>
               <td class="c-sculk" style="font-weight: bold; color: var(--color-gray) !important;">💀 Ruined Core<br><span style="font-size: 0.75rem; color: var(--color-gray);">ruined_core</span></td>
               <td><strong>Bất ổn:</strong> Lõi phế tích sụp đổ từ nghi thức rèn thất bại. Không thể dùng chế tạo các loại búa Mace, nhưng là vật liệu chính để rèn <strong>Kiếm Cổ Nguyền (Cursed Sword)</strong>.</td>
               <td>
-                Có <strong>80% cơ hội</strong> nhận được khi rèn thất bại lõi <strong>End Core</strong> bằng cách ném Heavy Core qua cổng dịch chuyển End Portal đang hoạt động.
+                Có <strong>80% cơ hội</strong> nhận được khi rèn thất bại/nghi thức thất bại lõi <strong>End Core</strong> hoặc <strong>Blood Core</strong>.
               </td>
             </tr>
           </tbody>
@@ -875,7 +859,7 @@
                 <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Nếu đánh air/block hụt, chịu Slowness trong 60 giây. Cầm búa trên tay bị trừ 10% tốc chạy.</span>
               </div>
               
-              <div class="weapon-meta-specs">Custom Model Data: 2001</div>
+              <div class="weapon-meta-specs">Custom Model Data: 2001 | singleton: true</div>
             </div>
             
             <div class="weapon-visuals-right">
@@ -929,7 +913,7 @@
                 <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Hồi máu tự nhiên giảm 60%, hiệu quả thuốc hồi máu giảm 35%, thanh đói cạn nhanh +50%. Mang búa chạm nước bị dính Wither II trong 3 giây. Đặc biệt, nếu mang búa trong người thì không thể dùng Totem (tự động drop hết Totem trong túi đồ ra ngoài đất và chặn hồi sinh bằng Totem).</span>
               </div>
               
-              <div class="weapon-meta-specs">Custom Model Data: 2003</div>
+              <div class="weapon-meta-specs">Custom Model Data: 2003 | singleton: true</div>
             </div>
             
             <div class="weapon-visuals-right">
@@ -985,7 +969,7 @@
                 <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Lần đầu cầm bị dính Chaos 10s. Khi kết thúc Madness mà người dùng không giết ai, chịu tự Chaos 30s. Gặp nước chịu Wither II 3s.</span>
               </div>
               
-              <div class="weapon-meta-specs">Custom Model Data: 2002</div>
+              <div class="weapon-meta-specs">Custom Model Data: 2002 | singleton: true</div>
             </div>
             
             <div class="weapon-visuals-right">
@@ -995,9 +979,9 @@
                   <div class="mc-slot" data-mc-tooltip="&cBlood Core">B</div>
                   <div class="mc-slot" data-mc-tooltip="&5Obsidian Chaos">O</div>
                   
-                  <div class="mc-slot" data-mc-tooltip="&5Obsidian Chaos">O</div>
+                  <div class="mc-slot" data-mc-tooltip="&c&lĐầu Player Bị Vấy Bẩn">H</div>
                   <div class="mc-slot" data-mc-tooltip="&fWither Rose">W</div>
-                  <div class="mc-slot" data-mc-tooltip="&5Obsidian Chaos">O</div>
+                  <div class="mc-slot" data-mc-tooltip="&c&lĐầu Player Bị Vấy Bẩn">H</div>
                   
                   <div class="mc-slot" data-mc-tooltip="&5Obsidian Chaos">O</div>
                   <div class="mc-slot" data-mc-tooltip="&dVoid Mace">V</div>
@@ -1009,10 +993,11 @@
                 </div>
               </div>
               <div class="ingredient-key-list">
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">O</span> Obsidian Chaos x6</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">O</span> Obsidian Chaos x4</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">B</span> Blood Core</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">V</span> Void Mace</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">W</span> Wither Rose</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">H</span> Cursed Player Head x2</span>
               </div>
             </div>
           </div>
@@ -1040,7 +1025,7 @@
                 <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Khi mang búa bị trừ vĩnh viễn 4 HP máu tối đa. Click active hụt tự gánh 6 sát thương thẳng lên bản thân. Nhận thêm +10% sát thương từ lửa, fall, và projectile.</span>
               </div>
               
-              <div class="weapon-meta-specs">Custom Model Data: 10002</div>
+              <div class="weapon-meta-specs">Custom Model Data: 10002 | singleton: true</div>
             </div>
             
             <div class="weapon-visuals-right">
@@ -1096,7 +1081,7 @@
                 <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Mang búa nhận Slowness I và cạn thanh đói x2. Nếu hố active hút từ 4 mục tiêu trở lên, người sở hữu chịu phản lực dính Mining Fatigue II trong 12s và tổn hao 3 HP.</span>
               </div>
               
-              <div class="weapon-meta-specs">Custom Model Data: 10004</div>
+              <div class="weapon-meta-specs">Custom Model Data: 10004 | singleton: true</div>
             </div>
             
             <div class="weapon-visuals-right">
@@ -1110,9 +1095,9 @@
                   <div class="mc-slot" data-mc-tooltip="&dEnd Core">E</div>
                   <div class="mc-slot" data-mc-tooltip="&3Sculk Core">S</div>
                   
-                  <div class="mc-slot" data-mc-tooltip="&fNetherite Block">N</div>
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
                   <div class="mc-slot" data-mc-tooltip="&fBreeze Rod">R</div>
-                  <div class="mc-slot" data-mc-tooltip="&fNetherite Block">N</div>
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
                 </div>
                 <div class="mc-arrow-icon">➔</div>
                 <div class="mc-result-wrap">
@@ -1122,7 +1107,7 @@
               <div class="ingredient-key-list">
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">E</span> End Core</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Sculk Core</span>
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Block</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Ingot</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">R</span> Breeze Rod</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">C</span> Obsidian Chaos</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">O</span> Obsidian</span>
@@ -1153,7 +1138,7 @@
                 <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Sau active người dùng bị Mù lòa (Blindness) 1.5 giây và Slowness II 2 giây. Mang giáo này không phát sáng khi cầm (không nguyền rủa lộ vị trí).</span>
               </div>
               
-              <div class="weapon-meta-specs">Custom Model Data: 10005</div>
+              <div class="weapon-meta-specs">Custom Model Data: 10005 | singleton: true</div>
             </div>
             
             <div class="weapon-visuals-right">
@@ -1164,7 +1149,7 @@
                   <div class="mc-slot" data-mc-tooltip="&fEnchanted Golden Apple">G</div>
                   
                   <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
-                  <div class="mc-slot" data-mc-tooltip="&fBreeze Rod">B</div>
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Spear">B</div>
                   <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
                   
                   <div class="mc-slot" data-mc-tooltip="&fEnchanted Golden Apple">G</div>
@@ -1178,7 +1163,7 @@
               </div>
               <div class="ingredient-key-list">
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">C</span> Sculk Core</span>
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">B</span> Breeze Rod</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">B</span> Netherite Spear</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">E</span> Echo Shard</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Ingot</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Sculk Catalyst</span>
@@ -1294,6 +1279,57 @@
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">W</span> Đầu bất kì (Any Head)</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">P</span> Thuốc độc bất kì (Poison Potion)</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Stick</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 9. Chronos Anchor Spear -->
+          <div class="weapon-row chronos" id="w-chronos">
+            <div class="weapon-info-left">
+              <div class="weapon-header">
+                <span style="font-size: 1.8rem;">⏳</span>
+                <h3 class="weapon-name" style="color: #e29578;">Giáo Thời Gian Chronos (Chronos Anchor Spear)</h3>
+              </div>
+              <p class="weapon-desc">Cổ vật thao túng dòng thời gian, đóng băng vị trí của mục tiêu hoặc chính người dùng nếu ném trượt.</p>
+              
+              <div class="mc-tooltip-box">
+                <span class="mcc-title" style="color: #e29578;">Chronos Anchor Spear</span>
+                <span class="mcc-text" style="color: var(--color-gray);">A time-anchored spear that binds motion and space.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-gold); font-weight: bold;">⚡ Active — Time Pin:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Ngồi + Đánh hướng nhìn. Kích hoạt Time Pin đóng băng chuyển động mục tiêu trong dòng thời gian. (Hồi chiêu 55 giây)</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-curse); font-weight: bold;">☠ Curse — Phản phệ ném trượt:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Ném trượt hoặc kích hoạt hụt sẽ tự đóng băng bản thân trong dòng thời gian. Giảm vĩnh viễn 15% máu tối đa khi mang theo.</span>
+              </div>
+              
+              <div class="weapon-meta-specs">Custom Model Data: 2003 | singleton: true</div>
+            </div>
+            
+            <div class="weapon-visuals-right">
+              <div class="mc-crafting-table-ui">
+                <div class="mc-grid-3x3">
+                  <div class="mc-slot empty"></div>
+                  <div class="mc-slot" data-mc-tooltip="&fEnder Pearl">E</div>
+                  <div class="mc-slot empty"></div>
+                  
+                  <div class="mc-slot empty"></div>
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Spear">T</div>
+                  <div class="mc-slot empty"></div>
+                  
+                  <div class="mc-slot empty"></div>
+                  <div class="mc-slot" data-mc-tooltip="&fAmethyst Shard">S</div>
+                  <div class="mc-slot empty"></div>
+                </div>
+                <div class="mc-arrow-icon">➔</div>
+                <div class="mc-result-wrap">
+                  <div class="mc-slot mc-result enchanted" data-mc-tooltip="&6&lChronos Anchor Spear">⚒</div>
+                </div>
+              </div>
+              <div class="ingredient-key-list">
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">E</span> Ender Pearl</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">T</span> Netherite Spear</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Amethyst Shard</span>
               </div>
             </div>
           </div>
