@@ -16,6 +16,6 @@ recipe:
     - " P "
     - " S "
   ingredients:
-    W: WITHER_SKELETON_SKULL
-    P: POTION
+    W: ANY_HEAD
+    P: ANY_POISON_POTION
     S: STICK

@@ -107,6 +107,24 @@ public final class RecipeRegistry implements Listener {
     }
 
     private RecipeChoice resolveIngredientChoice(String value) {
+        if ("ANY_HEAD".equalsIgnoreCase(value)) {
+            return new RecipeChoice.MaterialChoice(
+                Material.SKELETON_SKULL,
+                Material.WITHER_SKELETON_SKULL,
+                Material.PLAYER_HEAD,
+                Material.ZOMBIE_HEAD,
+                Material.CREEPER_HEAD,
+                Material.PIGLIN_HEAD,
+                Material.DRAGON_HEAD
+            );
+        }
+        if ("ANY_POISON_POTION".equalsIgnoreCase(value)) {
+            return new RecipeChoice.MaterialChoice(
+                Material.POTION,
+                Material.SPLASH_POTION,
+                Material.LINGERING_POTION
+            );
+        }
         Optional<CoreConfig> coreOpt = coreRegistry.find(value);
         if (coreOpt.isPresent()) {
             return new RecipeChoice.ExactChoice(coreItemFactory.create(coreOpt.get().id()));
@@ -133,7 +151,36 @@ public final class RecipeRegistry implements Listener {
         Recipe recipe = event.getRecipe();
         if (recipe == null) return;
 
+        boolean isCursedSwordRecipe = false;
+        if (recipe instanceof Keyed keyed) {
+            String namespace = plugin.getName().toLowerCase(Locale.ROOT);
+            if (keyed.getKey().getNamespace().equals(namespace) && keyed.getKey().getKey().equals("cursed_sword_recipe")) {
+                isCursedSwordRecipe = true;
+            }
+        }
+
         ItemStack[] matrix = event.getInventory().getMatrix();
+
+        if (isCursedSwordRecipe) {
+            boolean hasPoison = false;
+            for (ItemStack item : matrix) {
+                if (item == null) continue;
+                Material type = item.getType();
+                if (type == Material.POTION || type == Material.SPLASH_POTION || type == Material.LINGERING_POTION) {
+                    if (item.hasItemMeta() && item.getItemMeta() instanceof org.bukkit.inventory.meta.PotionMeta potionMeta) {
+                        org.bukkit.potion.PotionType potionType = potionMeta.getBasePotionType();
+                        if (potionType != null && potionType.name().contains("POISON")) {
+                            hasPoison = true;
+                        }
+                    }
+                }
+            }
+            if (!hasPoison) {
+                event.getInventory().setResult(null);
+                return;
+            }
+        }
+
         for (ItemStack item : matrix) {
             if (item == null || item.getType() == Material.AIR) continue;
 

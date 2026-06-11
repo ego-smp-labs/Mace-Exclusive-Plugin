@@ -1,5 +1,5 @@
 name: Mace-Exclusive
-version: '1.0.4'
+version: '1.0.5'
 main: vn.nirussv.maceexclusive.MaceExclusivePlugin
 api-version: '1.21'
 prefix: Mace-Exclusive
