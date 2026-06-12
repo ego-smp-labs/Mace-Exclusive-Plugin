@@ -13,6 +13,7 @@ import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.effect.FreezeService;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
 import vn.nirussv.maceexclusive.curse.LockoutService;
+import vn.nirussv.maceexclusive.recipe.RecipeRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,15 +31,17 @@ public final class CoreCraftListener implements Listener {
     private final ItemMatcher itemMatcher;
     private final FreezeService freezeService;
     private final LockoutService lockoutService;
+    private final RecipeRegistry recipeRegistry;
     private final Random random = new Random();
 
-    public CoreCraftListener(ConfigManager configManager, CoreRegistry coreRegistry, CoreItemFactory coreItemFactory, ItemMatcher itemMatcher, FreezeService freezeService, LockoutService lockoutService) {
+    public CoreCraftListener(ConfigManager configManager, CoreRegistry coreRegistry, CoreItemFactory coreItemFactory, ItemMatcher itemMatcher, FreezeService freezeService, LockoutService lockoutService, RecipeRegistry recipeRegistry) {
         this.configManager = configManager;
         this.coreRegistry = coreRegistry;
         this.coreItemFactory = coreItemFactory;
         this.itemMatcher = itemMatcher;
         this.freezeService = freezeService;
         this.lockoutService = lockoutService;
+        this.recipeRegistry = recipeRegistry;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -67,7 +70,7 @@ public final class CoreCraftListener implements Listener {
             return;
         }
 
-        consumeIngredients(event.getInventory());
+        consumeIngredients(event.getInventory(), event.getRecipe());
         chargeXp(player, core.xpCost());
         freezeService.freeze(player, FREEZE_TICKS);
         ItemStack output = random.nextDouble() < core.failureChance() ? fail(player) : coreItemFactory.create(core.id());
@@ -123,14 +126,14 @@ public final class CoreCraftListener implements Listener {
         return coreItemFactory.create("ruined_core");
     }
 
-    private void consumeIngredients(CraftingInventory inventory) {
+    private void consumeIngredients(CraftingInventory inventory, org.bukkit.inventory.Recipe recipe) {
         ItemStack[] matrix = inventory.getMatrix();
         for (int i = 0; i < matrix.length; i++) {
             ItemStack item = matrix[i];
             if (item == null || item.getType().isAir()) continue;
-            // Phase 2 recipes are shaped 3x3 with one unit per occupied slot.
-            // TODO: add explicit per-ingredient amounts if CoreConfig grows amount support.
-            item.setAmount(item.getAmount() - 1);
+            int required = recipeRegistry.getRequiredAmount(recipe, i);
+            int toDeduct = Math.max(1, required);
+            item.setAmount(item.getAmount() - toDeduct);
             if (item.getAmount() <= 0) matrix[i] = null;
         }
         inventory.setMatrix(matrix);

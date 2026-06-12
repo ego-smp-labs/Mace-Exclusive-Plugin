@@ -20,8 +20,12 @@ import vn.nirussv.maceexclusive.item.ItemRegistry;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.entity.Player;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -106,8 +110,39 @@ public final class RecipeRegistry implements Listener {
         plugin.getServer().addRecipe(recipe);
     }
 
+    private static final class IngredientRequirement {
+        private final String itemKey;
+        private final int amount;
+
+        public IngredientRequirement(String itemKey, int amount) {
+            this.itemKey = itemKey;
+            this.amount = amount;
+        }
+
+        public String itemKey() { return itemKey; }
+        public int amount() { return amount; }
+    }
+
+    private IngredientRequirement parseRequirement(String value) {
+        if (value == null) {
+            return new IngredientRequirement("", 1);
+        }
+        int colonIndex = value.indexOf(':');
+        if (colonIndex == -1) {
+            return new IngredientRequirement(value.trim(), 1);
+        }
+        String key = value.substring(0, colonIndex).trim();
+        int amount = 1;
+        try {
+            amount = Integer.parseInt(value.substring(colonIndex + 1).trim());
+        } catch (NumberFormatException ignored) {}
+        return new IngredientRequirement(key, Math.max(1, amount));
+    }
+
     private RecipeChoice resolveIngredientChoice(String value) {
-        if ("ANY_HEAD".equalsIgnoreCase(value)) {
+        IngredientRequirement req = parseRequirement(value);
+        String cleanValue = req.itemKey();
+        if ("ANY_HEAD".equalsIgnoreCase(cleanValue)) {
             return new RecipeChoice.MaterialChoice(
                 Material.SKELETON_SKULL,
                 Material.WITHER_SKELETON_SKULL,
@@ -118,22 +153,22 @@ public final class RecipeRegistry implements Listener {
                 Material.DRAGON_HEAD
             );
         }
-        if ("ANY_POISON_POTION".equalsIgnoreCase(value)) {
+        if ("ANY_POISON_POTION".equalsIgnoreCase(cleanValue)) {
             return new RecipeChoice.MaterialChoice(
                 Material.POTION,
                 Material.SPLASH_POTION,
                 Material.LINGERING_POTION
             );
         }
-        Optional<CoreConfig> coreOpt = coreRegistry.find(value);
+        Optional<CoreConfig> coreOpt = coreRegistry.find(cleanValue);
         if (coreOpt.isPresent()) {
             return new RecipeChoice.ExactChoice(coreItemFactory.create(coreOpt.get().id()));
         }
-        Optional<ItemDefinition> itemOpt = itemRegistry.find(value);
+        Optional<ItemDefinition> itemOpt = itemRegistry.find(cleanValue);
         if (itemOpt.isPresent()) {
             return new RecipeChoice.ExactChoice(itemFactory.create(itemOpt.get().id()));
         }
-        Material material = Material.matchMaterial(value);
+        Material material = Material.matchMaterial(cleanValue);
         if (material != null) {
             if (material == Material.HEAVY_CORE) {
                 return new RecipeChoice.ExactChoice(new ItemStack(Material.HEAVY_CORE));
@@ -142,6 +177,66 @@ public final class RecipeRegistry implements Listener {
                 return new RecipeChoice.ExactChoice(new ItemStack(Material.PLAYER_HEAD));
             }
             return new RecipeChoice.MaterialChoice(material);
+        }
+        return null;
+    }
+
+    public int getRequiredAmount(Recipe recipe, int matrixIndex) {
+        String customId = getCustomRecipeId(recipe);
+        if (customId == null) return 0;
+
+        List<String> shape = null;
+        Map<Character, String> ingredients = null;
+
+        ItemConfig itemConfig = configManager.getItemConfig(customId);
+        if (itemConfig != null && itemConfig.recipe().enabled()) {
+            shape = itemConfig.recipe().shape();
+            ingredients = itemConfig.recipe().ingredients();
+        } else {
+            Optional<CoreConfig> coreOpt = coreRegistry.find(customId);
+            if (coreOpt.isPresent() && coreOpt.get().craftable()) {
+                shape = coreOpt.get().shape();
+                ingredients = coreOpt.get().ingredients();
+            }
+        }
+
+        if (shape == null || ingredients == null) return 0;
+        return getRequiredAmount(shape, ingredients, matrixIndex);
+    }
+
+    private int getRequiredAmount(List<String> shape, Map<Character, String> ingredients, int matrixIndex) {
+        int row = matrixIndex / 3;
+        int col = matrixIndex % 3;
+        if (row >= shape.size()) return 0;
+        String rowStr = shape.get(row);
+        if (col >= rowStr.length()) return 0;
+        char symbol = rowStr.charAt(col);
+        if (symbol == ' ') return 0;
+        String ingredientVal = ingredients.get(symbol);
+        if (ingredientVal == null) return 0;
+        return parseRequirement(ingredientVal).amount();
+    }
+
+    private void validateCraftAmounts(PrepareItemCraftEvent event, List<String> shape, Map<Character, String> ingredients) {
+        ItemStack[] matrix = event.getInventory().getMatrix();
+        for (int i = 0; i < matrix.length; i++) {
+            int required = getRequiredAmount(shape, ingredients, i);
+            if (required <= 1) continue;
+            ItemStack item = matrix[i];
+            if (item == null || item.getAmount() < required) {
+                event.getInventory().setResult(null);
+                return;
+            }
+        }
+    }
+
+    private String getCustomRecipeId(Recipe recipe) {
+        if (!(recipe instanceof Keyed keyed)) return null;
+        String namespace = plugin.getName().toLowerCase(Locale.ROOT);
+        if (!keyed.getKey().getNamespace().equals(namespace)) return null;
+        String key = keyed.getKey().getKey();
+        if (key.endsWith("_recipe")) {
+            return key.substring(0, key.length() - "_recipe".length());
         }
         return null;
     }
@@ -198,5 +293,78 @@ public final class RecipeRegistry implements Listener {
                 }
             }
         }
+
+        // Custom amounts validation
+        String customId = getCustomRecipeId(recipe);
+        if (customId != null) {
+            List<String> shape = null;
+            Map<Character, String> ingredients = null;
+
+            ItemConfig itemConfig = configManager.getItemConfig(customId);
+            if (itemConfig != null && itemConfig.recipe().enabled()) {
+                shape = itemConfig.recipe().shape();
+                ingredients = itemConfig.recipe().ingredients();
+            } else {
+                Optional<CoreConfig> coreOpt = coreRegistry.find(customId);
+                if (coreOpt.isPresent() && coreOpt.get().craftable()) {
+                    shape = coreOpt.get().shape();
+                    ingredients = coreOpt.get().ingredients();
+                }
+            }
+
+            if (shape != null && ingredients != null) {
+                validateCraftAmounts(event, shape, ingredients);
+            }
+        }
+    }
+
+    @EventHandler(priority = org.bukkit.event.EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onCraftItem(CraftItemEvent event) {
+        Recipe recipe = event.getRecipe();
+        String customId = getCustomRecipeId(recipe);
+        if (customId == null) return;
+
+        ItemConfig itemConfig = configManager.getItemConfig(customId);
+        if (itemConfig == null || !itemConfig.recipe().enabled()) {
+            return;
+        }
+
+        Player player = (Player) event.getWhoClicked();
+
+        boolean hasMultiAmount = false;
+        List<String> shape = itemConfig.recipe().shape();
+        Map<Character, String> ingredients = itemConfig.recipe().ingredients();
+        for (int i = 0; i < 9; i++) {
+            if (getRequiredAmount(shape, ingredients, i) > 1) {
+                hasMultiAmount = true;
+                break;
+            }
+        }
+
+        if (hasMultiAmount && isUnsafeBulkCraft(event)) {
+            event.setCancelled(true);
+            player.sendMessage(configManager.getMessage("core.take-one-at-a-time"));
+            return;
+        }
+
+        // Deduct extra amounts (required - 1)
+        ItemStack[] matrix = event.getInventory().getMatrix();
+        for (int i = 0; i < matrix.length; i++) {
+            ItemStack item = matrix[i];
+            if (item == null || item.getType().isAir()) continue;
+            int required = getRequiredAmount(shape, ingredients, i);
+            if (required > 1) {
+                item.setAmount(item.getAmount() - (required - 1));
+                if (item.getAmount() <= 0) {
+                    matrix[i] = null;
+                }
+            }
+        }
+        event.getInventory().setMatrix(matrix);
+    }
+
+    private boolean isUnsafeBulkCraft(CraftItemEvent event) {
+        ClickType click = event.getClick();
+        return event.isShiftClick() || click == ClickType.NUMBER_KEY || click == ClickType.DOUBLE_CLICK;
     }
 }

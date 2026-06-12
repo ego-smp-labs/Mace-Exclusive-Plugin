@@ -102,7 +102,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new AbilityListener(abilityService), this);
             getServer().getPluginManager().registerEvents(freezeService, this);
             getServer().getPluginManager().registerEvents(new ForgeListener(forgeService, maceManager, configManager), this);
-            getServer().getPluginManager().registerEvents(new CoreCraftListener(configManager, coreRegistry, coreItemFactory, itemMatcher, freezeService, lockoutService), this);
+            getServer().getPluginManager().registerEvents(new CoreCraftListener(configManager, coreRegistry, coreItemFactory, itemMatcher, freezeService, lockoutService, recipeRegistry), this);
             getServer().getPluginManager().registerEvents(new CursedSwordListener(lockoutService, configManager, itemMatcher), this);
             getServer().getPluginManager().registerEvents(new RitualService(coreItemFactory, itemMatcher, lockoutService, configManager), this);
             getServer().getPluginManager().registerEvents(new SpecialItemListener(this, itemFactory, itemMatcher, configManager), this);
