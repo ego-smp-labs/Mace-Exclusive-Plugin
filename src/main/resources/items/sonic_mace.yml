@@ -11,9 +11,9 @@ lore:
 recipe:
   enabled: true
   shape:
-    - "SCG"
-    - "NBN"
-    - "GES"
+    - "SCB"
+    - "GNS"
+    - "NEG"
   ingredients:
     C: sculk_core
     B: NETHERITE_SPEAR

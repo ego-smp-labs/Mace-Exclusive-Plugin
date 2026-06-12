@@ -31,6 +31,8 @@ import vn.nirussv.maceexclusive.mace.MaceTrackerService;
 import vn.nirussv.maceexclusive.discord.DiscordWebhookService;
 import vn.nirussv.maceexclusive.persistence.ForgeSessionStore;
 import vn.nirussv.maceexclusive.recipe.RecipeRegistry;
+import vn.nirussv.maceexclusive.projectile.SpearProjectileService;
+import vn.nirussv.maceexclusive.listener.SpearListener;
 
 import java.util.logging.Level;
 
@@ -49,6 +51,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
     private ItemRegistry itemRegistry;
     private CoreRegistry coreRegistry;
     private ExclusiveItemFactory itemFactory;
+    private SpearProjectileService spearProjectileService;
 
     @Override
     public void onEnable() {
@@ -78,7 +81,8 @@ public class MaceExclusivePlugin extends JavaPlugin {
             this.curseService = new CurseService(this, configManager, itemMatcher);
             this.freezeService = new FreezeService(this);
             this.abilityService = new AbilityService(this, configManager, itemMatcher, freezeService);
-            // Phase 3 is mace-first: spear gameplay service/listener stays disabled until Phase 4.
+            // Enable Spear gameplay
+            this.spearProjectileService = new SpearProjectileService(this, configManager, itemMatcher, freezeService);
             this.recipeRegistry = new RecipeRegistry(this, configManager, itemRegistry, itemFactory, coreRegistry, coreItemFactory, itemMatcher);
             this.forgeService = new ForgeService(this, configManager, itemFactory, itemRegistry, maceManager, new ForgeSessionStore(this), new ForgeVisualService());
 
@@ -101,7 +105,8 @@ public class MaceExclusivePlugin extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new CoreCraftListener(configManager, coreRegistry, coreItemFactory, itemMatcher, freezeService, lockoutService), this);
             getServer().getPluginManager().registerEvents(new CursedSwordListener(lockoutService, configManager, itemMatcher), this);
             getServer().getPluginManager().registerEvents(new RitualService(coreItemFactory, itemMatcher, lockoutService, configManager), this);
-            getServer().getPluginManager().registerEvents(new SpecialItemListener(itemFactory, itemMatcher, configManager), this);
+            getServer().getPluginManager().registerEvents(new SpecialItemListener(this, itemFactory, itemMatcher, configManager), this);
+            getServer().getPluginManager().registerEvents(new SpearListener(spearProjectileService), this);
 
             try {
                 getServer().getPluginManager().registerEvents(curseService, this);
@@ -124,6 +129,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
         if (curseService != null) curseService.shutdown();
         if (freezeService != null) freezeService.shutdown();
         if (forgeService != null) forgeService.shutdown();
+        if (spearProjectileService != null) spearProjectileService.shutdown();
         if (maceRepository != null) maceRepository.save();
     }
 

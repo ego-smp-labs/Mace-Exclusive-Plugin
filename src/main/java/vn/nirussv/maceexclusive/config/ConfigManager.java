@@ -219,6 +219,16 @@ public class ConfigManager {
     public long getCoreCraftLockoutSeconds() { return Math.max(1L, plugin.getConfig().getLong("forge.craft-lockout-seconds", 900L)); }
 
     public boolean isItemEnabled(String id) { ItemConfig weaponConfig = getItemConfig(id); return weaponConfig == null || weaponConfig.enabled(); }
+
+    /**
+     * Returns the configured faction for an item id, or null when none is declared.
+     * Items without a faction are treated as belonging to their own isolated faction
+     * by callers, so a null here means "no shared faction".
+     */
+    public String getFaction(String id) {
+        ItemConfig weaponConfig = getItemConfig(id);
+        return weaponConfig == null ? null : weaponConfig.faction();
+    }
     public boolean isSingletonItemsEnabled() { return plugin.getConfig().getBoolean("settings.singleton-weapons", true); }
     public boolean isSingletonItem(String id) { if (!isSingletonItemsEnabled()) return false; ConfigurationSection section = getItemSection(id, "items." + id); return section == null || section.getBoolean("singleton", true); }
     public boolean isStrictContainerBlock() { return plugin.getConfig().getBoolean("settings.strict-container-block", true); }

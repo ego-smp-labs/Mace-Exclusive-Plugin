@@ -10,6 +10,8 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.Particle;
+import org.bukkit.Material;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.task.InventoryShuffleTask;
@@ -132,8 +134,10 @@ public final class ChaosMaceAbility implements ActiveAbility, PassiveAbility {
         // 1. Check if first hold to apply curse
         checkFirstHold(attacker);
 
-        // 2. Teleport target randomly
-        teleportTarget(target);
+        // 2. Teleport target randomly (10% chance)
+        if (random.nextDouble() < 0.10D) {
+            teleportRandomly(target);
+        }
 
         // 3. If in Rage State and has charges left, trigger skill
         if (isRageActive(attacker)) {
@@ -178,12 +182,20 @@ public final class ChaosMaceAbility implements ActiveAbility, PassiveAbility {
     public void onDamaged(AbilityContext context, EntityDamageByEntityEvent event) {
         Player player = context.player();
         UUID uuid = player.getUniqueId();
-        if (!(event.getDamager() instanceof Player attacker)) return;
+        
+        // Teleport attacker if random check passes (10% chance)
+        if (event.getDamager() instanceof LivingEntity attacker) {
+            if (random.nextDouble() < 0.10D) {
+                teleportRandomly(attacker);
+            }
+        }
+
+        if (!(event.getDamager() instanceof Player attackerPlayer)) return;
 
         double chance = isLunaticActive(player) ? 1.0D : configManager.getItemEffectDouble("chaos_mace", "effects.passive.chaos_chance", 0.10D);
         if (random.nextDouble() < chance) {
             int duration = configManager.getItemEffectInt("chaos_mace", "effects.passive.chaos_duration", 1);
-            inflictChaos(attacker, duration);
+            inflictChaos(attackerPlayer, duration);
         }
     }
 
@@ -247,15 +259,31 @@ public final class ChaosMaceAbility implements ActiveAbility, PassiveAbility {
         new InventoryShuffleTask(player, durationSeconds, 10, configManager).runTaskTimer(plugin, 0L, 10L);
     }
 
-    private void teleportTarget(LivingEntity target) {
+    private void teleportRandomly(LivingEntity target) {
         Location origin = target.getLocation();
-        double radius = configManager.getItemEffectDouble("chaos_mace", "effects.teleport.range", 5.0D);
-        double offsetX = (random.nextDouble() * 2 - 1) * radius;
-        double offsetZ = (random.nextDouble() * 2 - 1) * radius;
-        Location newLoc = origin.clone().add(offsetX, 0, offsetZ);
+        org.bukkit.World world = origin.getWorld();
+        if (world == null) return;
         
-        // Find suitable block (ground level)
-        newLoc.setY(origin.getWorld().getHighestBlockYAt(newLoc) + 1.0);
-        target.teleport(newLoc);
+        for (int attempt = 0; attempt < 10; attempt++) {
+            double distance = 2.0 + random.nextDouble() * 2.0;
+            double angle = random.nextDouble() * 2.0 * Math.PI;
+            double offsetX = Math.cos(angle) * distance;
+            double offsetZ = Math.sin(angle) * distance;
+            
+            Location candidate = origin.clone().add(offsetX, 0, offsetZ);
+            candidate.setY(world.getHighestBlockYAt(candidate) + 1.0D);
+            
+            Material feet = candidate.getBlock().getType();
+            Material head = candidate.clone().add(0, 1, 0).getBlock().getType();
+            Material below = candidate.clone().add(0, -1, 0).getBlock().getType();
+            
+            if (feet.isAir() && head.isAir() && below.isSolid() && below != Material.LAVA && below != Material.FIRE) {
+                world.spawnParticle(Particle.REVERSE_PORTAL, origin.clone().add(0, 1, 0), 16, 0.2, 0.3, 0.2, 0.05);
+                target.teleport(candidate.setDirection(origin.getDirection()));
+                world.spawnParticle(Particle.PORTAL, target.getLocation().add(0, 1, 0), 16, 0.2, 0.3, 0.2, 0.05);
+                world.playSound(target.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.8f, 1.0f);
+                return;
+            }
+        }
     }
 }

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
@@ -41,13 +41,14 @@
     <section id="status" class="warn">
       <h2>0. Trạng thái hiện tại & cảnh báo đồng bộ</h2>
       <ul>
-        <li>Phase 3 tập trung hoàn thiện <strong>Mace</strong> trước; Spear gameplay tạm dừng tới Phase 4.</li>
-        <li>Forge pipeline hiện hành: craft trực tiếp weapon final → bàn chế tạo biến thành <code>LODESTONE</code> → charge 3s → nổ lần 1 → forge 5 phút → nổ lần 2 → drop item.</li>
+        <li>Phase 3/4 Integration: Kích hoạt hoàn toàn Spear gameplay (Warden Spear và Chronos Anchor Spear) song song cùng các vũ khí Mace.</li>
+        <li>Forge pipeline hiện hành: craft trực tiếp weapon final -> bàn chế tạo biến thành <code>LODESTONE</code> -> charge 3s -> nổ lần 1 -> forge 5 phút -> nổ lần 2 -> drop item.</li>
         <li>Docs đã reset theo yêu cầu mới: active input = <strong>Sneak + Left Click</strong>, Chrono Core đổi thành End Core, bỏ Devourer/Phoenix/Aegis, gộp Gravity/Singularity.</li>
-        <li>Code đã disable spear registration ở plugin main theo cleanup gần nhất, nhưng vẫn cần reviewer kiểm tra sâu gameplay và particle coverage.</li>
+        <li>Code đã đăng ký SpearProjectileService và SpearListener đầy đủ, tích hợp rèn các vũ khí giáo.</li>
       </ul>
       <p><strong>Liên kết docs:</strong> <a href="implementation_tickets.html">Implementation Tickets</a> · <a href="scratch_base_todo.html">Todo</a> · <a href="implementation_report.html">Report</a> · <a href="agent_phase3_prompt.md">Agent Prompt</a> · <a href="archive/README.md">Archive</a></p>
     </section>
+
 
     <section id="vision">
       <h2>1. Tầm nhìn thiết kế</h2>
@@ -63,14 +64,15 @@
     </section>
 
     <section id="scope">
-      <h2>2. Phase 3 Scope — Mace-first</h2>
+      <h2>2. Phase 3/4 Integration Scope</h2>
       <div class="grid">
-        <div class="card ok"><h3>Trong scope</h3><ul><li>Power Mace</li><li>Void Mace</li><li>Chaos Mace</li><li>Vampiric Mace</li><li>Singularity Gravity Mace</li><li>Echoing Warden/Sonic Mace</li><li>Soulfire Pyre Mace</li><li>End/Blood/Sculk/Soulfire/Ego/Ruined Cores; Chaos Core disabled historical only</li><li>Lodestone Forge</li><li>Particle/sound coverage cho mọi Mace</li></ul></div>
-        <div class="card danger"><h3>Ngoài scope Phase 3</h3><ul><li>Spear gameplay, projectile, spear skills.</li><li>Devourer Mace.</li><li>Phoenix Mace.</li><li>Aegis Mace.</li><li>Chrono Core ID cũ.</li><li>Dark Ego / egosmp namespace.</li></ul></div>
+        <div class="card ok"><h3>Trong scope</h3><ul><li>Power Mace</li><li>Void Mace</li><li>Chaos Mace</li><li>Vampiric Mace</li><li>Singularity Gravity Mace</li><li>Echoing Warden/Sonic Mace (Warden Spear)</li><li>Soulfire Pyre Mace</li><li>Warden Spear & Chronos Anchor Spear</li><li>Spear gameplay, projectile, and spear skills</li><li>End/Blood/Sculk/Soulfire/Ego/Ruined Cores; Chaos Core disabled historical only</li><li>Lodestone Forge</li><li>Particle/sound coverage cho mỗi Mace & Spear</li></ul></div>
+        <div class="card danger"><h3>Ngoài scope</h3><ul><li>Devourer Mace.</li><li>Phoenix Mace.</li><li>Aegis Mace.</li><li>Chrono Core ID cũ.</li><li>Dark Ego / egosmp namespace.</li></ul></div>
       </div>
-      <h3>Quy tắc disable Spear</h3>
-      <p>Class spear có thể giữ để Phase 4, nhưng Phase 3 không register listener/service gameplay spear. Config spear nếu còn chỉ là historical/future data, không được active trong game.</p>
+      <h3>Trạng thái Spear</h3>
+      <p>Spear gameplay đã được kích hoạt hoàn toàn, register listener và service trong plugin main. Các config spear được dùng đầy đủ và hoạt động trong game.</p>
     </section>
+
 
     <section id="architecture">
       <h2>3. Architecture Wiki</h2>
@@ -206,13 +208,18 @@ N W N</pre><p>H=Blood Core, B=Netherite Ingot, W=Nether Wart, S=Cursed Player He
 S E S
 N R N</pre><p>E=End Core, S=Sculk Core, N=Netherite Block, R=Breeze Rod, C=Obsidian Chaos, O=Obsidian.</p><p><strong>Active — Singularity Well:</strong> Sneak+LeftClick tạo hố trọng lực tại block/entity nhìn tối đa 10 block. Trong 3s đầu, mọi LivingEntity bán kính 8 bị kéo từng tick về tâm và nhận Slowness III; khi collapse, damage = 2 HP + 1.5 HP mỗi entity bị hút, cap 15 HP, cooldown 60s.</p><p><strong>Passive:</strong> giảm fall damage 70% bằng wielder damage cause FALL; melee hit kéo wielder target nhẹ về phía wielder để giữ nhịp combo (tầm kéo 2.5).</p><p><strong>Curse:</strong> khi cầm chịu Slowness I/áp lực nặng và hunger drain x2. Nếu active hút từ 4 entity trở lên, wielder nhận Mining Fatigue II 12s và mất 3 HP hiện tại như phản lực trọng trường.</p><p><strong>Animation/Particles:</strong> hold aura là <code>ASH</code> bay quỹ đạo thấp quanh chân và đầu búa; active spawn spiral <code>PORTAL</code>/<code>DRAGON_BREATH</code> từ rìa vào tâm theo bán kính giảm dần trong 60 tick; collapse có flash trắng tím, âm <code>BLOCK_RESPAWN_ANCHOR_DEPLETE</code>, rồi hạt bị hút tắt trong 5 tick. Task phải tự hủy sau collapse/owner offline/world unload.</p><p><strong>Lore chuẩn:</strong> 1) Búa trọng lực kỳ dị bẻ cong khối lượng quanh điểm nhìn. 2) Active: ngồi + đánh mở giếng 3s kéo địch rồi collapse damage có cap. 3) Passive: giảm fall damage và kéo nhẹ target khi melee. 4) Curse: nặng nề, đói nhanh, hút quá nhiều bị phản lực.</p></section>
 
-      <section class="card" id="sonic_mace"><h3>9.6 Warden Spear — Giáo Tiếng Vọng Warden</h3><p><span class="tag">ID: sonic_mace</span></p><pre class="recipe">S C G
-N B N
-G E S</pre><p>S=Sculk Catalyst, C=Sculk Core, G=Enchanted Golden Apple, N=Netherite Ingot, B=Breeze Rod, E=Echo Shard.</p><p><strong>Active — Sonic Boom:</strong> Sneak+LeftClick bắn beam theo hướng nhìn tối đa 12 block. Target đầu tiên trên ray nhận 14 true/config damage, knockback 2.0, wielder trả 4 HP hiện tại nhưng không tự kết liễu; cooldown 35s.</p><p><strong>Passive:</strong> khi đứng trên/near Sculk nhận Speed I hoặc giảm nhiễu, đồng thời smash/falling hit cộng damage theo độ cao (+1.5 damage mỗi 4 block), cap +6 để giữ vanilla Mace feel.</p><p><strong>Curse:</strong> sau active wielder bị Blindness 1.5s (30 ticks) và Slowness II (amplifier 1) 2s (40 ticks) vì phản âm; khi cầm có Glowing/warden attention định kỳ để kẻ địch dễ phát hiện.</p><p><strong>Animation/Particles:</strong> beam gồm các segment cách nhau 0.5 block, spawn <code>SONIC_BOOM</code>/<code>SCULK_SOUL</code> theo đường thẳng từ mắt wielder tới hit point trong 1-2 tick; trước khi bắn có vòng cyan nén vào đầu búa, khi trúng target có ring cyan nén vào ngực rồi bật ra. Sound chính là Warden sonic boom, volume giới hạn để không spam.</p><p><strong>Lore chuẩn:</strong> 1) Búa tiếng vọng Warden nén âm sâu thành đòn xuyên phá. 2) Active: ngồi + đánh bắn beam 12 block, 14 damage, tốn 4 HP. 3) Passive: sculk hỗ trợ di chuyển và falling smash tăng damage. 4) Curse: phản âm gây Blindness/Slowness và làm chủ phát sáng.</p></section>
-
-      <section class="card" id="soulfire_mace"><h3>9.7 Soulfire Pyre Mace — Búa Hỏa Thiêu Hồn</h3><p><span class="tag">ID: soulfire_mace</span></p><pre class="recipe">F C F
+      <section class="card" id="soulfire_mace"><h3>9.6 Soulfire Pyre Mace — Búa Hỏa Thiêu Hồn</h3><p><span class="tag">ID: soulfire_mace</span></p><pre class="recipe">F C F
 G B S
 F N F</pre><p>F=Soul Campfire, C=Soulfire Core, G=Ghast Tear, B=Breeze Rod, S=Zombie Head, N=Netherite Ingot.</p><p><strong>Active — Soulfire Storm:</strong> Sneak+LeftClick tạo vùng bão lửa linh hồn bán kính 5 trong 5s tại vị trí wielder/hit. Enemy trong vùng nhận 3 HP/s và Wither I; wielder trả 4 HP hiện tại; cooldown 40s.</p><p><strong>Passive:</strong> khi cầm được miễn/giảm fire-lava damage, melee đốt target bằng soul fire 3s.</p><p><strong>Curse:</strong> hunger drain x2 vì linh hồn cháy liên tục; active luôn thu wielder health cost (4 HP), kể cả khi không trúng nhiều target.</p><p><strong>Animation/Particles:</strong> hold effect là <code>SOUL_FIRE_FLAME</code> bám quanh đầu búa như lửa xanh nhỏ; active phát 5 pulse mỗi giây, mỗi pulse là vòng soul flame lan từ tâm ra radius 5, sau đó <code>SOUL</code> bay lên; sound firecharge mở màn, campfire crackle nền, extinguish nhỏ khi hết TTL. Task phải dừng đúng sau 5s.</p><p><strong>Lore chuẩn:</strong> 1) Búa hỏa thiêu hồn đổi máu chủ lấy lửa xanh nuốt linh hồn. 2) Active: ngồi + đánh tạo bão soul fire 5s radius 5, tốn 4 HP. 3) Passive: kháng lửa/lava và melee đốt soul fire. 4) Curse: đói nhanh, active luôn thu máu hiện tại.</p></section>
+
+      <section class="card" id="sonic_mace"><h3>9.7 Warden Spear — Giáo Tiếng Vọng Warden</h3><p><span class="tag">ID: sonic_mace</span></p><pre class="recipe">S C B
+G N S
+N E G</pre><p>S=Sculk Catalyst, C=Sculk Core, B=Netherite Spear, G=Enchanted Golden Apple, N=Netherite Ingot, E=Echo Shard.</p><p><strong>Active — Sonic Boom:</strong> Sneak+LeftClick bắn beam theo hướng nhìn tối đa 12 block. Target đầu tiên trên ray nhận 14 true/config damage, knockback 2.0, wielder trả 4 HP hiện tại nhưng không tự kết liễu; cooldown 35s.</p><p><strong>Passive:</strong> khi đứng trên/near Sculk nhận Speed I hoặc giảm nhiễu, đồng thời smash/falling hit cộng damage theo độ cao (+1.5 damage mỗi 4 block), cap +6 để giữ vanilla Mace feel.</p><p><strong>Curse:</strong> sau active wielder bị Blindness 1.5s (30 ticks) và Slowness II (amplifier 1) 2s (40 ticks) vì phản âm; khi cầm có Glowing/warden attention định kỳ để kẻ địch dễ phát hiện.</p><p><strong>Animation/Particles:</strong> beam gồm các segment cách nhau 0.5 block, spawn <code>SONIC_BOOM</code>/<code>SCULK_SOUL</code> theo đường thẳng từ mắt wielder tới hit point trong 1-2 tick; trước khi bắn có vòng cyan nén vào đầu búa, khi trúng target có ring cyan nén vào ngực rồi bật ra. Sound chính là Warden sonic boom, volume giới hạn để không spam.</p><p><strong>Lore chuẩn:</strong> 1) Giáo tiếng vọng Warden nén âm sâu thành đòn xuyên phá. 2) Active: ngồi + đánh bắn beam 12 block, 14 damage, tốn 4 HP. 3) Passive: sculk hỗ trợ di chuyển và falling smash tăng damage. 4) Curse: phản âm gây Blindness/Slowness và làm chủ phát sáng.</p></section>
+
+      <section class="card" id="chronos_anchor_spear"><h3>9.8 Chronos Anchor Spear — Giáo Thời Gian Chronos</h3><p><span class="tag">ID: chronos_anchor_spear</span></p><pre class="recipe">S G T
+G N S
+N S S</pre><p>T=Netherite Spear, N=Netherite Ingot, G=Glitch Clock, S=Slime Block.</p><p><strong>Active — Time Pin:</strong> Sneak+LeftClick bắn beam Time Pin đóng băng mục tiêu trong 2.25 giây (55s CD).</p><p><strong>Passive:</strong> none.</p><p><strong>Curse:</strong> ném trượt hoặc kích hoạt hụt tự đóng băng bản thân trong 1.25 giây. Không bị giảm máu tối đa.</p><p><strong>Animation/Particles:</strong> beam spawn <code>SNOWFLAKE</code>/<code>GLOW</code> theo đường thẳng từ mắt wielder tới hit point; khi trúng target có vòng băng xanh bao quanh trong 2.25s và tiếng <code>BLOCK_GLASS_BREAK</code>; wielder bị đóng băng có tiếng <code>BLOCK_POWDER_SNOW_BREAK</code> và phủ lớp tuyết.</p><p><strong>Lore chuẩn:</strong> 1) Giáo thời gian Chronos đóng băng chuyển động của mục tiêu. 2) Active: ngồi + đánh hướng nhìn bắn Time Pin đóng băng 2.25s. 3) Curse: ném trượt/active hụt tự đóng băng 1.25s. Không bị giảm máu tối đa.</p></section>
+
     </section>
 
     <section id="particles">
@@ -238,10 +245,12 @@ F N F</pre><p>F=Soul Campfire, C=Soulfire Core, G=Ghast Tear, B=Breeze Rod, S=Zo
         <tr><td>Chaos Mace</td><td>Void Mace + Blood Core</td><td>Direct craft with 6 Obsidian Chaos + Wither Rose + Blood Core + Void Mace.</td></tr>
         <tr><td>Vampiric Mace</td><td>Blood Core</td><td>Nether Ingot x2 + Magma Block x4 + Nether Wart + Skeleton Skull + Blood Core.</td></tr>
         <tr><td>Gravity Mace</td><td>End Core + Sculk Core</td><td>Merged Gravity/Singularity; expensive.</td></tr>
-        <tr><td>Sonic Mace</td><td>Sculk Core</td><td>Echo/Warden theme.</td></tr>
         <tr><td>Soulfire Mace</td><td>Soulfire Core</td><td>Soul fire theme.</td></tr>
+        <tr><td>Warden Spear (Sonic Mace)</td><td>Sculk Core</td><td>Echo/Warden theme. Recipe: SCB / GNS / NEG (Spear top-right).</td></tr>
+        <tr><td>Chronos Anchor Spear</td><td>Glitch Clock</td><td>Time theme. Recipe: SGT / GNS / NSS (Spear top-right).</td></tr>
       </tbody></table>
     </section>
+
 
     <section id="qa">
       <h2>12. QA/Test Matrix</h2>

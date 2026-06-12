@@ -605,16 +605,24 @@
       </div>
 
       <div class="nav-group">
-        <span class="nav-label">Vũ khí & Cổ vật</span>
+        <span class="nav-label">🔨 Cổ Vật Búa Mace</span>
         <a href="#w-power" class="nav-link" onclick="activateLink(this)">⚡ Búa Quyền Năng</a>
         <a href="#w-void" class="nav-link" onclick="activateLink(this)">🌀 Búa Vực Thẳm</a>
         <a href="#w-chaos" class="nav-link" onclick="activateLink(this)">🎲 Búa Hỗn Loạn</a>
         <a href="#w-vampiric" class="nav-link" onclick="activateLink(this)">🩸 Búa Huyết Ma</a>
         <a href="#w-gravity" class="nav-link" onclick="activateLink(this)">🌌 Búa Trọng Lực</a>
-        <a href="#w-sonic" class="nav-link" onclick="activateLink(this)">🔊 Búa Tiếng Vọng</a>
         <a href="#w-soulfire" class="nav-link" onclick="activateLink(this)">🔥 Búa Hỏa Thiêu Hồn</a>
-        <a href="#w-cursed-sword" class="nav-link" onclick="activateLink(this)">☠ Kiếm Cổ Nguyền</a>
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-label">🔱 Cổ Vật Giáo Spear</span>
+        <a href="#w-sonic" class="nav-link" onclick="activateLink(this)">🔊 Giáo Tiếng Vọng Warden</a>
         <a href="#w-chronos" class="nav-link" onclick="activateLink(this)">⏳ Giáo Thời Gian Chronos</a>
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-label">⚔ Vũ Khí Khác</span>
+        <a href="#w-cursed-sword" class="nav-link" onclick="activateLink(this)">☠ Kiếm Cổ Nguyền</a>
       </div>
     </aside>
 
@@ -826,12 +834,21 @@
               <strong>Cách lấy:</strong> Bị một **Enderman** đánh chí mạng. Nghi thức sẽ cưỡng chế bỏ qua Totem hồi sinh của bạn (bạn sẽ thực sự chết), đổi lại Challenger's Eye rơi ra trong hòm đồ chết.
             </p>
           </div>
+
+          <div class="card-panel" style="background: var(--panel-dark);">
+            <h3 class="c-epic" style="color: #ffaa00;">Đồng hồ Glitch</h3>
+            <p style="font-family: 'VT323', monospace; font-size: 1.1rem; color: var(--color-gray);">ID: glitch_clock · CMD: 4003</p>
+            <p>Chiếc đồng hồ bị lỗi vòng lặp thời gian từ nghịch lý sinh mạng.</p>
+            <p style="font-size: 0.85rem; border-top: 1px solid var(--border-mc); padding-top: 8px;">
+              <strong>Cách lấy:</strong> Thoát game khi tay đang cầm đồng hồ thông thường và lượng máu của bạn chỉ còn từ <strong>0.5 tim trở xuống</strong> (<= 1.0 HP), tỉ lệ thành công là <strong>20%</strong>.
+            </p>
+          </div>
         </div>
       </section>
 
-      <!-- The 7 Weapons Wiki Cards -->
+      <!-- The Weapons Wiki Cards -->
       <section>
-        <h2 class="section-title">⚔ DANH SÁCH 7 CỔ VẬT MACE EXCLUSIVE</h2>
+        <h2 class="section-title">🔨 CÁC CỔ VẬT BÚA MACE (MACE WEAPONS)</h2>
         
         <div class="weapon-list-container">
           
@@ -1115,64 +1132,7 @@
             </div>
           </div>
 
-          <!-- 6. Sonic Mace (Warden Spear) -->
-          <div class="weapon-row sonic" id="w-sonic">
-            <div class="weapon-info-left">
-              <div class="weapon-header">
-                <span style="font-size: 1.8rem;">🔊</span>
-                <h3 class="weapon-name" style="color: #00b4d8;">Giáo Tiếng Vọng Warden (Warden Spear)</h3>
-              </div>
-              <p class="weapon-desc">Cổ vật dạng giáo mang dư chấn lòng đất, bắn sóng âm nén phá tan mọi rào cản phòng ngự.</p>
-              
-              <div class="mc-tooltip-box">
-                <span class="mcc-title" style="color: #00b4d8;">Warden Spear</span>
-                <span class="mcc-text" style="color: var(--color-gray);">A deep-dark spear resonating with Warden pressure waves.</span>
-                <br>
-                <span class="mcc-text" style="color: var(--color-gold); font-weight: bold;">⚡ Active — Sonic Boom:</span>
-                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Ngồi + Đánh hướng nhìn. Bắn sóng âm nén xa 12 khối, mục tiêu đầu tiên nhận 14 sát thương chuẩn và đẩy lùi mạnh 2.0. Trả giá người dùng mất 4 HP (không tự tử). Hồi chiêu 35s.</span>
-                <br>
-                <span class="mcc-text" style="color: var(--color-green);">⭐ Passive — Quiet step:</span>
-                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Đi trên/gần Sculk giảm âm thanh. Đòn đập rơi tự do (Smash) được +1.5 sát thương mỗi 4 khối độ cao (cộng tối đa +6 HP).</span>
-                <br>
-                <span class="mcc-text" style="color: var(--color-curse);">☠ Curse — Quá tải phản âm:</span>
-                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Sau active người dùng bị Mù lòa (Blindness) 1.5 giây và Slowness II 2 giây. Mang giáo này không phát sáng khi cầm (không nguyền rủa lộ vị trí).</span>
-              </div>
-              
-              <div class="weapon-meta-specs">Custom Model Data: 10005 | singleton: true</div>
-            </div>
-            
-            <div class="weapon-visuals-right">
-              <div class="mc-crafting-table-ui">
-                <div class="mc-grid-3x3">
-                  <div class="mc-slot" data-mc-tooltip="&fSculk Catalyst">S</div>
-                  <div class="mc-slot" data-mc-tooltip="&3Sculk Core">C</div>
-                  <div class="mc-slot" data-mc-tooltip="&fEnchanted Golden Apple">G</div>
-                  
-                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
-                  <div class="mc-slot" data-mc-tooltip="&fNetherite Spear">B</div>
-                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
-                  
-                  <div class="mc-slot" data-mc-tooltip="&fEnchanted Golden Apple">G</div>
-                  <div class="mc-slot" data-mc-tooltip="&fEcho Shard">E</div>
-                  <div class="mc-slot" data-mc-tooltip="&fSculk Catalyst">S</div>
-                </div>
-                <div class="mc-arrow-icon">➔</div>
-                <div class="mc-result-wrap">
-                  <div class="mc-slot mc-result enchanted" data-mc-tooltip="&9&lWarden Spear">⚒</div>
-                </div>
-              </div>
-              <div class="ingredient-key-list">
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">C</span> Sculk Core</span>
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">B</span> Netherite Spear</span>
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">E</span> Echo Shard</span>
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Ingot</span>
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Sculk Catalyst</span>
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">G</span> Enchanted Golden Apple</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 7. Soulfire Mace -->
+          <!-- 6. Soulfire Mace -->
           <div class="weapon-row soulfire" id="w-soulfire">
             <div class="weapon-info-left">
               <div class="weapon-header">
@@ -1228,8 +1188,130 @@
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          <!-- 8. Cursed Sword -->
+      <!-- The Spear Weapons Section -->
+      <section>
+        <h2 class="section-title">🔱 CÁC CỔ VẬT GIÁO SPEAR (SPEAR WEAPONS)</h2>
+        <div class="weapon-list-container">
+
+          <!-- 7. Warden Spear -->
+          <div class="weapon-row sonic" id="w-sonic">
+            <div class="weapon-info-left">
+              <div class="weapon-header">
+                <span style="font-size: 1.8rem;">🔊</span>
+                <h3 class="weapon-name" style="color: #00b4d8;">Giáo Tiếng Vọng Warden (Warden Spear)</h3>
+              </div>
+              <p class="weapon-desc">Cổ vật dạng giáo mang dư chấn lòng đất, bắn sóng âm nén phá tan mọi rào cản phòng ngự.</p>
+              
+              <div class="mc-tooltip-box">
+                <span class="mcc-title" style="color: #00b4d8;">Warden Spear</span>
+                <span class="mcc-text" style="color: var(--color-gray);">A deep-dark spear resonating with Warden pressure waves.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-gold); font-weight: bold;">⚡ Active — Sonic Boom:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Ngồi + Đánh hướng nhìn. Bắn sóng âm nén xa 12 khối, mục tiêu đầu tiên nhận 14 sát thương chuẩn và đẩy lùi mạnh 2.0. Trả giá người dùng mất 4 HP (không tự tử). Hồi chiêu 35s.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-green);">⭐ Passive — Quiet step:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Đi trên/gần Sculk giảm âm thanh. Đòn đập rơi tự do (Smash) được +1.5 sát thương mỗi 4 khối độ cao (cộng tối đa +6 HP).</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-curse);">☠ Curse — Quá tải phản âm:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Sau active người dùng bị Mù lòa (Blindness) 1.5 giây và Slowness II 2 giây. Mang giáo này không phát sáng khi cầm (không nguyền rủa lộ vị trí).</span>
+              </div>
+              
+              <div class="weapon-meta-specs">Custom Model Data: 10005 | singleton: true</div>
+            </div>
+            
+            <div class="weapon-visuals-right">
+              <div class="mc-crafting-table-ui">
+                <div class="mc-grid-3x3">
+                  <div class="mc-slot" data-mc-tooltip="&fSculk Catalyst">S</div>
+                  <div class="mc-slot" data-mc-tooltip="&3Sculk Core">C</div>
+                  <div class="mc-slot" data-mc-tooltip="&7Netherite Spear">B</div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="&fEnchanted Golden Apple">G</div>
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
+                  <div class="mc-slot" data-mc-tooltip="&fSculk Catalyst">S</div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
+                  <div class="mc-slot" data-mc-tooltip="&fEcho Shard">E</div>
+                  <div class="mc-slot" data-mc-tooltip="&fEnchanted Golden Apple">G</div>
+                </div>
+                <div class="mc-arrow-icon">➔</div>
+                <div class="mc-result-wrap">
+                  <div class="mc-slot mc-result enchanted" data-mc-tooltip="&9&lWarden Spear">⚒</div>
+                </div>
+              </div>
+              <div class="ingredient-key-list">
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">C</span> Sculk Core</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">B</span> Netherite Spear</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">E</span> Echo Shard</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Ingot x2</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Sculk Catalyst x2</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">G</span> Enchanted Golden Apple x2</span>
+              </div>
+            </div>
+          <!-- 8. Chronos Anchor Spear -->
+          <div class="weapon-row chronos" id="w-chronos">
+            <div class="weapon-info-left">
+              <div class="weapon-header">
+                <span style="font-size: 1.8rem;">⏳</span>
+                <h3 class="weapon-name" style="color: #e29578;">Giáo Thời Gian Chronos (Chronos Anchor Spear)</h3>
+              </div>
+              <p class="weapon-desc">Cổ vật thao túng dòng thời gian, đóng băng vị trí của mục tiêu hoặc chính người dùng nếu ném trượt.</p>
+              
+              <div class="mc-tooltip-box">
+                <span class="mcc-title" style="color: #e29578;">Chronos Anchor Spear</span>
+                <span class="mcc-text" style="color: var(--color-gray);">A time-anchored spear that binds motion and space.</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-gold); font-weight: bold;">⚡ Active — Time Pin:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Ngồi + Đánh hướng nhìn. Kích hoạt Time Pin đóng băng chuyển động mục tiêu trong dòng thời gian trong 2.25 giây. (Hồi chiêu 55 giây)</span>
+                <br>
+                <span class="mcc-text" style="color: var(--color-curse); font-weight: bold;">☠ Curse — Phản phệ ném trượt:</span>
+                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Ném trượt hoặc kích hoạt hụt sẽ tự đóng băng bản thân trong 1.25 giây.</span>
+              </div>
+              
+              <div class="weapon-meta-specs">Custom Model Data: 2003 | singleton: true</div>
+            </div>
+            
+            <div class="weapon-visuals-right">
+              <div class="mc-crafting-table-ui">
+                <div class="mc-grid-3x3">
+                  <div class="mc-slot" data-mc-tooltip="&fSlime Block">S</div>
+                  <div class="mc-slot" data-mc-tooltip="&eĐồng hồ Glitch">G</div>
+                  <div class="mc-slot" data-mc-tooltip="&7Netherite Spear">T</div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="&eĐồng hồ Glitch">G</div>
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
+                  <div class="mc-slot" data-mc-tooltip="&fSlime Block">S</div>
+                  
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
+                  <div class="mc-slot" data-mc-tooltip="&fSlime Block">S</div>
+                  <div class="mc-slot" data-mc-tooltip="&fSlime Block">S</div>
+                </div>
+                <div class="mc-arrow-icon">➔</div>
+                <div class="mc-result-wrap">
+                  <div class="mc-slot mc-result enchanted" data-mc-tooltip="&6&lChronos Anchor Spear">⚒</div>
+                </div>
+              </div>
+              <div class="ingredient-key-list">
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">T</span> Netherite Spear</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Ingot x2</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">G</span> Đồng hồ Glitch x2</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Slime Block x4</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- The Other Weapons Section -->
+      <section>
+        <h2 class="section-title">⚔ CÁC CỔ VẬT VŨ KHÍ KHÁC</h2>
+        <div class="weapon-list-container">
+
+          <!-- 9. Cursed Sword -->
           <div class="weapon-row cursedsword" id="w-cursed-sword">
             <div class="weapon-info-left">
               <div class="weapon-header">
@@ -1279,57 +1361,6 @@
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">W</span> Đầu bất kì (Any Head)</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">P</span> Thuốc độc bất kì (Poison Potion)</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Stick</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 9. Chronos Anchor Spear -->
-          <div class="weapon-row chronos" id="w-chronos">
-            <div class="weapon-info-left">
-              <div class="weapon-header">
-                <span style="font-size: 1.8rem;">⏳</span>
-                <h3 class="weapon-name" style="color: #e29578;">Giáo Thời Gian Chronos (Chronos Anchor Spear)</h3>
-              </div>
-              <p class="weapon-desc">Cổ vật thao túng dòng thời gian, đóng băng vị trí của mục tiêu hoặc chính người dùng nếu ném trượt.</p>
-              
-              <div class="mc-tooltip-box">
-                <span class="mcc-title" style="color: #e29578;">Chronos Anchor Spear</span>
-                <span class="mcc-text" style="color: var(--color-gray);">A time-anchored spear that binds motion and space.</span>
-                <br>
-                <span class="mcc-text" style="color: var(--color-gold); font-weight: bold;">⚡ Active — Time Pin:</span>
-                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Ngồi + Đánh hướng nhìn. Kích hoạt Time Pin đóng băng chuyển động mục tiêu trong dòng thời gian. (Hồi chiêu 55 giây)</span>
-                <br>
-                <span class="mcc-text" style="color: var(--color-curse); font-weight: bold;">☠ Curse — Phản phệ ném trượt:</span>
-                <span class="mcc-text" style="color: #ffffff; padding-left: 10px;">Ném trượt hoặc kích hoạt hụt sẽ tự đóng băng bản thân trong dòng thời gian. Giảm vĩnh viễn 15% máu tối đa khi mang theo.</span>
-              </div>
-              
-              <div class="weapon-meta-specs">Custom Model Data: 2003 | singleton: true</div>
-            </div>
-            
-            <div class="weapon-visuals-right">
-              <div class="mc-crafting-table-ui">
-                <div class="mc-grid-3x3">
-                  <div class="mc-slot empty"></div>
-                  <div class="mc-slot" data-mc-tooltip="&fEnder Pearl">E</div>
-                  <div class="mc-slot empty"></div>
-                  
-                  <div class="mc-slot empty"></div>
-                  <div class="mc-slot" data-mc-tooltip="&fNetherite Spear">T</div>
-                  <div class="mc-slot empty"></div>
-                  
-                  <div class="mc-slot empty"></div>
-                  <div class="mc-slot" data-mc-tooltip="&fAmethyst Shard">S</div>
-                  <div class="mc-slot empty"></div>
-                </div>
-                <div class="mc-arrow-icon">➔</div>
-                <div class="mc-result-wrap">
-                  <div class="mc-slot mc-result enchanted" data-mc-tooltip="&6&lChronos Anchor Spear">⚒</div>
-                </div>
-              </div>
-              <div class="ingredient-key-list">
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">E</span> Ender Pearl</span>
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">T</span> Netherite Spear</span>
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Amethyst Shard</span>
               </div>
             </div>
           </div>

@@ -25,9 +25,11 @@ import java.util.UUID;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 
 public final class SpecialItemListener implements Listener {
 
+    private final MaceExclusivePlugin plugin;
     private final ExclusiveItemFactory itemFactory;
     private final ItemMatcher itemMatcher;
     private final ConfigManager configManager;
@@ -40,7 +42,8 @@ public final class SpecialItemListener implements Listener {
         long lastKillTime = 0L;
     }
 
-    public SpecialItemListener(ExclusiveItemFactory itemFactory, ItemMatcher itemMatcher, ConfigManager configManager) {
+    public SpecialItemListener(MaceExclusivePlugin plugin, ExclusiveItemFactory itemFactory, ItemMatcher itemMatcher, ConfigManager configManager) {
+        this.plugin = plugin;
         this.itemFactory = itemFactory;
         this.itemMatcher = itemMatcher;
         this.configManager = configManager;
@@ -135,9 +138,28 @@ public final class SpecialItemListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        slaughterMap.remove(event.getPlayer().getUniqueId());
+        Player player = event.getPlayer();
+        slaughterMap.remove(player.getUniqueId());
+
+        // Glitch Clock logic: quit with CLOCK in main hand and <= 0.5 hearts (1.0 HP)
+        if (player.getHealth() <= 1.0D) {
+            ItemStack mainHand = player.getInventory().getItemInMainHand();
+            if (mainHand != null && mainHand.getType() == Material.CLOCK) {
+                if (random.nextDouble() < 0.20D) {
+                    mainHand.setAmount(mainHand.getAmount() - 1);
+                    player.getInventory().setItemInMainHand(mainHand.getAmount() > 0 ? mainHand : null);
+
+                    ItemStack glitchClock = itemFactory.create("glitch_clock");
+                    java.util.HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(glitchClock);
+                    for (ItemStack item : leftover.values()) {
+                        player.getWorld().dropItemNaturally(player.getLocation(), item);
+                    }
+                    plugin.getLogger().info("Player " + player.getName() + " forged a Glitch Clock by quitting at 0.5 hearts!");
+                }
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

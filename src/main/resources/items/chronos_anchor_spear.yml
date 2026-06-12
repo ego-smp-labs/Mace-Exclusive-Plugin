@@ -1,24 +1,26 @@
-enabled: false
+enabled: true
 singleton: true
 name: "&6&lCHRONOS ANCHOR SPEAR"
 material: NETHERITE_SPEAR
 custom-model-data: 2003
 lore:
-  - "&7A time-anchored spear."
+  - "&7Cây giáo thao túng dòng thời gian, đóng băng vị trí của mục tiêu."
+  - "&eActive: &fSneak + Left-Click phóng luồng Time Pin đóng băng đối thủ trong 2.25 giây (55s CD)."
+  - "&cCurse: &fNém trượt hoặc kích hoạt hụt sẽ tự đóng băng bản thân trong 1.25 giây."
 recipe:
-  enabled: false
+  enabled: true
   shape:
-    - " E "
-    - " T "
-    - " S "
+    - "SGT"
+    - "GNS"
+    - "NSS"
   ingredients:
-    E: ENDER_PEARL
     T: NETHERITE_SPEAR
-    S: AMETHYST_SHARD
+    N: NETHERITE_INGOT
+    G: glitch_clock
+    S: SLIME_BLOCK
 cooldowns:
   time_pin: 55
-curse:
-  max_health_multiplier: 0.85
+curse: {}
 messages:
   skill-time-pin: "&6[Chronos Spear] &fKỹ năng &eTime Pin&f đã kích hoạt! Mục tiêu bị đóng băng."
   skill-miss-backfire: "&c[Chronos Spear] &fNém trượt! Kỹ năng phản hệ, bạn bị đóng băng!"
