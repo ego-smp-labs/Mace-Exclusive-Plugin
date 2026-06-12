@@ -12,14 +12,14 @@ recipe:
   enabled: true
   shape:
     - "SCB"
-    - "GNS"
-    - "NEG"
+    - "GDS"
+    - "DEG"
   ingredients:
     C: sculk_core
     B: NETHERITE_SPEAR
     E: ECHO_SHARD
-    N: NETHERITE_INGOT
-    S: SCULK_CATALYST
+    D: DIAMOND:16
+    S: SCULK_CATALYST:16
     G: ENCHANTED_GOLDEN_APPLE
 cooldowns:
   sonic_boom: 35

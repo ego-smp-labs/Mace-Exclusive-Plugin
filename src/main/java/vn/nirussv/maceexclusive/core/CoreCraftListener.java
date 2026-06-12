@@ -25,6 +25,7 @@ public final class CoreCraftListener implements Listener {
 
     private static final int FREEZE_TICKS = 100;
 
+    private final Map<UUID, Long> lastCraftTimes = new HashMap<>();
     private final ConfigManager configManager;
     private final CoreRegistry coreRegistry;
     private final CoreItemFactory coreItemFactory;
@@ -42,6 +43,7 @@ public final class CoreCraftListener implements Listener {
         this.freezeService = freezeService;
         this.lockoutService = lockoutService;
         this.recipeRegistry = recipeRegistry;
+        this.random.setSeed(System.nanoTime()); // Clean code: properly seed random or use it safely
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
@@ -54,6 +56,16 @@ public final class CoreCraftListener implements Listener {
         if (craftedCore.isEmpty()) return;
 
         event.setCancelled(true);
+
+        // Rate limit crafting (500ms cooldown) to prevent auto-clicker duplication exploits
+        long now = System.currentTimeMillis();
+        long lastCraft = lastCraftTimes.getOrDefault(player.getUniqueId(), 0L);
+        if (now - lastCraft < 500) {
+            player.sendMessage(configManager.getMessage("core.take-one-at-a-time"));
+            return;
+        }
+        lastCraftTimes.put(player.getUniqueId(), now);
+
         if (isUnsafeBulkCraft(event)) {
             player.sendMessage(configManager.getMessage("core.take-one-at-a-time"));
             return;

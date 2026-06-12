@@ -24,13 +24,17 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.entity.Player;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 public final class RecipeRegistry implements Listener {
+
+    private final Map<UUID, Long> lastCraftTimes = new HashMap<>();
 
     private final MaceExclusivePlugin plugin;
     private final ConfigManager configManager;
@@ -324,24 +328,37 @@ public final class RecipeRegistry implements Listener {
         String customId = getCustomRecipeId(recipe);
         if (customId == null) return;
 
-        ItemConfig itemConfig = configManager.getItemConfig(customId);
-        if (itemConfig == null || !itemConfig.recipe().enabled()) {
+        if (!(event.getWhoClicked() instanceof Player player)) return;
+
+        // Rate limit crafting (500ms cooldown) to prevent auto-clicker duplication exploits
+        long now = System.currentTimeMillis();
+        long lastCraft = lastCraftTimes.getOrDefault(player.getUniqueId(), 0L);
+        if (now - lastCraft < 500) {
+            event.setCancelled(true);
+            player.sendMessage(configManager.getMessage("core.take-one-at-a-time"));
             return;
         }
+        lastCraftTimes.put(player.getUniqueId(), now);
 
-        Player player = (Player) event.getWhoClicked();
+        List<String> shape = null;
+        Map<Character, String> ingredients = null;
 
-        boolean hasMultiAmount = false;
-        List<String> shape = itemConfig.recipe().shape();
-        Map<Character, String> ingredients = itemConfig.recipe().ingredients();
-        for (int i = 0; i < 9; i++) {
-            if (getRequiredAmount(shape, ingredients, i) > 1) {
-                hasMultiAmount = true;
-                break;
+        ItemConfig itemConfig = configManager.getItemConfig(customId);
+        if (itemConfig != null && itemConfig.recipe().enabled()) {
+            shape = itemConfig.recipe().shape();
+            ingredients = itemConfig.recipe().ingredients();
+        } else {
+            Optional<CoreConfig> coreOpt = coreRegistry.find(customId);
+            if (coreOpt.isPresent() && coreOpt.get().craftable()) {
+                shape = coreOpt.get().shape();
+                ingredients = coreOpt.get().ingredients();
             }
         }
 
-        if (hasMultiAmount && isUnsafeBulkCraft(event)) {
+        if (shape == null || ingredients == null) return;
+
+        // Block all unsafe bulk crafting types (shift-click, swap offhand, etc.) for ALL custom items
+        if (isUnsafeBulkCraft(event)) {
             event.setCancelled(true);
             player.sendMessage(configManager.getMessage("core.take-one-at-a-time"));
             return;
@@ -365,6 +382,11 @@ public final class RecipeRegistry implements Listener {
 
     private boolean isUnsafeBulkCraft(CraftItemEvent event) {
         ClickType click = event.getClick();
-        return event.isShiftClick() || click == ClickType.NUMBER_KEY || click == ClickType.DOUBLE_CLICK;
+        return event.isShiftClick()
+            || click == ClickType.NUMBER_KEY
+            || click == ClickType.DOUBLE_CLICK
+            || click == ClickType.SWAP_OFFHAND
+            || click == ClickType.DROP
+            || click == ClickType.CONTROL_DROP;
     }
 }

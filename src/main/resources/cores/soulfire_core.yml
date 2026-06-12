@@ -13,5 +13,5 @@ recipe:
     - "LML"
   ingredients:
     L: SOUL_LANTERN
-    M: MAGMA_BLOCK
+    M: MAGMA_BLOCK:64
     H: HEAVY_CORE

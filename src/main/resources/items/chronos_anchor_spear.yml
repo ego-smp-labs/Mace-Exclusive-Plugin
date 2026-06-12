@@ -15,9 +15,9 @@ recipe:
     - "NSS"
   ingredients:
     T: NETHERITE_SPEAR
-    N: NETHERITE_INGOT
+    N: NETHERITE_INGOT:16
     G: glitch_clock
-    S: SLIME_BLOCK
+    S: SLIME_BLOCK:64
 cooldowns:
   time_pin: 55
 curse: {}

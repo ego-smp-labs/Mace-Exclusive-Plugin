@@ -19,7 +19,7 @@ recipe:
     B: NETHERITE_INGOT
     W: NETHER_WART
     S: cursed_player_head
-    N: MAGMA_BLOCK
+    N: MAGMA_BLOCK:64
 cooldowns:
   siphon: 75
 curse:

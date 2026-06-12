@@ -759,13 +759,13 @@
                 <div class="mc-crafting-table-ui" style="scale: 0.85; margin: -10px 0;">
                   <div class="mc-grid-3x3">
                     <div class="mc-slot" data-mc-tooltip="&fSoul Lantern">L</div>
-                    <div class="mc-slot" data-mc-tooltip="&fMagma Block">M</div>
+                    <div class="mc-slot" data-mc-tooltip="&fMagma Block x64">M</div>
                     <div class="mc-slot" data-mc-tooltip="&fSoul Lantern">L</div>
-                    <div class="mc-slot" data-mc-tooltip="&fMagma Block">M</div>
+                    <div class="mc-slot" data-mc-tooltip="&fMagma Block x64">M</div>
                     <div class="mc-slot" data-mc-tooltip="&fHeavy Core">H</div>
-                    <div class="mc-slot" data-mc-tooltip="&fMagma Block">M</div>
+                    <div class="mc-slot" data-mc-tooltip="&fMagma Block x64">M</div>
                     <div class="mc-slot" data-mc-tooltip="&fSoul Lantern">L</div>
-                    <div class="mc-slot" data-mc-tooltip="&fMagma Block">M</div>
+                    <div class="mc-slot" data-mc-tooltip="&fMagma Block x64">M</div>
                     <div class="mc-slot" data-mc-tooltip="&fSoul Lantern">L</div>
                   </div>
                 </div>
@@ -847,7 +847,7 @@
       </section>
 
       <!-- The Weapons Wiki Cards -->
-      <section>
+      <section class="card-panel" id="mace-weapons">
         <h2 class="section-title">🔨 CÁC CỔ VẬT BÚA MACE (MACE WEAPONS)</h2>
         
         <div class="weapon-list-container">
@@ -1048,17 +1048,17 @@
             <div class="weapon-visuals-right">
               <div class="mc-crafting-table-ui">
                 <div class="mc-grid-3x3">
-                  <div class="mc-slot" data-mc-tooltip="&fMagma Block">M</div>
+                  <div class="mc-slot" data-mc-tooltip="&fMagma Block x64">M</div>
                   <div class="mc-slot" data-mc-tooltip="&cBlood Core">B</div>
-                  <div class="mc-slot" data-mc-tooltip="&fMagma Block">M</div>
+                  <div class="mc-slot" data-mc-tooltip="&fMagma Block x64">M</div>
                   
                   <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
                   <div class="mc-slot" data-mc-tooltip="&c&lĐầu Player Bị Vấy Bẩn">S</div>
                   <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
                   
-                  <div class="mc-slot" data-mc-tooltip="&fMagma Block">M</div>
+                  <div class="mc-slot" data-mc-tooltip="&fMagma Block x64">M</div>
                   <div class="mc-slot" data-mc-tooltip="&fNether Wart">W</div>
-                  <div class="mc-slot" data-mc-tooltip="&fMagma Block">M</div>
+                  <div class="mc-slot" data-mc-tooltip="&fMagma Block x64">M</div>
                 </div>
                 <div class="mc-arrow-icon">➔</div>
                 <div class="mc-result-wrap">
@@ -1070,7 +1070,7 @@
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Ingot</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">W</span> Nether Wart</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Cursed Player Head</span>
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">M</span> Magma Block</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">M</span> Magma Block x64 (mỗi ô)</span>
               </div>
             </div>
           </div>
@@ -1192,7 +1192,7 @@
       </section>
 
       <!-- The Spear Weapons Section -->
-      <section>
+      <section class="card-panel" id="spear-weapons">
         <h2 class="section-title">🔱 CÁC CỔ VẬT GIÁO SPEAR (SPEAR WEAPONS)</h2>
         <div class="weapon-list-container">
 
@@ -1225,15 +1225,15 @@
             <div class="weapon-visuals-right">
               <div class="mc-crafting-table-ui">
                 <div class="mc-grid-3x3">
-                  <div class="mc-slot" data-mc-tooltip="&fSculk Catalyst">S</div>
+                  <div class="mc-slot" data-mc-tooltip="&fSculk Catalyst x16">S</div>
                   <div class="mc-slot" data-mc-tooltip="&3Sculk Core">C</div>
                   <div class="mc-slot" data-mc-tooltip="&7Netherite Spear">B</div>
                   
                   <div class="mc-slot" data-mc-tooltip="&fEnchanted Golden Apple">G</div>
-                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
-                  <div class="mc-slot" data-mc-tooltip="&fSculk Catalyst">S</div>
+                  <div class="mc-slot" data-mc-tooltip="&fDiamond x16">D</div>
+                  <div class="mc-slot" data-mc-tooltip="&fSculk Catalyst x16">S</div>
                   
-                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
+                  <div class="mc-slot" data-mc-tooltip="&fDiamond x16">D</div>
                   <div class="mc-slot" data-mc-tooltip="&fEcho Shard">E</div>
                   <div class="mc-slot" data-mc-tooltip="&fEnchanted Golden Apple">G</div>
                 </div>
@@ -1246,11 +1246,13 @@
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">C</span> Sculk Core</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">B</span> Netherite Spear</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">E</span> Echo Shard</span>
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Ingot x2</span>
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Sculk Catalyst x2</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">D</span> Diamond x16 (mỗi ô)</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Sculk Catalyst x16 (mỗi ô)</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">G</span> Enchanted Golden Apple x2</span>
               </div>
             </div>
+          </div>
+
           <!-- 8. Chronos Anchor Spear -->
           <div class="weapon-row chronos" id="w-chronos">
             <div class="weapon-info-left">
@@ -1277,17 +1279,17 @@
             <div class="weapon-visuals-right">
               <div class="mc-crafting-table-ui">
                 <div class="mc-grid-3x3">
-                  <div class="mc-slot" data-mc-tooltip="&fSlime Block">S</div>
+                  <div class="mc-slot" data-mc-tooltip="&fSlime Block x64">S</div>
                   <div class="mc-slot" data-mc-tooltip="&eĐồng hồ Glitch">G</div>
                   <div class="mc-slot" data-mc-tooltip="&7Netherite Spear">T</div>
                   
                   <div class="mc-slot" data-mc-tooltip="&eĐồng hồ Glitch">G</div>
-                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
-                  <div class="mc-slot" data-mc-tooltip="&fSlime Block">S</div>
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot x16">N</div>
+                  <div class="mc-slot" data-mc-tooltip="&fSlime Block x64">S</div>
                   
-                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot">N</div>
-                  <div class="mc-slot" data-mc-tooltip="&fSlime Block">S</div>
-                  <div class="mc-slot" data-mc-tooltip="&fSlime Block">S</div>
+                  <div class="mc-slot" data-mc-tooltip="&fNetherite Ingot x16">N</div>
+                  <div class="mc-slot" data-mc-tooltip="&fSlime Block x64">S</div>
+                  <div class="mc-slot" data-mc-tooltip="&fSlime Block x64">S</div>
                 </div>
                 <div class="mc-arrow-icon">➔</div>
                 <div class="mc-result-wrap">
@@ -1296,9 +1298,9 @@
               </div>
               <div class="ingredient-key-list">
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">T</span> Netherite Spear</span>
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Ingot x2</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">N</span> Netherite Ingot x16 (mỗi ô)</span>
                 <span class="ingredient-badge"><span class="ingredient-key-symbol">G</span> Đồng hồ Glitch x2</span>
-                <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Slime Block x4</span>
+                <span class="ingredient-badge"><span class="ingredient-key-symbol">S</span> Slime Block x64 (mỗi ô)</span>
               </div>
             </div>
           </div>
@@ -1307,7 +1309,7 @@
       </section>
 
       <!-- The Other Weapons Section -->
-      <section>
+      <section class="card-panel" id="other-weapons">
         <h2 class="section-title">⚔ CÁC CỔ VẬT VŨ KHÍ KHÁC</h2>
         <div class="weapon-list-container">
 
