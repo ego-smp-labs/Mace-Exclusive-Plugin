@@ -13,7 +13,7 @@ This docs folder is the active project wiki for Mace-Exclusive.
 
 ## Archive
 
-[`archive/`](archive/) contains historical references only. Do not treat archived files as active requirements unless the Architect copies them into `plan.html` first.
+[`.task/`](.task/) contains historical references only. Do not treat archived files as active requirements unless the Architect copies them into `plan.html` first.
 
 ## Current phase
 

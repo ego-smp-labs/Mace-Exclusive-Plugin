@@ -9,5 +9,5 @@ build/
 .gradle/*
 **/build/
 !gradle-wrapper.jar
-docs/archive/*
+.task
 hoiihesmp-web/
