@@ -45,6 +45,8 @@ public class ConfigManager {
     private final MaceExclusivePlugin plugin;
     private final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacyAmpersand();
     private FileConfiguration langConfig;
+    private FileConfiguration discordConfig;
+    private boolean discordConfigMissingBeforeLoad;
     private PerformanceConfig performanceConfig;
     private final Map<String, ItemConfig> itemConfigs = new LinkedHashMap<>();
     private final Map<String, YamlConfiguration> itemFiles = new HashMap<>();
@@ -62,7 +64,22 @@ public class ConfigManager {
         clearItemEffectCaches();
         plugin.reloadConfig();
         loadLanguage();
+        loadDiscord();
         loadTypedConfigs();
+    }
+
+    private void loadDiscord() {
+        File discordFile = new File(plugin.getDataFolder(), "discord.yml");
+        discordConfigMissingBeforeLoad = !discordFile.exists();
+        ResourceBootstrap.ensure(plugin, "discord.yml");
+        discordConfig = YamlConfiguration.loadConfiguration(discordFile);
+        try (InputStream defStream = plugin.getResource("discord.yml")) {
+            if (defStream != null) {
+                discordConfig.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defStream, StandardCharsets.UTF_8)));
+            }
+        } catch (IOException exception) {
+            plugin.getLogger().warning("Could not load Discord defaults: " + exception.getMessage());
+        }
     }
 
     private void loadLanguage() {
@@ -369,6 +386,72 @@ public class ConfigManager {
     public boolean isVerboseLogging() { return plugin.getConfig().getBoolean("settings.verbose", false); }
     public boolean isStrictModeDrop() { return plugin.getConfig().getBoolean("settings.strict-mode-drop", false); }
     public boolean isPreventHopperPickup() { return plugin.getConfig().getBoolean("settings.prevent-hopper-pickup", true); }
+
+    public boolean isDiscordWebhookEnabled() {
+        return getDiscordBoolean("enabled", "discord.enabled", false);
+    }
+
+    public String getDiscordWebhookUrl() {
+        return getDiscordString("webhook-url", "discord.webhook-url", "");
+    }
+
+    public String getDiscordEmbedTitle() {
+        return getDiscordString("embed.title", null, "⚔️ ANCIENT ARTIFACT CLAIMED ⚔️");
+    }
+
+    public String getDiscordEmbedDescription() {
+        return getDiscordString("embed.description", null, "**%player%** has %action% the legendary **%item%**!");
+    }
+
+    public String getDiscordEmbedFooter() {
+        return getDiscordString("embed.footer", null, "Mace-Exclusive Integration Status");
+    }
+
+    public String getDiscordEmbedFieldName(String key) {
+        String fallback = switch (key) {
+            case "player-name" -> "👤 Player";
+            case "method-name" -> "🔨 Method";
+            case "location-name" -> "📍 Location";
+            default -> key;
+        };
+        return getDiscordString("embed.fields." + key, null, fallback);
+    }
+
+    public String getDiscordEmbedLocationValue() {
+        return getDiscordString("embed.fields.location-value", null, "World: `%world%`\nCoords: `%coords%`");
+    }
+
+    public int getDiscordColor(String itemId) {
+        String normalizedItemId = itemId == null ? "" : itemId.toLowerCase();
+        String path = "colors." + normalizedItemId;
+        if (isDiscordConfigLoaded() && discordConfig.contains(path, true)) {
+            return discordConfig.getInt(path);
+        }
+        return isDiscordConfigLoaded() ? discordConfig.getInt("colors.default", 9807270) : 9807270;
+    }
+
+    private boolean getDiscordBoolean(String path, String legacyPath, boolean fallback) {
+        if (shouldUseLegacyDiscordPath(path, legacyPath)) {
+            return plugin.getConfig().getBoolean(legacyPath, fallback);
+        }
+        return isDiscordConfigLoaded() ? discordConfig.getBoolean(path, fallback) : fallback;
+    }
+
+    private String getDiscordString(String path, String legacyPath, String fallback) {
+        if (shouldUseLegacyDiscordPath(path, legacyPath)) {
+            return plugin.getConfig().getString(legacyPath, fallback);
+        }
+        return isDiscordConfigLoaded() ? discordConfig.getString(path, fallback) : fallback;
+    }
+
+    private boolean shouldUseLegacyDiscordPath(String path, String legacyPath) {
+        if (legacyPath == null || !plugin.getConfig().contains(legacyPath)) return false;
+        return !isDiscordConfigLoaded() || discordConfigMissingBeforeLoad || !discordConfig.contains(path, true);
+    }
+
+    private boolean isDiscordConfigLoaded() {
+        return discordConfig != null;
+    }
 
     private void ensureBundledYamlCopied(String resourceDirectory) {
         File dir = new File(plugin.getDataFolder(), resourceDirectory);

@@ -112,6 +112,4 @@ netherite-forge:
   freeze-player: true
   restore-smithing-table-on-complete: true
 
-discord:
-  enabled: false
-  webhook-url: ""
+

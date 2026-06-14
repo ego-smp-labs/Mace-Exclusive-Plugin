@@ -1,0 +1,20 @@
+enabled: false
+webhook-url: ""
+embed:
+  title: "⚔️ ANCIENT ARTIFACT CLAIMED ⚔️"
+  description: "**%player%** has %action% the legendary **%item%**!"
+  footer: "Mace-Exclusive Integration Status"
+  fields:
+    player-name: "👤 Player"
+    method-name: "🔨 Method"
+    location-name: "📍 Location"
+    location-value: "World: `%world%`\nCoords: `%coords%`"
+colors:
+  default: 9807270
+  chaos_mace: 10181046
+  void_mace: 3447003
+  vampiric_mace: 15158332
+  gravity_mace: 15277667
+  power_mace: 15844367
+  sonic_mace: 1752220
+  soulfire_mace: 2062527

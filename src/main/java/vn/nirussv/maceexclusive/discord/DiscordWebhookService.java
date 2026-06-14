@@ -2,6 +2,7 @@ package vn.nirussv.maceexclusive.discord;
 
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
+import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.util.Scheduler;
 
 import java.io.OutputStream;
@@ -14,17 +15,19 @@ import java.util.logging.Level;
 public final class DiscordWebhookService {
 
     private final Plugin plugin;
+    private final ConfigManager configManager;
 
-    public DiscordWebhookService(Plugin plugin) {
+    public DiscordWebhookService(Plugin plugin, ConfigManager configManager) {
         this.plugin = plugin;
+        this.configManager = configManager;
     }
 
     public void sendMaceNotification(String playerName, String maceName, String action, Location loc, String maceId) {
-        if (!plugin.getConfig().getBoolean("discord.enabled", false)) return;
-        String urlString = plugin.getConfig().getString("discord.webhook-url", "");
+        if (!configManager.isDiscordWebhookEnabled()) return;
+        String urlString = configManager.getDiscordWebhookUrl();
         if (urlString == null || urlString.isBlank() || !urlString.startsWith("http")) return;
 
-        int color = getMaceColorDecimal(maceId);
+        int color = configManager.getDiscordColor(maceId);
         String worldName = loc != null && loc.getWorld() != null ? loc.getWorld().getName() : "Unknown";
         String coords = loc != null ? loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() : "Unknown";
 
@@ -33,20 +36,25 @@ public final class DiscordWebhookService {
         String cleanPlayerName = playerName.replaceAll("(?i)&[0-9a-fk-or]", "");
         String cleanAction = action.toLowerCase();
 
-        String embedTitle = "⚔️ ANCIENT ARTIFACT CLAIMED ⚔️";
-        String embedDesc = "**" + escapeJson(cleanPlayerName) + "** has " + cleanAction + " the legendary **" + escapeJson(cleanMaceName) + "**!";
+        String embedTitle = applyPlaceholders(configManager.getDiscordEmbedTitle(), cleanPlayerName, cleanMaceName, cleanAction, worldName, coords);
+        String embedDesc = applyPlaceholders(configManager.getDiscordEmbedDescription(), cleanPlayerName, cleanMaceName, cleanAction, worldName, coords);
+        String playerFieldName = applyPlaceholders(configManager.getDiscordEmbedFieldName("player-name"), cleanPlayerName, cleanMaceName, cleanAction, worldName, coords);
+        String methodFieldName = applyPlaceholders(configManager.getDiscordEmbedFieldName("method-name"), cleanPlayerName, cleanMaceName, cleanAction, worldName, coords);
+        String locationFieldName = applyPlaceholders(configManager.getDiscordEmbedFieldName("location-name"), cleanPlayerName, cleanMaceName, cleanAction, worldName, coords);
+        String locationFieldValue = applyPlaceholders(configManager.getDiscordEmbedLocationValue(), cleanPlayerName, cleanMaceName, cleanAction, worldName, coords);
+        String footer = applyPlaceholders(configManager.getDiscordEmbedFooter(), cleanPlayerName, cleanMaceName, cleanAction, worldName, coords);
 
         String json = "{"
             + "\"embeds\": [{"
             + "\"title\": \"" + escapeJson(embedTitle) + "\","
             + "\"color\": " + color + ","
-            + "\"description\": \"" + embedDesc + "\","
+            + "\"description\": \"" + escapeJson(embedDesc) + "\","
             + "\"fields\": ["
-            + "{\"name\": \"👤 Player\", \"value\": \"" + escapeJson(cleanPlayerName) + "\", \"inline\": true},"
-            + "{\"name\": \"🔨 Method\", \"value\": \"" + escapeJson(cleanAction.toUpperCase()) + "\", \"inline\": true},"
-            + "{\"name\": \"📍 Location\", \"value\": \"World: `" + escapeJson(worldName) + "`\\nCoords: `" + escapeJson(coords) + "`\", \"inline\": false}"
+            + "{\"name\": \"" + escapeJson(playerFieldName) + "\", \"value\": \"" + escapeJson(cleanPlayerName) + "\", \"inline\": true},"
+            + "{\"name\": \"" + escapeJson(methodFieldName) + "\", \"value\": \"" + escapeJson(cleanAction.toUpperCase()) + "\", \"inline\": true},"
+            + "{\"name\": \"" + escapeJson(locationFieldName) + "\", \"value\": \"" + escapeJson(locationFieldValue) + "\", \"inline\": false}"
             + "],"
-            + "\"footer\": {\"text\": \"Mace-Exclusive Integration Status\"},"
+            + "\"footer\": {\"text\": \"" + escapeJson(footer) + "\"},"
             + "\"timestamp\": \"" + Instant.now().toString() + "\""
             + "}]"
             + "}";
@@ -54,18 +62,14 @@ public final class DiscordWebhookService {
         sendPostAsync(urlString, json);
     }
 
-    private int getMaceColorDecimal(String maceId) {
-        if (maceId == null) return 9807270;
-        return switch (maceId.toLowerCase()) {
-            case "chaos_mace" -> 10181046; // Purple
-            case "void_mace" -> 3447003;   // Dark Blue
-            case "vampiric_mace" -> 15158332; // Red
-            case "gravity_mace" -> 15277667; // Pink
-            case "power_mace" -> 15844367;   // Gold
-            case "sonic_mace" -> 1752220;    // Cyan
-            case "soulfire_mace" -> 2062527; // Light Blue
-            default -> 9807270;             // Light Grey
-        };
+    private String applyPlaceholders(String template, String playerName, String maceName, String action, String worldName, String coords) {
+        if (template == null) return "";
+        return template
+            .replace("%player%", playerName)
+            .replace("%item%", maceName)
+            .replace("%action%", action)
+            .replace("%world%", worldName)
+            .replace("%coords%", coords);
     }
 
     private void sendPostAsync(String urlString, String jsonPayload) {

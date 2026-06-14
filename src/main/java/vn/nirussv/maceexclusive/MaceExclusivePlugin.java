@@ -79,7 +79,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
             CoreItemFactory coreItemFactory = new CoreItemFactory(coreRegistry, configManager, pdcKeys);
             this.maceRepository = new MaceRepository(this);
             this.maceTrackerService = new MaceTrackerService(this, configManager, maceRepository, itemMatcher);
-            DiscordWebhookService discordWebhookService = new DiscordWebhookService(this);
+            DiscordWebhookService discordWebhookService = new DiscordWebhookService(this, configManager);
             this.maceManager = new MaceManager(maceRepository, configManager, itemMatcher, itemRegistry, pdcKeys, maceTrackerService, discordWebhookService);
             this.lockoutService = new LockoutService();
             this.curseService = new CurseService(this, configManager, itemMatcher);
