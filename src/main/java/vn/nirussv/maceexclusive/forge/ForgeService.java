@@ -13,6 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
@@ -300,7 +302,14 @@ public final class ForgeService {
         item.setPickupDelay(20);
         Scheduler.runEntityTaskLater(plugin, item, () -> { if (!item.isDead()) item.setInvulnerable(false); }, 20L);
         Player owner = session.owner() == null ? null : plugin.getServer().getPlayer(session.owner());
-        if (owner != null) maceManager.onPlayerBecameHolder(owner, spawnLocation, session.itemId());
+        if (owner != null) {
+            ConfigManager.CraftFeedback feedback = configManager.getItemCraftFeedback(session.itemId());
+            if (feedback.glowAfterCraft()) {
+                owner.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 200, 0, false, false, true));
+            }
+            configManager.sendCraftCompleteMessage(owner, session.itemId(), displayName(session.itemId()), feedback);
+            maceManager.onPlayerBecameHolder(owner, spawnLocation, session.itemId());
+        }
         reservedItemIds.remove(session.itemId());
     }
 

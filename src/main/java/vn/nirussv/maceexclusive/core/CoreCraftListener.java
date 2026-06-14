@@ -9,6 +9,8 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.effect.FreezeService;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
@@ -55,6 +57,11 @@ public final class CoreCraftListener implements Listener {
         Optional<String> craftedCore = itemMatcher.matchCore(result);
         if (craftedCore.isEmpty()) return;
 
+        CoreConfig core = coreRegistry.find(craftedCore.get()).orElse(null);
+        if (core == null) return;
+        ConfigManager.CraftFeedback feedback = configManager.getCoreCraftFeedback(core);
+        if (!feedback.specialCraftingEnabled()) return;
+
         event.setCancelled(true);
 
         // Rate limit crafting (500ms cooldown) to prevent auto-clicker duplication exploits
@@ -66,7 +73,7 @@ public final class CoreCraftListener implements Listener {
         }
         lastCraftTimes.put(player.getUniqueId(), now);
 
-        if (isUnsafeBulkCraft(event)) {
+        if (configManager.isCraftingShiftClickPrevented() && isUnsafeBulkCraft(event)) {
             player.sendMessage(configManager.getMessage("core.take-one-at-a-time"));
             return;
         }
@@ -75,18 +82,24 @@ public final class CoreCraftListener implements Listener {
             return;
         }
 
-        CoreConfig core = coreRegistry.find(craftedCore.get()).orElse(null);
-        if (core == null) return;
         if (!hasEnoughXp(player, core.xpCost())) {
             player.sendMessage(configManager.getMessage("core.insufficient-xp"));
             return;
         }
 
+        configManager.sendCraftStartMessage(player, core.id(), core.name(), feedback);
         consumeIngredients(event.getInventory(), event.getRecipe());
         chargeXp(player, core.xpCost());
         freezeService.freeze(player, FREEZE_TICKS);
-        ItemStack output = random.nextDouble() < core.failureChance() ? fail(player) : coreItemFactory.create(core.id());
+        boolean failed = random.nextDouble() < core.failureChance();
+        ItemStack output = failed ? fail(player) : coreItemFactory.create(core.id());
         give(player, output);
+        if (!failed) {
+            if (feedback.glowAfterCraft()) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 200, 0, false, false, true));
+            }
+            configManager.sendCraftCompleteMessage(player, core.id(), core.name(), feedback);
+        }
 
         double damage = (5 + random.nextInt(5)) * 2.0D;
         player.damage(damage);
@@ -155,4 +168,5 @@ public final class CoreCraftListener implements Listener {
         Map<Integer, ItemStack> leftovers = player.getInventory().addItem(item);
         for (ItemStack leftover : leftovers.values()) player.getWorld().dropItemNaturally(player.getLocation(), leftover);
     }
+
 }

@@ -9,6 +9,16 @@ lore:
   - "&cCurse: &fNém trượt hoặc kích hoạt hụt sẽ tự đóng băng bản thân trong 1.25 giây."
 recipe:
   enabled: true
+  special-crafting-enabled: true
+  glow-after-craft: false
+  start-message:
+    enabled: false
+    audience: player
+    text: "&7You begin forging %name%..."
+  complete-message:
+    enabled: false
+    audience: player
+    text: "&aYou forged %name%!"
   shape:
     - "SGT"
     - "GNS"

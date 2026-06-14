@@ -10,6 +10,16 @@ lore:
   - "&cCurse: &fHolding/carrying reduces max health by 4 HP; missing a target deals 6 damage to you."
 recipe:
   enabled: true
+  special-crafting-enabled: true
+  glow-after-craft: false
+  start-message:
+    enabled: false
+    audience: player
+    text: "&7You begin forging %name%..."
+  complete-message:
+    enabled: false
+    audience: player
+    text: "&aYou forged %name%!"
   shape:
     - "NHN"
     - "BSB"

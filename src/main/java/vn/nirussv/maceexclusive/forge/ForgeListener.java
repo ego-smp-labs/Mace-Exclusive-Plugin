@@ -12,6 +12,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.inventory.ItemStack;
 import vn.nirussv.maceexclusive.config.ConfigManager;
+import vn.nirussv.maceexclusive.config.ItemConfig;
 import vn.nirussv.maceexclusive.mace.MaceManager;
 
 import java.util.ArrayList;
@@ -35,8 +36,10 @@ public final class ForgeListener implements Listener {
         ItemStack result = event.getCurrentItem();
         String itemId = maceManager.getExclusiveItemKey(result).orElse(null);
         if (itemId == null) return;
+        ConfigManager.CraftFeedback feedback = configManager.getItemCraftFeedback(itemId);
+        if (!feedback.specialCraftingEnabled()) return;
         event.setCancelled(true);
-        if (isUnsafeBulkCraft(event)) {
+        if (configManager.isCraftingShiftClickPrevented() && isUnsafeBulkCraft(event)) {
             player.sendMessage(configManager.getMessage("forge.take-one-at-a-time"));
             return;
         }
@@ -45,6 +48,8 @@ public final class ForgeListener implements Listener {
             return;
         }
         if (forgeService.tryStartFromCraft(player, event.getInventory(), itemId)) {
+            ItemConfig itemConfig = configManager.getItemConfig(itemId);
+            configManager.sendCraftStartMessage(player, itemId, itemConfig == null ? itemId : itemConfig.name(), feedback);
             player.sendMessage(configManager.getMessage("forge.ritual-started"));
             double damage = (5 + java.util.concurrent.ThreadLocalRandom.current().nextInt(5)) * 2.0D;
             player.damage(damage);

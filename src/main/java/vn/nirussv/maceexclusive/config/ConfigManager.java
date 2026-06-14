@@ -6,7 +6,9 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
+import vn.nirussv.maceexclusive.core.CoreConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +46,7 @@ public class ConfigManager {
 
     private final MaceExclusivePlugin plugin;
     private final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacyAmpersand();
+    private FileConfiguration itemsConfig;
     private FileConfiguration langConfig;
     private FileConfiguration discordConfig;
     private boolean discordConfigMissingBeforeLoad;
@@ -63,9 +66,23 @@ public class ConfigManager {
     public void reload() {
         clearItemEffectCaches();
         plugin.reloadConfig();
+        loadItemsConfig();
         loadLanguage();
         loadDiscord();
         loadTypedConfigs();
+    }
+
+    private void loadItemsConfig() {
+        File itemsFile = new File(plugin.getDataFolder(), "items.yml");
+        ResourceBootstrap.ensure(plugin, "items.yml");
+        itemsConfig = YamlConfiguration.loadConfiguration(itemsFile);
+        try (InputStream defStream = plugin.getResource("items.yml")) {
+            if (defStream != null) {
+                itemsConfig.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defStream, StandardCharsets.UTF_8)));
+            }
+        } catch (IOException exception) {
+            plugin.getLogger().warning("Could not load item defaults: " + exception.getMessage());
+        }
     }
 
     private void loadDiscord() {
@@ -242,8 +259,8 @@ public class ConfigManager {
         return section != null ? section : plugin.getConfig().getConfigurationSection("items." + id);
     }
 
-    public boolean isCraftingShiftClickPrevented() { return plugin.getConfig().getBoolean("crafting.prevent-shift-click", true); }
-    public boolean shouldRemoveVanillaMaceRecipe() { return plugin.getConfig().getBoolean("crafting.remove-vanilla-mace-recipe", true); }
+    public boolean isCraftingShiftClickPrevented() { return getItemsBoolean("items.crafting.prevent-shift-click", "crafting.prevent-shift-click", true); }
+    public boolean shouldRemoveVanillaMaceRecipe() { return getItemsBoolean("items.crafting.remove-vanilla-mace-recipe", "crafting.remove-vanilla-mace-recipe", true); }
     public Material getForgeBlockMaterial() { Material material = Material.matchMaterial(plugin.getConfig().getString("forge.block", "LODESTONE")); return material == null ? Material.LODESTONE : material; }
     public long getForgeDurationSeconds() { return Math.max(1L, plugin.getConfig().getLong("forge.duration-seconds", 300L)); }
     public long getPreforgeChargeSeconds() { return Math.max(1L, plugin.getConfig().getLong("forge.preforge-charge-seconds", 3L)); }
@@ -296,9 +313,109 @@ public class ConfigManager {
         ItemConfig weaponConfig = getItemConfig(id);
         return weaponConfig == null ? null : weaponConfig.faction();
     }
-    public boolean isSingletonItemsEnabled() { return plugin.getConfig().getBoolean("settings.singleton-weapons", true); }
+    public boolean isSingletonItemsEnabled() { return getItemsBoolean("items.singleton-weapons", "settings.singleton-weapons", true); }
     public boolean isSingletonItem(String id) { if (!isSingletonItemsEnabled()) return false; ConfigurationSection section = getItemSection(id, "items." + id); return section == null || section.getBoolean("singleton", true); }
-    public boolean isStrictContainerBlock() { return plugin.getConfig().getBoolean("settings.strict-container-block", true); }
+    public boolean isStrictContainerBlock() { return getItemsBoolean("items.strict-container-block", "settings.strict-container-block", true); }
+
+    public boolean isSpecialCraftingEnabledByDefault() { return getItemsBoolean("items.crafting.special-crafting-enabled", null, true); }
+    public boolean isGlowAfterCraftEnabledByDefault() { return getItemsBoolean("items.crafting.default-glow-after-craft", null, false); }
+
+    public CraftFeedback getItemCraftFeedback(String id) {
+        ItemConfig itemConfig = getItemConfig(id);
+        ItemConfig.RecipeConfig recipe = itemConfig == null ? null : itemConfig.recipe();
+        ConfigurationSection itemSection = getItemSection(id, "items." + id);
+        ConfigurationSection recipeSection = itemSection == null ? null : itemSection.getConfigurationSection("recipe");
+        boolean special = recipeSection != null && recipeSection.contains("special-crafting-enabled", false)
+            ? recipeSection.getBoolean("special-crafting-enabled")
+            : isSpecialCraftingEnabledByDefault();
+        boolean glow = recipeSection != null && recipeSection.contains("glow-after-craft", false)
+            ? recipeSection.getBoolean("glow-after-craft")
+            : isGlowAfterCraftEnabledByDefault();
+        CraftMessage start = recipeSection != null && recipeSection.contains("start-message", false) && recipeSection.isConfigurationSection("start-message") && recipe != null
+            ? recipe.startMessage()
+            : getDefaultStartCraftMessage();
+        CraftMessage complete = recipeSection != null && recipeSection.contains("complete-message", false) && recipeSection.isConfigurationSection("complete-message") && recipe != null
+            ? recipe.completeMessage()
+            : getDefaultCompleteCraftMessage();
+        return new CraftFeedback(special, glow, start, complete);
+    }
+
+    public CraftFeedback getCoreCraftFeedback(CoreConfig core) {
+        if (core == null) {
+            return new CraftFeedback(isSpecialCraftingEnabledByDefault(), isGlowAfterCraftEnabledByDefault(), getDefaultStartCraftMessage(), getDefaultCompleteCraftMessage());
+        }
+        boolean special = core.specialCraftingConfigured() ? core.specialCraftingEnabled() : isSpecialCraftingEnabledByDefault();
+        boolean glow = core.glowAfterCraftConfigured() ? core.glowAfterCraft() : isGlowAfterCraftEnabledByDefault();
+        CraftMessage start = core.startMessageConfigured() ? core.startMessage() : getDefaultStartCraftMessage();
+        CraftMessage complete = core.completeMessageConfigured() ? core.completeMessage() : getDefaultCompleteCraftMessage();
+        return new CraftFeedback(special, glow, start, complete);
+    }
+
+    public void sendCraftStartMessage(Player player, String id, String displayName, CraftFeedback feedback) {
+        sendCraftMessage(player, id, displayName, feedback == null ? null : feedback.startMessage());
+    }
+
+    public void sendCraftCompleteMessage(Player player, String id, String displayName, CraftFeedback feedback) {
+        sendCraftMessage(player, id, displayName, feedback == null ? null : feedback.completeMessage());
+    }
+
+    private void sendCraftMessage(Player player, String id, String displayName, CraftMessage message) {
+        if (player == null || message == null || !message.enabled()) return;
+        String audience = normalizeAudience(message.audience());
+        if ("none".equals(audience)) return;
+        String text = message.text() == null ? "" : message.text();
+        text = text.replace("%name%", displayName == null ? id : displayName)
+            .replace("%player%", player.getName())
+            .replace("%id%", id == null ? "" : id);
+        Component component = toComponent(text);
+        if ("broadcast".equals(audience)) {
+            plugin.getServer().sendMessage(component);
+        } else {
+            player.sendMessage(component);
+        }
+    }
+
+    private CraftMessage getDefaultStartCraftMessage() {
+        ConfigurationSection section = itemsConfig == null ? null : itemsConfig.getConfigurationSection("items.crafting.default-start-message");
+        return readCraftMessage(section, "&7You begin crafting %name%...");
+    }
+
+    private CraftMessage getDefaultCompleteCraftMessage() {
+        ConfigurationSection section = itemsConfig == null ? null : itemsConfig.getConfigurationSection("items.crafting.default-complete-message");
+        return readCraftMessage(section, "&aYou crafted %name%!");
+    }
+
+    private CraftMessage readCraftMessage(ConfigurationSection section, String fallbackText) {
+        if (section == null) return CraftMessage.disabled(fallbackText);
+        return new CraftMessage(section.getBoolean("enabled", false), section.getString("audience", "player"), section.getString("text", fallbackText));
+    }
+
+    private boolean getItemsBoolean(String path, String legacyPath, boolean fallback) {
+        if (itemsConfig != null && itemsConfig.contains(path, true)) {
+            return itemsConfig.getBoolean(path, fallback);
+        }
+        if (legacyPath != null) {
+            return plugin.getConfig().getBoolean(legacyPath, fallback);
+        }
+        return fallback;
+    }
+
+    private String normalizeAudience(String audience) {
+        if (audience == null) return "player";
+        String normalized = audience.trim().toLowerCase();
+        return switch (normalized) {
+            case "broadcast", "none" -> normalized;
+            default -> "player";
+        };
+    }
+
+    public record CraftFeedback(boolean specialCraftingEnabled, boolean glowAfterCraft, CraftMessage startMessage, CraftMessage completeMessage) {}
+
+    public record CraftMessage(boolean enabled, String audience, String text) {
+        public static CraftMessage disabled(String text) {
+            return new CraftMessage(false, "player", text);
+        }
+    }
 
     public boolean getItemEffectBoolean(String itemId, String path, boolean fallback) {
         String normalizedPath = normalizeEffectPath(path);

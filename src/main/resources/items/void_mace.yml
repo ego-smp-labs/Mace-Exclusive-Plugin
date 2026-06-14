@@ -10,6 +10,16 @@ lore:
   - "&cCurse: &fHealing is weakened, water in inventory withers you, and post-abyss leaves weakness."
 recipe:
   enabled: true
+  special-crafting-enabled: true
+  glow-after-craft: false
+  start-message:
+    enabled: false
+    audience: player
+    text: "&7You begin forging %name%..."
+  complete-message:
+    enabled: false
+    audience: player
+    text: "&aYou forged %name%!"
   shape:
     - "AEA"
     - "HWH"

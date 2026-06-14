@@ -358,7 +358,7 @@ public final class RecipeRegistry implements Listener {
         if (shape == null || ingredients == null) return;
 
         // Block all unsafe bulk crafting types (shift-click, swap offhand, etc.) for ALL custom items
-        if (isUnsafeBulkCraft(event)) {
+        if (configManager.isCraftingShiftClickPrevented() && isUnsafeBulkCraft(event)) {
             event.setCancelled(true);
             player.sendMessage(configManager.getMessage("core.take-one-at-a-time"));
             return;

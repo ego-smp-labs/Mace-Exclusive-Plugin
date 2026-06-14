@@ -1,0 +1,17 @@
+items:
+  # Global item behavior. Individual item definitions remain in ./items/*.yml.
+  singleton-weapons: true
+  strict-container-block: true
+  crafting:
+    prevent-shift-click: true
+    remove-vanilla-mace-recipe: true
+    special-crafting-enabled: true
+    default-glow-after-craft: false
+    default-start-message:
+      enabled: false
+      audience: player # player|broadcast|none
+      text: "&7You begin crafting %name%..."
+    default-complete-message:
+      enabled: false
+      audience: player
+      text: "&aYou crafted %name%!"

@@ -21,7 +21,15 @@ public record ItemConfig(
     String faction
 ) {
 
-    public record RecipeConfig(boolean enabled, List<String> shape, Map<Character, String> ingredients) {
+    public record RecipeConfig(
+        boolean enabled,
+        List<String> shape,
+        Map<Character, String> ingredients,
+        boolean specialCraftingEnabled,
+        boolean glowAfterCraft,
+        ConfigManager.CraftMessage startMessage,
+        ConfigManager.CraftMessage completeMessage
+    ) {
     }
 
     static ItemConfig fromSection(String id, ConfigurationSection section, Material fallbackMaterial, String fallbackName) {
@@ -52,7 +60,15 @@ public record ItemConfig(
 
     private static RecipeConfig readRecipe(ConfigurationSection section) {
         if (section == null) {
-            return new RecipeConfig(true, List.of(), Collections.emptyMap());
+            return new RecipeConfig(
+                true,
+                List.of(),
+                Collections.emptyMap(),
+                true,
+                false,
+                ConfigManager.CraftMessage.disabled("&7You begin crafting %name%..."),
+                ConfigManager.CraftMessage.disabled("&aYou crafted %name%!")
+            );
         }
 
         Map<Character, String> ingredients = new LinkedHashMap<>();
@@ -72,7 +88,22 @@ public record ItemConfig(
         return new RecipeConfig(
             section.getBoolean("enabled", true),
             List.copyOf(section.getStringList("shape")),
-            Collections.unmodifiableMap(ingredients)
+            Collections.unmodifiableMap(ingredients),
+            section.getBoolean("special-crafting-enabled", true),
+            section.getBoolean("glow-after-craft", false),
+            readCraftMessage(section.getConfigurationSection("start-message"), "&7You begin crafting %name%..."),
+            readCraftMessage(section.getConfigurationSection("complete-message"), "&aYou crafted %name%!")
+        );
+    }
+
+    private static ConfigManager.CraftMessage readCraftMessage(ConfigurationSection section, String fallbackText) {
+        if (section == null) {
+            return ConfigManager.CraftMessage.disabled(fallbackText);
+        }
+        return new ConfigManager.CraftMessage(
+            section.getBoolean("enabled", false),
+            section.getString("audience", "player"),
+            section.getString("text", fallbackText)
         );
     }
 }
