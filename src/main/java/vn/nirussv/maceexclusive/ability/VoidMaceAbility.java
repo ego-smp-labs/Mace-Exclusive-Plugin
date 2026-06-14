@@ -22,6 +22,7 @@ import org.bukkit.potion.PotionEffectType;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.effect.FreezeService;
+import vn.nirussv.maceexclusive.util.Scheduler;
 
 import java.util.*;
 
@@ -158,7 +159,7 @@ public final class VoidMaceAbility implements ActiveAbility, PassiveAbility, Lis
                 }
 
                 // Schedule end of resurrection state
-                plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                Scheduler.runTaskLater(plugin, () -> {
                     resurrectionEnds.remove(uuid);
                 }, durationSeconds * 20L);
             }
@@ -226,7 +227,7 @@ public final class VoidMaceAbility implements ActiveAbility, PassiveAbility, Lis
         if (lockMsg != null) player.sendMessage(lockMsg);
         player.playSound(player.getLocation(), Sound.BLOCK_RESPAWN_ANCHOR_DEPLETE, 0.8f, 0.5f);
 
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+        Scheduler.runEntityTaskLater(plugin, player, () -> {
             restoreSlots(player);
         }, durationSeconds * 20L);
     }

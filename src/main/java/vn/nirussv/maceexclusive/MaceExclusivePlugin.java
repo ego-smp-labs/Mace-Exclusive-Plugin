@@ -3,6 +3,7 @@ package vn.nirussv.maceexclusive;
 import org.bukkit.plugin.java.JavaPlugin;
 import vn.nirussv.maceexclusive.ability.AbilityService;
 import vn.nirussv.maceexclusive.command.MaceCommand;
+import vn.nirussv.maceexclusive.command.MaceInfoMenu;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.config.ResourceBootstrap;
 import vn.nirussv.maceexclusive.core.CoreCraftListener;
@@ -16,6 +17,8 @@ import vn.nirussv.maceexclusive.effect.FreezeService;
 import vn.nirussv.maceexclusive.forge.ForgeListener;
 import vn.nirussv.maceexclusive.forge.ForgeService;
 import vn.nirussv.maceexclusive.forge.ForgeVisualService;
+import vn.nirussv.maceexclusive.forge.NetheriteForgeListener;
+import vn.nirussv.maceexclusive.forge.NetheriteForgeService;
 import vn.nirussv.maceexclusive.item.ExclusiveItemFactory;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
 import vn.nirussv.maceexclusive.item.ItemRegistry;
@@ -48,6 +51,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
     private FreezeService freezeService;
     private RecipeRegistry recipeRegistry;
     private ForgeService forgeService;
+    private NetheriteForgeService netheriteForgeService;
     private ItemRegistry itemRegistry;
     private CoreRegistry coreRegistry;
     private ExclusiveItemFactory itemFactory;
@@ -85,8 +89,10 @@ public class MaceExclusivePlugin extends JavaPlugin {
             this.spearProjectileService = new SpearProjectileService(this, configManager, itemMatcher, freezeService);
             this.recipeRegistry = new RecipeRegistry(this, configManager, itemRegistry, itemFactory, coreRegistry, coreItemFactory, itemMatcher);
             this.forgeService = new ForgeService(this, configManager, itemFactory, itemRegistry, maceManager, new ForgeSessionStore(this), new ForgeVisualService());
+            this.netheriteForgeService = new NetheriteForgeService(this, configManager);
 
-            MaceCommand cmd = new MaceCommand(this, maceManager, configManager, itemFactory, itemRegistry);
+            MaceInfoMenu infoMenu = new MaceInfoMenu(this, configManager, maceManager, itemFactory, itemRegistry, coreRegistry, coreItemFactory);
+            MaceCommand cmd = new MaceCommand(this, maceManager, configManager, itemFactory, itemRegistry, infoMenu);
             if (getCommand("macee") != null) {
                 getCommand("macee").setExecutor(cmd);
                 getCommand("macee").setTabCompleter(cmd);
@@ -95,6 +101,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
             }
 
             getServer().getPluginManager().registerEvents(new MaceListener(maceManager), this);
+            getServer().getPluginManager().registerEvents(infoMenu, this);
             getServer().getPluginManager().registerEvents(recipeRegistry, this);
             getServer().getPluginManager().registerEvents(maceTrackerService, this);
             getServer().getPluginManager().registerEvents(new ContainerGuardListener(maceManager, configManager), this);
@@ -102,6 +109,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new AbilityListener(abilityService), this);
             getServer().getPluginManager().registerEvents(freezeService, this);
             getServer().getPluginManager().registerEvents(new ForgeListener(forgeService, maceManager, configManager), this);
+            getServer().getPluginManager().registerEvents(new NetheriteForgeListener(netheriteForgeService, configManager), this);
             getServer().getPluginManager().registerEvents(new CoreCraftListener(configManager, coreRegistry, coreItemFactory, itemMatcher, freezeService, lockoutService, recipeRegistry), this);
             getServer().getPluginManager().registerEvents(new CursedSwordListener(lockoutService, configManager, itemMatcher), this);
             getServer().getPluginManager().registerEvents(new RitualService(coreItemFactory, itemMatcher, lockoutService, configManager), this);
@@ -129,6 +137,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
         if (curseService != null) curseService.shutdown();
         if (freezeService != null) freezeService.shutdown();
         if (forgeService != null) forgeService.shutdown();
+        if (netheriteForgeService != null) netheriteForgeService.shutdown();
         if (spearProjectileService != null) spearProjectileService.shutdown();
         if (maceRepository != null) maceRepository.save();
     }

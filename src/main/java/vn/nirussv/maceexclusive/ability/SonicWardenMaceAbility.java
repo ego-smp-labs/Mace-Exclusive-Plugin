@@ -50,7 +50,7 @@ public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbili
     @Override
     public boolean canActivate(AbilityContext context) {
         Player player = context.player();
-        double cost = configManager.getItemEffectDouble("sonic_mace", "active.hp_cost", 4.0D);
+        double cost = configManager.getItemEffectDouble("sonic_mace", "effects.active.hp_cost", 4.0D);
         if (player.getHealth() <= cost) {
             net.kyori.adventure.text.Component msg = configManager.getItemMessage("sonic_mace", "messages.insufficient-hp");
             if (msg != null) player.sendMessage(msg);

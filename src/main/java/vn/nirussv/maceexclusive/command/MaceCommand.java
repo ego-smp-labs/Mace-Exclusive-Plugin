@@ -26,12 +26,14 @@ public class MaceCommand implements CommandExecutor, TabCompleter {
     private final MaceManager maceManager;
     private final ExclusiveItemFactory itemFactory;
     private final ItemRegistry itemRegistry;
+    private final MaceInfoMenu infoMenu;
 
-    public MaceCommand(MaceExclusivePlugin plugin, MaceManager maceManager, ConfigManager configManager, ExclusiveItemFactory itemFactory, ItemRegistry itemRegistry) {
+    public MaceCommand(MaceExclusivePlugin plugin, MaceManager maceManager, ConfigManager configManager, ExclusiveItemFactory itemFactory, ItemRegistry itemRegistry, MaceInfoMenu infoMenu) {
         this.maceManager = maceManager;
         this.configManager = configManager;
         this.itemFactory = itemFactory;
         this.itemRegistry = itemRegistry;
+        this.infoMenu = infoMenu;
     }
 
     @Override
@@ -80,6 +82,14 @@ public class MaceCommand implements CommandExecutor, TabCompleter {
     }
 
     private void handleInfo(CommandSender sender, String[] args) {
+        if (args.length <= 1) {
+            if (sender instanceof Player player) {
+                infoMenu.openOverview(player);
+            } else {
+                sendItemUsage(sender);
+            }
+            return;
+        }
         Optional<String> parsed = parseItemId(args, 1);
         if (parsed.isEmpty()) { sendItemUsage(sender); return; }
         String id = parsed.get();

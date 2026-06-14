@@ -20,6 +20,7 @@ import vn.nirussv.maceexclusive.item.ExclusiveItemFactory;
 import vn.nirussv.maceexclusive.item.ItemRegistry;
 import vn.nirussv.maceexclusive.mace.MaceManager;
 import vn.nirussv.maceexclusive.persistence.ForgeSessionStore;
+import vn.nirussv.maceexclusive.util.Scheduler;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -288,12 +289,16 @@ public final class ForgeService {
         }
         world.strikeLightning(spawnLocation);
         float explosionPower = Math.max(6.0f, configManager.getCompletionExplosionPower());
-        world.createExplosion(spawnLocation, explosionPower, true, true);
+        world.createExplosion(spawnLocation, explosionPower, true, false);
+        Block forgeBlock = session.blockLocation().getBlock();
+        if (forgeBlock.getType() != configManager.getForgeBlockMaterial()) {
+            forgeBlock.setType(configManager.getForgeBlockMaterial(), false);
+        }
         visualService.playCompletion(session.blockLocation().getBlock());
         Item item = world.dropItem(spawnLocation, result);
         item.setInvulnerable(true);
         item.setPickupDelay(20);
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> { if (!item.isDead()) item.setInvulnerable(false); }, 20L);
+        Scheduler.runEntityTaskLater(plugin, item, () -> { if (!item.isDead()) item.setInvulnerable(false); }, 20L);
         Player owner = session.owner() == null ? null : plugin.getServer().getPlayer(session.owner());
         if (owner != null) maceManager.onPlayerBecameHolder(owner, spawnLocation, session.itemId());
         reservedItemIds.remove(session.itemId());

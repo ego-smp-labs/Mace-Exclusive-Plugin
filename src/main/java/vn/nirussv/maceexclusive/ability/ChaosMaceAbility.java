@@ -15,6 +15,7 @@ import org.bukkit.Material;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.task.InventoryShuffleTask;
+import vn.nirussv.maceexclusive.util.Scheduler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -100,7 +101,7 @@ public final class ChaosMaceAbility implements ActiveAbility, PassiveAbility {
         }
 
         // Schedule check for backfire at the end of the 2 minutes
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+        Scheduler.runEntityTaskLater(plugin, player, () -> {
             if (!player.isOnline()) {
                 rageEnds.remove(uuid);
                 rageCharges.remove(uuid);

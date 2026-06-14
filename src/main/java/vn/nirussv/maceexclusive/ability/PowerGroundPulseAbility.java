@@ -14,6 +14,7 @@ import org.bukkit.util.Vector;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.effect.ParticleProfile;
 import vn.nirussv.maceexclusive.effect.SoundProfile;
+import vn.nirussv.maceexclusive.util.Scheduler;
 
 public final class PowerGroundPulseAbility implements ActiveAbility {
 
@@ -97,7 +98,7 @@ public final class PowerGroundPulseAbility implements ActiveAbility {
             if (key.equals(modifier.getKey())) speed.removeModifier(modifier);
         }
         speed.addModifier(new AttributeModifier(key, 0.05D, AttributeModifier.Operation.ADD_SCALAR));
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+        Scheduler.runEntityTaskLater(plugin, player, () -> {
             AttributeInstance current = player.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
             if (current == null) return;
             for (AttributeModifier modifier : java.util.List.copyOf(current.getModifiers())) {

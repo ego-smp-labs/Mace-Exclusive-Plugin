@@ -2,6 +2,8 @@ package vn.nirussv.maceexclusive.discord;
 
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
+import vn.nirussv.maceexclusive.util.Scheduler;
+
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -67,7 +69,7 @@ public final class DiscordWebhookService {
     }
 
     private void sendPostAsync(String urlString, String jsonPayload) {
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+        Scheduler.runTaskAsync(plugin, () -> {
             HttpURLConnection conn = null;
             try {
                 URL url = new URL(urlString);

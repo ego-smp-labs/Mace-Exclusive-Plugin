@@ -58,6 +58,24 @@ forge:
   charging-format: "&eCHARGING: &f%name% &e- &b%seconds%s"
   forging-format: "&eFORGING: &f%name% &e- &b%time%"
 
+netherite-forge:
+  started: "&aNetherite forging started. Stay near the forge."
+  paused: "&eNetherite forging paused. Return and click the forge to resume."
+  resumed: "&aNetherite forging resumed."
+  completed: "&aNetherite forging complete."
+  busy: "&cThis forge is already in use."
+  aborted: "&cNetherite forging was aborted."
+
+timed-forge:
+  started: "&aTimed forging started. Stay near the forge."
+  paused: "&eTimed forging paused. Return and click the forge to resume."
+  resumed: "&aTimed forging resumed."
+  completed: "&aTimed forging complete."
+  busy: "&cThis forge is already in use."
+  aborted: "&cTimed forging was aborted."
+  failed: "&cTimed forging failed."
+  collect-failed: "&cCould not collect the crafted item for timed forging."
+
 core:
   take-one-at-a-time: "&cPlease take cores one at a time."
   craft-locked: "&cYou are locked out from crafting cores. (Cursed state active)"

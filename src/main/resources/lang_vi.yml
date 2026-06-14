@@ -58,6 +58,24 @@ forge:
   charging-format: "&eĐANG NẠP: &f%name% &e- &b%seconds%s"
   forging-format: "&eĐANG ĐÚC: &f%name% &e- &b%time%"
 
+netherite-forge:
+  started: "&aBắt đầu rèn Netherite. Hãy đứng gần lò rèn."
+  paused: "&eRèn Netherite đã tạm dừng. Quay lại và bấm lò rèn để tiếp tục."
+  resumed: "&aRèn Netherite đã tiếp tục."
+  completed: "&aRèn Netherite hoàn tất."
+  busy: "&cLò rèn này đang được sử dụng."
+  aborted: "&cRèn Netherite đã bị hủy."
+
+timed-forge:
+  started: "&aBắt đầu rèn theo thời gian. Hãy đứng gần lò rèn."
+  paused: "&eRèn theo thời gian đã tạm dừng. Quay lại và bấm lò rèn để tiếp tục."
+  resumed: "&aRèn theo thời gian đã tiếp tục."
+  completed: "&aRèn theo thời gian hoàn tất."
+  busy: "&cLò rèn này đang được sử dụng."
+  aborted: "&cRèn theo thời gian đã bị hủy."
+  failed: "&cRèn theo thời gian thất bại."
+  collect-failed: "&cKhông thể thu vật phẩm đã chế tạo để đưa vào lò rèn."
+
 core:
   take-one-at-a-time: "&cHãy lấy core từng cái một."
   craft-locked: "&cBạn đang trong trạng thái bị khóa chế tạo core. (Trạng thái nguyền rủa đang hoạt động)"

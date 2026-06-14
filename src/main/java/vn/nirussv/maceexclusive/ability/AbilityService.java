@@ -168,8 +168,13 @@ public final class AbilityService {
         Location eye = player.getEyeLocation();
         RayTraceResult result = player.getWorld().rayTraceEntities(eye, eye.getDirection(), range, 0.6D,
             entity -> entity instanceof LivingEntity && !entity.getUniqueId().equals(player.getUniqueId()));
-        if (result != null && result.getHitEntity() instanceof LivingEntity livingEntity) return livingEntity;
+        if (result == null || !(result.getHitEntity() instanceof LivingEntity livingEntity)) return null;
+
         RayTraceResult blockTrace = player.getWorld().rayTraceBlocks(eye, eye.getDirection(), range, FluidCollisionMode.NEVER, true);
-        return blockTrace == null ? null : null;
+        if (blockTrace == null) return livingEntity;
+
+        double entityDistance = result.getHitPosition().distance(eye.toVector());
+        double blockDistance = blockTrace.getHitPosition().distance(eye.toVector());
+        return entityDistance <= blockDistance + 0.05D ? livingEntity : null;
     }
 }

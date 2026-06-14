@@ -59,7 +59,59 @@ forge:
   completion-explosion-power: 4.0
   abort-explosion-power: 1.5
 
+timed-forge:
+  enabled: true
+  default-enabled: false
+  default-duration-seconds: 60
+  default-success-rate: 1.0
+  max-distance: 4.0
+  freeze-player: true
+  restore-workstation-on-complete: true
+  items:
+    NETHERITE_SWORD:
+      enabled: true
+      duration-seconds: 60
+      success-rate: 1.0
+    NETHERITE_PICKAXE:
+      enabled: true
+      duration-seconds: 60
+      success-rate: 1.0
+    NETHERITE_AXE:
+      enabled: true
+      duration-seconds: 60
+      success-rate: 1.0
+    NETHERITE_SHOVEL:
+      enabled: true
+      duration-seconds: 60
+      success-rate: 1.0
+    NETHERITE_HOE:
+      enabled: true
+      duration-seconds: 60
+      success-rate: 1.0
+    NETHERITE_HELMET:
+      enabled: true
+      duration-seconds: 60
+      success-rate: 1.0
+    NETHERITE_CHESTPLATE:
+      enabled: true
+      duration-seconds: 60
+      success-rate: 1.0
+    NETHERITE_LEGGINGS:
+      enabled: true
+      duration-seconds: 60
+      success-rate: 1.0
+    NETHERITE_BOOTS:
+      enabled: true
+      duration-seconds: 60
+      success-rate: 1.0
+
+netherite-forge:
+  enabled: true
+  duration-seconds: 60
+  max-distance: 4.0
+  freeze-player: true
+  restore-smithing-table-on-complete: true
+
 discord:
   enabled: false
   webhook-url: ""
-

@@ -17,10 +17,12 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -28,6 +30,17 @@ public class ConfigManager {
 
     private static final String ITEM_CONFIG_DIRECTORY = "items";
     private static final String YAML_EXTENSION = ".yml";
+    private static final Set<Material> LEGACY_NETHERITE_FORGE_ITEMS = EnumSet.of(
+        Material.NETHERITE_SWORD,
+        Material.NETHERITE_PICKAXE,
+        Material.NETHERITE_AXE,
+        Material.NETHERITE_SHOVEL,
+        Material.NETHERITE_HOE,
+        Material.NETHERITE_HELMET,
+        Material.NETHERITE_CHESTPLATE,
+        Material.NETHERITE_LEGGINGS,
+        Material.NETHERITE_BOOTS
+    );
 
     private final MaceExclusivePlugin plugin;
     private final LegacyComponentSerializer legacySerializer = LegacyComponentSerializer.legacyAmpersand();
@@ -36,6 +49,9 @@ public class ConfigManager {
     private final Map<String, ItemConfig> itemConfigs = new LinkedHashMap<>();
     private final Map<String, YamlConfiguration> itemFiles = new HashMap<>();
     private final Map<String, String> messageCache = new HashMap<>();
+    private final Map<String, Boolean> itemEffectBooleanCache = new HashMap<>();
+    private final Map<String, Integer> itemEffectIntCache = new HashMap<>();
+    private final Map<String, Double> itemEffectDoubleCache = new HashMap<>();
 
     public ConfigManager(MaceExclusivePlugin plugin) {
         this.plugin = plugin;
@@ -43,6 +59,7 @@ public class ConfigManager {
     }
 
     public void reload() {
+        clearItemEffectCaches();
         plugin.reloadConfig();
         loadLanguage();
         loadTypedConfigs();
@@ -77,6 +94,7 @@ public class ConfigManager {
         performanceConfig = PerformanceConfig.fromConfig(plugin.getConfig());
         itemConfigs.clear();
         itemFiles.clear();
+        clearItemEffectCaches();
         ensureBundledYamlCopied(ITEM_CONFIG_DIRECTORY);
         File directory = getItemConfigDirectory();
         if (!directory.exists() && !directory.mkdirs()) {
@@ -217,6 +235,38 @@ public class ConfigManager {
     public float getForgeAbortExplosionPower() { return (float) Math.max(0.0D, plugin.getConfig().getDouble("forge.abort-explosion-power", 1.5D)); }
     public double getCoreFailureChance() { return Math.max(0.0D, Math.min(1.0D, plugin.getConfig().getDouble("forge.core-failure-chance", 0.30D))); }
     public long getCoreCraftLockoutSeconds() { return Math.max(1L, plugin.getConfig().getLong("forge.craft-lockout-seconds", 900L)); }
+    public boolean isTimedForgeEnabled() { return plugin.getConfig().getBoolean("timed-forge.enabled", plugin.getConfig().getBoolean("netherite-forge.enabled", true)); }
+    public boolean isTimedForgeDefaultEnabled() { return plugin.getConfig().getBoolean("timed-forge.default-enabled", false); }
+    public long getTimedForgeDefaultDurationSeconds() { return Math.max(1L, plugin.getConfig().getLong("timed-forge.default-duration-seconds", plugin.getConfig().getLong("netherite-forge.duration-seconds", 60L))); }
+    public double getTimedForgeDefaultSuccessRate() { return clampSuccessRate(plugin.getConfig().getDouble("timed-forge.default-success-rate", 1.0D)); }
+    public double getTimedForgeMaxDistance() { return Math.max(0.1D, plugin.getConfig().getDouble("timed-forge.max-distance", plugin.getConfig().getDouble("netherite-forge.max-distance", 4.0D))); }
+    public boolean shouldFreezeTimedForgePlayer() { return plugin.getConfig().getBoolean("timed-forge.freeze-player", plugin.getConfig().getBoolean("netherite-forge.freeze-player", true)); }
+    public boolean shouldRestoreWorkstationOnTimedForgeComplete() { return plugin.getConfig().getBoolean("timed-forge.restore-workstation-on-complete", plugin.getConfig().getBoolean("netherite-forge.restore-smithing-table-on-complete", true)); }
+    public TimedForgeItemSettings getTimedForgeSettings(Material material) {
+        if (material == null || material.isAir()) return new TimedForgeItemSettings(false, getTimedForgeDefaultDurationSeconds(), getTimedForgeDefaultSuccessRate());
+        if (!plugin.getConfig().contains("timed-forge") && LEGACY_NETHERITE_FORGE_ITEMS.contains(material)) {
+            return new TimedForgeItemSettings(isTimedForgeEnabled(), getTimedForgeDefaultDurationSeconds(), 1.0D);
+        }
+        String path = "timed-forge.items." + material.name();
+        boolean enabled = plugin.getConfig().contains(path + ".enabled")
+            ? plugin.getConfig().getBoolean(path + ".enabled")
+            : isTimedForgeDefaultEnabled();
+        long durationSeconds = Math.max(1L, plugin.getConfig().getLong(path + ".duration-seconds", getTimedForgeDefaultDurationSeconds()));
+        double successRate = clampSuccessRate(plugin.getConfig().getDouble(path + ".success-rate", getTimedForgeDefaultSuccessRate()));
+        return new TimedForgeItemSettings(enabled, durationSeconds, successRate);
+    }
+
+    private double clampSuccessRate(double successRate) {
+        return Math.max(0.0D, Math.min(1.0D, successRate));
+    }
+
+    public boolean isNetheriteForgeEnabled() { return isTimedForgeEnabled(); }
+    public long getNetheriteForgeDurationSeconds() { return getTimedForgeDefaultDurationSeconds(); }
+    public double getNetheriteForgeMaxDistance() { return getTimedForgeMaxDistance(); }
+    public boolean shouldFreezeNetheriteForgePlayer() { return shouldFreezeTimedForgePlayer(); }
+    public boolean shouldRestoreSmithingTableOnNetheriteForgeComplete() { return shouldRestoreWorkstationOnTimedForgeComplete(); }
+
+    public record TimedForgeItemSettings(boolean enabled, long durationSeconds, double successRate) {}
 
     public boolean isItemEnabled(String id) { ItemConfig weaponConfig = getItemConfig(id); return weaponConfig == null || weaponConfig.enabled(); }
 
@@ -233,9 +283,43 @@ public class ConfigManager {
     public boolean isSingletonItem(String id) { if (!isSingletonItemsEnabled()) return false; ConfigurationSection section = getItemSection(id, "items." + id); return section == null || section.getBoolean("singleton", true); }
     public boolean isStrictContainerBlock() { return plugin.getConfig().getBoolean("settings.strict-container-block", true); }
 
-    public boolean getItemEffectBoolean(String itemId, String path, boolean fallback) { ConfigurationSection effects = getItemConfig(itemId) == null ? null : getItemConfig(itemId).effects(); return effects == null ? fallback : effects.getBoolean(normalizeEffectPath(path), fallback); }
-    public int getItemEffectInt(String itemId, String path, int fallback) { ConfigurationSection effects = getItemConfig(itemId) == null ? null : getItemConfig(itemId).effects(); return effects == null ? fallback : effects.getInt(normalizeEffectPath(path), fallback); }
-    public double getItemEffectDouble(String itemId, String path, double fallback) { ConfigurationSection effects = getItemConfig(itemId) == null ? null : getItemConfig(itemId).effects(); return effects == null ? fallback : effects.getDouble(normalizeEffectPath(path), fallback); }
+    public boolean getItemEffectBoolean(String itemId, String path, boolean fallback) {
+        String normalizedPath = normalizeEffectPath(path);
+        return itemEffectBooleanCache.computeIfAbsent(itemEffectCacheKey(itemId, normalizedPath, Boolean.toString(fallback)), ignored -> {
+            ItemConfig weaponConfig = getItemConfig(itemId);
+            ConfigurationSection effects = weaponConfig == null ? null : weaponConfig.effects();
+            return effects == null ? fallback : effects.getBoolean(normalizedPath, fallback);
+        });
+    }
+
+    public int getItemEffectInt(String itemId, String path, int fallback) {
+        String normalizedPath = normalizeEffectPath(path);
+        return itemEffectIntCache.computeIfAbsent(itemEffectCacheKey(itemId, normalizedPath, Integer.toString(fallback)), ignored -> {
+            ItemConfig weaponConfig = getItemConfig(itemId);
+            ConfigurationSection effects = weaponConfig == null ? null : weaponConfig.effects();
+            return effects == null ? fallback : effects.getInt(normalizedPath, fallback);
+        });
+    }
+
+    public double getItemEffectDouble(String itemId, String path, double fallback) {
+        String normalizedPath = normalizeEffectPath(path);
+        return itemEffectDoubleCache.computeIfAbsent(itemEffectCacheKey(itemId, normalizedPath, Double.toString(fallback)), ignored -> {
+            ItemConfig weaponConfig = getItemConfig(itemId);
+            ConfigurationSection effects = weaponConfig == null ? null : weaponConfig.effects();
+            return effects == null ? fallback : effects.getDouble(normalizedPath, fallback);
+        });
+    }
+
+    private String itemEffectCacheKey(String itemId, String normalizedPath, String fallback) {
+        String id = itemId == null ? "" : itemId;
+        return (itemId == null ? -1 : id.length()) + ":" + id + ":" + normalizedPath.length() + ":" + normalizedPath + ":" + fallback;
+    }
+
+    private void clearItemEffectCaches() {
+        itemEffectBooleanCache.clear();
+        itemEffectIntCache.clear();
+        itemEffectDoubleCache.clear();
+    }
 
     private String normalizeEffectPath(String path) {
         if (path == null) return "";

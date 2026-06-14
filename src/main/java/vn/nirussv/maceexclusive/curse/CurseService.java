@@ -1,21 +1,25 @@
 package vn.nirussv.maceexclusive.curse;
 
-import org.bukkit.NamespacedKey;
-import org.bukkit.Particle;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -29,10 +33,7 @@ import org.bukkit.scheduler.BukkitTask;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.config.PerformanceConfig;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.PlayerExpChangeEvent;
-import org.bukkit.Sound;
-import org.bukkit.World;
+import vn.nirussv.maceexclusive.util.Scheduler;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -171,7 +172,7 @@ public final class CurseService implements Listener {
     }
 
     private void refreshNextTick(Player player) {
-        plugin.getServer().getScheduler().runTask(plugin, () -> refresh(player));
+        Scheduler.runEntityTask(plugin, player, () -> refresh(player));
     }
 
     public void refresh(Player player) {

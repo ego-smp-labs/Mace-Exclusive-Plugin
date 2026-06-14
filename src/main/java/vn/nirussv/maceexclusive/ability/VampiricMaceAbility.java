@@ -19,6 +19,7 @@ import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
+import vn.nirussv.maceexclusive.util.Scheduler;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -119,7 +120,7 @@ public final class VampiricMaceAbility implements ActiveAbility, PassiveAbility,
                 siphonExpiries.put(expiryKey, expiresAt);
                  
                 // Restore victim HP later
-                plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                Scheduler.runEntityTaskLater(plugin, victim, () -> {
                     if (siphonExpiries.getOrDefault(expiryKey, 0L) > System.currentTimeMillis()) return;
                     siphonExpiries.remove(expiryKey);
                     if (victim.isOnline()) {
@@ -148,7 +149,7 @@ public final class VampiricMaceAbility implements ActiveAbility, PassiveAbility,
         if (msg != null) player.sendMessage(msg);
 
         // Schedule remove caster boost
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+        Scheduler.runEntityTaskLater(plugin, player, () -> {
             if (siphonExpiries.getOrDefault(casterExpiryKey(uuid), 0L) > System.currentTimeMillis()) return;
             siphonExpiries.remove(casterExpiryKey(uuid));
             if (player.isOnline()) {
