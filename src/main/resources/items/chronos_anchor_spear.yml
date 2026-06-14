@@ -4,9 +4,9 @@ name: "&6&lCHRONOS ANCHOR SPEAR"
 material: NETHERITE_SPEAR
 custom-model-data: 2003
 lore:
-  - "&7Cây giáo thao túng dòng thời gian, đóng băng vị trí của mục tiêu."
-  - "&eActive: &fSneak + Left-Click phóng luồng Time Pin đóng băng đối thủ trong 2.25 giây (55s CD)."
-  - "&cCurse: &fNém trượt hoặc kích hoạt hụt sẽ tự đóng băng bản thân trong 1.25 giây."
+  - "&7A spear that manipulates the flow of time, freezing the target's position."
+  - "&eActive: &fSneak + Left-Click fires a Time Pin to freeze the opponent for 2.25 seconds (55s CD)."
+  - "&cCurse: &fMissing the throw or failing to activate freezes yourself for 1.25 seconds."
 recipe:
   enabled: true
   special-crafting-enabled: true
@@ -32,5 +32,5 @@ cooldowns:
   time_pin: 55
 curse: {}
 messages:
-  skill-time-pin: "&6[Chronos Spear] &fKỹ năng &eTime Pin&f đã kích hoạt! Mục tiêu bị đóng băng."
-  skill-miss-backfire: "&c[Chronos Spear] &fNém trượt! Kỹ năng phản hệ, bạn bị đóng băng!"
+  skill-time-pin: "&6[Chronos Spear] &fTime Pin activated! Target has been frozen."
+  skill-miss-backfire: "&c[Chronos Spear] &fMissed! The skill backfired and froze you!"

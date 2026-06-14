@@ -4,11 +4,11 @@ name: "&c&lCursed Sword"
 material: NETHERITE_SWORD
 custom-model-data: 5001
 lore:
-  - "&7Cầm trên tay sẽ bị suy yếu và đi chậm."
-  - "&7Cận chiến gây sát thương sẽ phá hủy kiếm lập tức,"
-  - "&7hồi lại lượng máu bằng sát thương gây ra."
-  - "&750% nguyền rủa đối thủ 30 phút + Wither III trong 3s,"
-  - "&750% phản phệ ngược lại người cầm."
+  - "&7Holding this weapon inflicts Weakness and Slowness."
+  - "&7Melee attacks immediately destroy the sword,"
+  - "&7healing the wielder for the amount of damage dealt."
+  - "&750% chance to curse the opponent for 30 minutes + Wither III for 3s,"
+  - "&750% chance to backfire on the wielder."
 recipe:
   enabled: true
   special-crafting-enabled: true

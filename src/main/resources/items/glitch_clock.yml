@@ -1,8 +1,8 @@
 enabled: true
 singleton: false
-name: "&e&lĐồng hồ Glitch"
+name: "&e&lGlitch Clock"
 material: CLOCK
 custom-model-data: 4003
 lore:
-  - "&7Một chiếc đồng hồ bị lỗi thời gian."
-  - "&7Lấy được từ một nghịch lý sinh mạng."
+  - "&7A clock with glitched time."
+  - "&7Obtained from a life paradox."

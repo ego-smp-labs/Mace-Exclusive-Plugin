@@ -136,7 +136,8 @@ public final class MaceInfoMenu implements Listener {
                 if (symbol == ' ') continue;
                 String value = ingredients.get(symbol);
                 if (value == null) continue;
-                resolveDisplayIngredient(value).ifPresent(item -> inventory.setItem(RECIPE_SLOTS[row * 3 + col], item));
+                final int slotIndex = RECIPE_SLOTS[row * 3 + col];
+                resolveDisplayIngredient(value).ifPresent(item -> inventory.setItem(slotIndex, item));
             }
         }
     }

@@ -1,10 +1,10 @@
 enabled: true
 singleton: false
-name: "&c&lĐầu Player Bị Vấy Bẩn"
+name: "&c&lCursed Player Head"
 material: PLAYER_HEAD
 custom-model-data: 4002
 lore:
-  - "&7Chiếc đầu này đã trở thành nơi trú ngụ của linh hồn."
+  - "&7This head has become the dwelling place of spirits."
 recipe:
   enabled: false
 enchanted: true
