@@ -66,4 +66,105 @@
 <p><strong>Constraints:</strong></p><ul><li>Không consume nguyên liệu nếu reserve/session fail.</li><li>Atomic reservation theo item_id.</li><li>Shift-click/number-key/double-click không dupe.</li><li>Restart charge/countdown/completion không duplicate drop.</li></ul>
 <p><strong>Tests:</strong> same tick craft, 1 tick delayed craft, block break abort, crash window documented.</p>
 </section>
+<section><h2>Ticket 10 — Rescue Scope Docs Sync: Mace + Spear Active</h2>
+<p><strong>Goal:</strong> Đồng bộ docs/code với scope hiện tại: mace active dùng <code>Sneak + Left Click</code>, spear vẫn active và không bị disable.</p>
+<p><strong>Files:</strong> <code>docs/plan.html</code>, <code>docs/implementation_tickets.html</code>, <code>docs/scratch_base_todo.html</code>, <code>docs/implementation_report.html</code>, <code>wiki.html</code>, <code>AGENTS.md</code>.</p>
+<p><strong>Constraints:</strong></p><ul><li>Không paste full plan vào chat khi user yêu cầu update docs; ghi thẳng vào active docs.</li><li>Không sửa generated resources dưới <code>build/resources/main</code>.</li><li>Ghi nhận <code>docs/agent_phase3_prompt.md</code> đang thiếu nếu chưa khôi phục.</li></ul>
+<p><strong>Definition of Done:</strong> Docs không còn hướng dẫn disable spear trái với code/wiki hiện tại; root rules ghi rõ scope override mới.</p>
+<p><strong>Risks:</strong> Docs cũ "mace-only" có thể làm agent sau vô tình tắt spear.</p>
+<p><strong>Tests to add:</strong> Docs review + grep các câu "disable spear" trong active docs.</p>
+</section>
+
+<section><h2>Ticket 11 — Action Bar Skill Feedback & Cooldown Throttle</h2>
+<p><strong>Goal:</strong> Khi custom skill kích hoạt thành công thì hiện Action Bar; khi cooldown thì chỉ hiện thời gian nếu người chơi thật sự cố kích hoạt skill, có rate-limit.</p>
+<p><strong>Files:</strong> <code>AbilityService.java</code>, <code>CooldownService.java</code>, ability classes, <code>src/main/resources/lang_en.yml</code>, <code>src/main/resources/lang_vi.yml</code>.</p>
+<p><strong>Constraints:</strong></p><ul><li>Dùng <code>player.sendActionBar(Component)</code>, không spam chat.</li><li>Cooldown feedback chỉ chạy sau khi đúng input active và ability có thể activate ngoại trừ cooldown.</li><li>Throttle mỗi player/ability khoảng 800-1000ms.</li><li>Success feedback lấy từ item config hoặc lang key; không hardcode Java user text.</li><li>Nếu cooldown/fail khi đánh entity thì không cancel vanilla hit.</li></ul>
+<p><strong>Definition of Done:</strong> Active skill thành công có Action Bar; cooldown attempt có Action Bar thời gian còn lại, không spam liên tục.</p>
+<p><strong>Risks:</strong> Sai thứ tự <code>canActivate</code>/cooldown sẽ báo cooldown khi người chơi không thực sự cast được.</p>
+<p><strong>Tests to add:</strong> Manual matrix sneak/not sneak, left/right click, air/block/entity, ready/cooldown.</p>
+</section>
+
+<section><h2>Ticket 12 — Vanilla/Custom Mace Conflict Guard</h2>
+<p><strong>Goal:</strong> Custom mace active không lẫn với vanilla mace hit/effect; Action Bar xác nhận lúc custom skill chạy.</p>
+<p><strong>Files:</strong> <code>AbilityService.java</code>, <code>AbilityListener.java</code>, <code>EffectMaceListener.java</code>, mace ability classes.</p>
+<p><strong>Constraints:</strong></p><ul><li>Active Mace chỉ <code>Sneak + Left Click</code>.</li><li>Entity hit + active success: cancel normal damage để tránh double-hit.</li><li>Entity hit + cooldown/fail: không cancel damage, vanilla hit vẫn chạy.</li><li>Passive mace behavior vẫn chạy trên hit thường khi không active.</li></ul>
+<p><strong>Definition of Done:</strong> Player phân biệt được vanilla/passive hit với custom active qua Action Bar; không double damage khi active success.</p>
+<p><strong>Risks:</strong> <code>EffectMaceListener</code> có generic ground slam có thể trùng visual/damage nếu bật config.</p>
+<p><strong>Tests to add:</strong> Manual Power Mace high-fall hit, sneak entity hit, non-sneak entity hit.</p>
+</section>
+
+<section><h2>Ticket 13 — Spear Vanilla + Custom Skill Coexistence</h2>
+<p><strong>Goal:</strong> Spear right-click/throw/thrust vanilla vẫn chạy, custom spear skill chạy song song nếu item PDC là spear custom.</p>
+<p><strong>Files:</strong> <code>SpearListener.java</code>, <code>SpearProjectileService.java</code>, spear item YAML.</p>
+<p><strong>Constraints:</strong></p><ul><li>Không cancel <code>ProjectileLaunchEvent</code> nếu không bắt buộc.</li><li>Không làm mất/dupe spear khi custom tracking projectile.</li><li>Cooldown custom spear nếu có chỉ skip custom effect, không chặn vanilla action.</li><li>Success/cooldown feedback dùng Action Bar.</li></ul>
+<p><strong>Definition of Done:</strong> Spear vẫn đâm/lướt/throw theo vanilla; custom freeze/pin/effect vẫn chạy; quit/full-inventory không mất/dupe item.</p>
+<p><strong>Risks:</strong> Code hiện dùng <code>PickupStatus.DISALLOWED</code> và trả clone về inventory; cần test dupe/mất item kỹ.</p>
+<p><strong>Tests to add:</strong> Throw hit entity, hit block, miss timeout, quit while projectile active, inventory full return.</p>
+</section>
+
+<section><h2>Ticket 14 — Holding Glow & Ground Pickup Reveal</h2>
+<p><strong>Goal:</strong> Cầm custom weapon là tự phát sáng/refresh theo config; nhặt weapon từ đất vẫn lộ vị trí theo config cũ.</p>
+<p><strong>Files:</strong> <code>EffectMaceListener.java</code> hoặc service mới, <code>MaceTrackerService.java</code>, <code>PerformanceConfig.java</code>, <code>config.yml</code>, lang files.</p>
+<p><strong>Constraints:</strong></p><ul><li>Scan main hand + offhand.</li><li>Không chỉ glow lúc craft lần đầu.</li><li>Không remove bừa <code>GLOWING</code> do plugin khác cấp; ưu tiên refresh ngắn/lease riêng.</li><li>Pickup from ground gọi reveal/tracking một lần và config-driven.</li></ul>
+<p><strong>Definition of Done:</strong> Main/offhand custom weapon refreshes glow; drop stops refresh; ground pickup triggers configured reveal.</p>
+<p><strong>Risks:</strong> Potion effect ownership không có native source tracking.</p>
+<p><strong>Tests to add:</strong> Manual main/offhand switch, drop/pickup, config off/on.</p>
+</section>
+
+<section><h2>Ticket 15 — Per-Weapon Enchant Policy with Repair Allowed</h2>
+<p><strong>Goal:</strong> Data-driven enchant allow/deny per weapon. Repair vẫn được phép, thêm enchant bị cấm phải bị chặn.</p>
+<p><strong>Files:</strong> <code>ItemConfig.java</code>, listener mới <code>EnchantPolicyListener.java</code>, <code>MaceExclusivePlugin.java</code>, <code>src/main/resources/items/*.yml</code>, lang files.</p>
+<p><strong>Constraints:</strong></p><ul><li>Default mace allowlist: <code>MENDING</code>, <code>UNBREAKING</code>.</li><li>Spear allowlist: thêm <code>SHARPNESS</code>.</li><li>Support config <code>mode: allowlist</code> hoặc <code>mode: deny-all</code>.</li><li>Chặn enchanting table/anvil combine disallowed; anvil repair không thêm enchant thì cho phép.</li><li>Nhận diện custom item bằng PDC, không lore/name.</li></ul>
+<p><strong>Definition of Done:</strong> Mace bị chặn Sharpness/Fire Aspect/etc.; Spear được Sharpness nếu allow; repair vẫn hoạt động.</p>
+<p><strong>Risks:</strong> Enchantment registry/API 1.21 thay đổi; tránh hardcode deprecated nếu có lookup tốt hơn.</p>
+<p><strong>Tests to add:</strong> Manual enchanting table, anvil repair, allowed Mending book, disallowed Sharpness book for mace, allowed Sharpness for spear.</p>
+</section>
+
+<section><h2>Ticket 16 — I18n Cleanup for User-Facing Java Text</h2>
+<p><strong>Goal:</strong> Đưa UI/chat/actionbar/title/bossbar/inventory text hardcoded trong Java vào source lang files.</p>
+<p><strong>Files:</strong> <code>MaceCommand.java</code>, <code>MaceInfoMenu.java</code>, <code>MaceTrackerService.java</code>, <code>SpearProjectileService.java</code>, ability/listener classes, <code>lang_en.yml</code>, <code>lang_vi.yml</code>.</p>
+<p><strong>Constraints:</strong></p><ul><li>Không sửa <code>build/resources/main/lang_*.yml</code>.</li><li>Console logs có thể giữ tiếng Anh kỹ thuật; user-facing text phải lang/config.</li><li>Giữ placeholder chuẩn <code>%player%</code>, <code>%name%</code>, <code>%id%</code>, <code>%seconds%</code>.</li></ul>
+<p><strong>Definition of Done:</strong> Grep không còn hardcoded user-facing <code>sendMessage("...")</code>, GUI title, bossbar title trong Java.</p>
+<p><strong>Risks:</strong> Một số item-specific lore/message nên ở item YAML, không nhất thiết gom vào lang.</p>
+<p><strong>Tests to add:</strong> Manual language <code>en</code>/<code>vi</code> for command, GUI, tracker, actionbar.</p>
+</section>
+<section><h2>Ticket 17 — Singularity Gravity Mace Absorption Scaling & Backfire</h2>
+<p><strong>[Target]</strong> <code>gravity_mace</code> active ability and item config.</p>
+<p><strong>[Goal]</strong> Đổi Singularity Well từ damage-scaling sang reward-scaling: số mob/player hút được càng nhiều thì số tim vàng nhận càng nhiều.</p>
+<p><strong>[Files]</strong> <code>GravityMaceAbility.java</code>, <code>items/gravity_mace.yml</code>, <code>lang_en.yml</code>, <code>lang_vi.yml</code>, optional helper in <code>CooldownService.java</code> nếu cần set cooldown override 5 phút.</p>
+<p><strong>[Constraints]</strong></p><ul><li>Trong 3s pull, phải track unique LivingEntity hợp lệ bị hút/pulled pulse; tính cả mob và player, loại caster.</li><li>Collapse không còn gây damage theo số entity; thay bằng absorption: <code>pulledCount</code> tim vàng = <code>pulledCount * 2.0</code> absorption HP, có cap config.</li><li>Nếu <code>pulledCount == 0</code>: caster nhận đúng 3.0 damage HP (1.5 tim), Mining Fatigue theo config, và cooldown của skill thành 300s.</li><li>Nếu <code>pulledCount &gt; 6</code>: caster nhận Mining Fatigue theo config nhưng không mất máu.</li><li>Không phá block; không scan nặng mỗi tick; giữ interval hiện tại hoặc config-driven.</li></ul>
+<p><strong>[Definition of Done]</strong> Hút 5 entity cho +5 tim vàng; hút 0 entity gây 3 HP damage + đào chậm + 5 phút cooldown; hút 7+ entity chỉ thêm đào chậm, không tự mất máu.</p>
+<p><strong>[Risks]</strong> Nếu chỉ đếm entity ở collapse có thể bỏ sót entity đã bị hút rồi đi ra ngoài; nên track UUID trong lúc pull. Absorption overwrite có thể đè tim vàng plugin khác; dùng max(currentAbsorption, reward) hoặc config rõ.</p>
+<p><strong>[Tests to add]</strong> Manual/server test 0, 1, 5, 7 targets; verify cooldown remaining; verify absorption hearts; verify player target counted; verify offline/death task cleanup.</p>
+</section>
+
+<section><h2>Ticket 18 — Soulfire Pyre Mace 20s Follow Aura, Lava Heal, Water Poison</h2>
+<p><strong>[Target]</strong> <code>soulfire_mace</code> active/passive/curse behavior.</p>
+<p><strong>[Goal]</strong> Biến active thành vòng lửa xanh bán kính 10 đi theo caster 20s; Lava Heal chỉ bật khi đang trong trạng thái skill; mang búa xuống nước bị Poison II 3s.</p>
+<p><strong>[Files]</strong> <code>SoulfirePyreMaceAbility.java</code>, <code>CurseService.java</code>, <code>items/soulfire_mace.yml</code>, lang files.</p>
+<p><strong>[Constraints]</strong></p><ul><li>Active vẫn theo scope hiện tại: Sneak + Left Click; activation success dùng Action Bar.</li><li>Không trừ HP cost nữa trừ khi user/config explicitly giữ; yêu cầu mới không nhắc self-cost nên remove gate <code>insufficient-hp</code> khỏi logic active.</li><li>Trong 20s, mỗi pulse lấy <code>player.getLocation()</code> làm center để vòng đi theo caster, không dùng center cố định lúc cast.</li><li>Radius mặc định 10 block; duration 20s; cooldown 40s.</li><li>Entity trong vòng bị cháy/soul burn; caster không bị hại bởi fire/lava vì passive kháng lửa hiện có.</li><li>Lava Heal chỉ khi active state còn TTL và caster đang trong lava; hồi máu có cap max health và pulse rate config.</li><li>Water curse nằm ở <code>CurseService</code>: scan inventory contents + offhand; nếu có <code>soulfire_mace</code> và chạm nước, apply Poison II 60 ticks.</li></ul>
+<p><strong>[Definition of Done]</strong> Vòng soul fire đi theo người cầm búa 20s, đốt entity trong radius 10; đứng trong lava trong trạng thái active hồi máu; xuống nước khi chỉ mang búa trong inventory cũng bị Poison II 3s.</p>
+<p><strong>[Risks]</strong> Task 20s dễ leak nếu player quit/death/world null; water curse interval quá chậm có thể không “lập tức” như yêu cầu — cần interval thấp hoặc event/tick path phù hợp.</p>
+<p><strong>[Tests to add]</strong> Manual active follow movement, quit/death during active, lava heal only active/not inactive, water poison for main/offhand/backpack, cooldown 40s.</p>
+</section>
+
+<section><h2>Ticket 19 — Warden Spear No HP Cost, Darkness Curse, Sculk Kill Proc</h2>
+<p><strong>[Target]</strong> Warden Spear item id <code>sonic_mace</code> and spear/warden integration.</p>
+<p><strong>[Goal]</strong> Active Sonic Boom không mất máu; curse dùng Darkness đúng theme Warden; kill có 10% tạo cụm sculk/warden-shrine và Warden liên quan không đánh chủ spear.</p>
+<p><strong>[Files]</strong> <code>SonicWardenMaceAbility.java</code>, optional new <code>WardenSpearSculkService.java</code>, <code>EffectMaceListener.java</code> or <code>CurseService.java</code> for holding glow if current config insufficient, <code>items/sonic_mace.yml</code>, lang files.</p>
+<p><strong>[Constraints]</strong></p><ul><li>Remove HP cost check and player health deduction from active.</li><li>Replace Blindness with <code>PotioneffectType.DARKNESS</code> where API supports it; fallback only if server API lacks Darkness.</li><li>Keep Slowness configurable if already part of curse.</li><li>Holding Warden Spear still applies Glowing via existing holding glow refresh/config; do not disable it.</li><li>On kill by Warden Spear holder, roll 10%; place only safe sculk blocks around death location without griefing protected/unsafe blocks where possible.</li><li>If a Warden is spawned/associated by this proc, tag it with owner UUID metadata/PDC where possible and intercept target events so it will not target that owner.</li><li>Do not break vanilla spear projectile behavior; custom spear projectile should coexist.</li></ul>
+<p><strong>[Definition of Done]</strong> Warden Spear active fires at any positive HP without self-damage; post-active curse is Darkness not Blindness; holder glows; 10% kill proc can create sculk/shrieker/catalyst feature; owner is ignored by spawned/associated Warden.</p>
+<p><strong>[Risks]</strong> Spawning Warden directly may be too strong; if using Sculk Shrieker/catalyst, “Warden đó không tấn công” needs reliable owner tagging on later spawn events.</p>
+<p><strong>[Tests to add]</strong> Manual active at low HP, potion effect type check, glowing while held, 100 mocked/forced kills for proc, Warden target owner vs other players, projectile no-dupe regression.</p>
+</section>
+
+<section><h2>Ticket 20 — Docs/Report Sync After Gameplay Implementation</h2>
+<p><strong>[Target]</strong> Project tracking docs and root wiki.</p>
+<p><strong>[Goal]</strong> Sau khi builder triển khai Tickets 17-19, cập nhật report thành trạng thái implementation complete kèm build/test kết quả.</p>
+<p><strong>[Files]</strong> <code>docs/implementation_report.html</code>, <code>docs/scratch_base_todo.html</code>, <code>docs/plan.html</code>, root <code>wiki.html</code> nếu gameplay docs public bị ảnh hưởng.</p>
+<p><strong>[Constraints]</strong></p><ul><li>Không paste full plan vào chat; ghi active docs trước.</li><li>Không sửa generated <code>build/resources/main</code>.</li><li>Build command phải timeout 120000ms: <code>if (Test-Path -LiteralPath ".\\gradlew.bat") { .\\gradlew.bat build } else { gradle build }</code>.</li></ul>
+<p><strong>[Definition of Done]</strong> Report ghi rõ files changed, behavior changed, build result, remaining manual QA; todo milestone tương ứng marked done only after build pass.</p>
+<p><strong>[Risks]</strong> Báo done trước khi build/manual QA sẽ che lỗi runtime Bukkit API.</p>
+<p><strong>[Tests to add]</strong> Docs grep for old wrong claims: Gravity damage-scaling, Soulfire 5s fixed storm/HP cost, Warden Spear HP cost/Blindness.</p>
+</section>
 </main></body></html>

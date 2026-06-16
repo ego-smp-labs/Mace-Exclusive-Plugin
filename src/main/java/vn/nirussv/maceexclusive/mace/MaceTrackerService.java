@@ -29,8 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class MaceTrackerService implements Listener {
 
-    private static final int TRACKING_DURATION_SECONDS = 300; // 5 minutes
-
     private final Plugin plugin;
     private final ConfigManager configManager;
     private final MaceRepository repository;
@@ -60,8 +58,12 @@ public final class MaceTrackerService implements Listener {
 
         // Create BossBar
         String displayName = getDisplayName(maceId);
+        String searchingText = configManager.getRawMessage("tracking.searching");
+        String initialTitle = configManager.getRawMessage("tracking.unlocated-format")
+            .replace("%name%", displayName)
+            .replace("%status%", searchingText);
         BossBar bossBar = Bukkit.createBossBar(
-            displayName + " (&7Đang tìm vị trí...&8)",
+            org.bukkit.ChatColor.translateAlternateColorCodes('&', initialTitle),
             color,
             BarStyle.SOLID
         );
@@ -112,7 +114,8 @@ public final class MaceTrackerService implements Listener {
             return;
         }
 
-        if (elapsed >= TRACKING_DURATION_SECONDS) {
+        int trackingDurationSeconds = configManager.getTrackingDurationSeconds();
+        if (elapsed >= trackingDurationSeconds) {
             stopTracking(maceId);
             return;
         }
@@ -121,17 +124,17 @@ public final class MaceTrackerService implements Listener {
         elapsedSeconds.put(maceId, elapsed);
 
         // Update progress
-        double progress = (double) (TRACKING_DURATION_SECONDS - elapsed) / TRACKING_DURATION_SECONDS;
+        double progress = (double) (trackingDurationSeconds - elapsed) / trackingDurationSeconds;
         bossBar.setProgress(Math.max(0.0, Math.min(1.0, progress)));
 
         // Locate the mace
         Location loc = null;
-        String statusLabel = "Ngoại tuyến";
+        String statusLabel = configManager.getRawMessage("tracking.offline");
 
         Item dropped = droppedMaces.get(maceId);
         if (dropped != null && dropped.isValid() && !dropped.isDead()) {
             loc = dropped.getLocation();
-            statusLabel = "Rơi";
+            statusLabel = configManager.getRawMessage("tracking.dropped");
         } else {
             UUID holderUuid = repository.getHolder(maceId);
             if (holderUuid != null) {
@@ -146,12 +149,20 @@ public final class MaceTrackerService implements Listener {
         String displayName = getDisplayName(maceId);
         String titleText;
         if (loc != null && loc.getWorld() != null) {
-            titleText = displayName + " &8(&d" + statusLabel + "&8) &7tại &b" + loc.getWorld().getName() + " &a[" + loc.getBlockX() + ", " + loc.getBlockY() + ", " + loc.getBlockZ() + "]";
+            titleText = configManager.getRawMessage("tracking.located-format")
+                .replace("%name%", displayName)
+                .replace("%status%", statusLabel)
+                .replace("%world%", loc.getWorld().getName())
+                .replace("%x%", String.valueOf(loc.getBlockX()))
+                .replace("%y%", String.valueOf(loc.getBlockY()))
+                .replace("%z%", String.valueOf(loc.getBlockZ()));
         } else {
-            titleText = displayName + " &8(&7" + statusLabel + "&8)";
+            titleText = configManager.getRawMessage("tracking.unlocated-format")
+                .replace("%name%", displayName)
+                .replace("%status%", statusLabel);
         }
 
-        bossBar.setTitle(titleText);
+        bossBar.setTitle(org.bukkit.ChatColor.translateAlternateColorCodes('&', titleText));
 
         // Sync players
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -202,7 +213,10 @@ public final class MaceTrackerService implements Listener {
         Optional<String> matched = itemMatcher.match(item);
         if (matched.isPresent()) {
             String maceId = matched.get().toLowerCase();
-            droppedMaces.remove(maceId);
+            Item dropped = droppedMaces.remove(maceId);
+            if (dropped != null && configManager.isGroundPickupRevealEnabled() && configManager.isSingletonItem(maceId)) {
+                startTracking(maceId);
+            }
         }
     }
 

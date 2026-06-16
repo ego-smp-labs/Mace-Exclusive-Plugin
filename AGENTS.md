@@ -84,9 +84,23 @@ Before production code changes, read:
 
 Archive docs under `docs/archive/` are historical references only.
 
-## Phase 3 scope
+## User-requested planning/documentation update rule
 
-- Mace-first only.
-- Do not implement or re-enable spear gameplay until the Architect starts Phase 4.
+- When the user asks to "update", "write the plan", "ghi vào docs", or similar for project tracking, do **not** paste the full plan/tickets into chat.
+- Write the update directly into the active docs under `docs/` first, especially:
+  - `docs/implementation_report.html`
+  - `docs/implementation_tickets.html`
+  - `docs/scratch_base_todo.html`
+  - `docs/plan.html` / root `wiki.html` when gameplay docs are affected.
+- After writing docs, only summarize the changed file paths and current status in chat.
+- Do not edit generated files under `build/resources/main`; edit source resources under `src/main/resources` and rebuild.
+- If a documented source file is missing (for example `docs/agent_phase3_prompt.md`), note the missing file in the active docs instead of silently ignoring it.
+
+## Current gameplay scope override
+
 - Active Mace ability input is Sneak + Left Click only.
+- Spear gameplay is currently active in code and wiki; do not disable it unless the user explicitly asks. Spear vanilla behavior and custom skill behavior must run together where possible.
+- Custom skill feedback should use Action Bar on successful activation and rate-limited Action Bar cooldown feedback only when the player attempts to activate a skill on cooldown.
+- Holding a custom weapon should refresh configured glowing behavior from source config; pickup-from-ground reveal/tracking behavior remains config-driven.
+- Enchant restrictions are data-driven per weapon. Repair is allowed; adding disallowed enchantments must be blocked.
 - Build must pass before reporting implementation complete.

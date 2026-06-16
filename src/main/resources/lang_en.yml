@@ -4,6 +4,10 @@ only-player: "&cOnly players can use this command."
 config-reloaded: "&aConfiguration reloaded successfully."
 cooldown: "&cPlease wait &e%seconds%s &cbefore using this again."
 
+ability:
+  activated: "&aSkill activated: &f%ability%"
+  enchant-blocked: "&cThis weapon cannot receive &e%enchant%&c."
+
 mace:
   received: "&aYou have received %name%&a!"
   already-exists: "&c%name% already exists! It is held by &e%player%&c."
@@ -98,4 +102,18 @@ help:
   header: "&8&m--------&r &bMace Exclusive &8&m--------"
   link: "&7Website: &b/sabicoder.xyz/"
   commands: "&7Commands: &b/macee <info|give|reset|reload> <weapon_name>"
+  item-usage: "&7Usage: &b/macee <give|reset|info> <item_id>"
   footer: "&8&m-----------------------------"
+
+menu:
+  overview-title: "&bMace Recipes"
+  recipe-title: "&bRecipe: &f%name%"
+  owner-line: "&7Owner: &b%player%"
+  available-line: "&aAvailable / unowned"
+
+tracking:
+  searching: "&7Searching...&8"
+  offline: "Offline"
+  dropped: "Dropped"
+  located-format: "%name% &8(&d%status%&8) &7at &b%world% &a[%x%, %y%, %z%]"
+  unlocated-format: "%name% &8(&7%status%&8)"

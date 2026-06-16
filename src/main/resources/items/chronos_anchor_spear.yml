@@ -3,6 +3,12 @@ singleton: true
 name: "&6&lCHRONOS ANCHOR SPEAR"
 material: NETHERITE_SPEAR
 custom-model-data: 2003
+enchant-policy:
+  mode: allowlist
+  allowed:
+    - MENDING
+    - UNBREAKING
+    - SHARPNESS
 lore:
   - "&7A spear that manipulates the flow of time, freezing the target's position."
   - "&eActive: &fSneak + Left-Click fires a Time Pin to freeze the opponent for 2.25 seconds (55s CD)."
@@ -20,17 +26,18 @@ recipe:
     audience: player
     text: "&aYou forged %name%!"
   shape:
-    - "SGT"
-    - "GNS"
-    - "NSS"
+    - "GTG"
+    - "DSD"
+    - "SSS"
   ingredients:
     T: NETHERITE_SPEAR
-    N: NETHERITE_INGOT:16
+    D: DIAMOND:16
     G: glitch_clock
-    S: SLIME_BLOCK:64
+    S: SLIME_BALL
 cooldowns:
   time_pin: 55
 curse: {}
 messages:
+  skill-activated: "&6[Chronos Spear] &fTime Pin activated."
   skill-time-pin: "&6[Chronos Spear] &fTime Pin activated! Target has been frozen."
   skill-miss-backfire: "&c[Chronos Spear] &fMissed! The skill backfired and froze you!"

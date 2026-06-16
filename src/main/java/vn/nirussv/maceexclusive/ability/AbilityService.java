@@ -19,20 +19,27 @@ import vn.nirussv.maceexclusive.effect.FreezeService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public final class AbilityService {
 
     private final MaceExclusivePlugin plugin;
-    private final ItemMatcher itemMatcher;
+    private final ConfigManager configManager;
     private final CooldownService cooldownService;
+    private final ItemMatcher itemMatcher;
+
     private final Map<String, List<ActiveAbility>> activeAbilities = new HashMap<>();
     private final Map<String, List<PassiveAbility>> passiveAbilities = new HashMap<>();
+    private final Set<UUID> processingAttack = new HashSet<>();
 
     public AbilityService(MaceExclusivePlugin plugin, ConfigManager configManager, ItemMatcher itemMatcher, FreezeService freezeService) {
         this.plugin = plugin;
+        this.configManager = configManager;
         this.itemMatcher = itemMatcher;
         this.cooldownService = new CooldownService(configManager);
         registerDefaults(configManager, freezeService);
@@ -60,6 +67,7 @@ public final class AbilityService {
             if (!ability.canActivate(context)) continue;
             if (!cooldownService.checkAndNotify(player, ability.id())) return;
             ability.activate(context);
+            notifyActivation(player, weaponId.get(), ability.id());
             event.setCancelled(true);
             return;
         }
@@ -77,6 +85,10 @@ public final class AbilityService {
 
     public void handleAttack(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player attacker) || !(event.getEntity() instanceof LivingEntity target)) return;
+        
+        UUID uuid = attacker.getUniqueId();
+        if (processingAttack.contains(uuid)) return;
+
         ItemStack weapon = attacker.getInventory().getItemInMainHand();
         Optional<String> weaponId = itemMatcher.match(weapon);
         if (weaponId.isEmpty()) return;
@@ -86,7 +98,14 @@ public final class AbilityService {
             for (ActiveAbility ability : activeAbilities.getOrDefault(weaponId.get(), List.of())) {
                 if (ability.canActivate(context)) {
                     if (!cooldownService.checkAndNotify(attacker, ability.id())) return;
-                    ability.activate(context);
+                    
+                    processingAttack.add(uuid);
+                    try {
+                        ability.activate(context);
+                        notifyActivation(attacker, weaponId.get(), ability.id());
+                    } finally {
+                        processingAttack.remove(uuid);
+                    }
                     event.setCancelled(true);
                     return;
                 }
@@ -162,6 +181,18 @@ public final class AbilityService {
         registerActive(soulfireMaceAbility);
         registerPassive(soulfireMaceAbility);
         plugin.getServer().getPluginManager().registerEvents(soulfireMaceAbility, plugin);
+    }
+
+    private void notifyActivation(Player player, String weaponId, String abilityId) {
+        net.kyori.adventure.text.Component itemMessage = plugin.getConfigManager().getItemMessage(weaponId, "messages.skill-activated");
+        if (itemMessage != null) {
+            player.sendActionBar(itemMessage);
+            return;
+        }
+        player.sendActionBar(plugin.getConfigManager().getMessage(
+            "ability.activated",
+            Map.of("weapon", weaponId, "ability", abilityId)
+        ));
     }
 
     private LivingEntity findLookTarget(Player player, double range) {

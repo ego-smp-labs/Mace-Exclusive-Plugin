@@ -26,6 +26,7 @@ import vn.nirussv.maceexclusive.item.PdcKeys;
 import vn.nirussv.maceexclusive.listener.AbilityListener;
 import vn.nirussv.maceexclusive.listener.ContainerGuardListener;
 import vn.nirussv.maceexclusive.listener.EffectMaceListener;
+import vn.nirussv.maceexclusive.listener.EnchantPolicyListener;
 import vn.nirussv.maceexclusive.listener.MaceListener;
 import vn.nirussv.maceexclusive.listener.SpecialItemListener;
 import vn.nirussv.maceexclusive.mace.MaceManager;
@@ -115,6 +116,7 @@ public class MaceExclusivePlugin extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new RitualService(coreItemFactory, itemMatcher, lockoutService, configManager), this);
             getServer().getPluginManager().registerEvents(new SpecialItemListener(this, itemFactory, itemMatcher, configManager), this);
             getServer().getPluginManager().registerEvents(new SpearListener(spearProjectileService), this);
+            getServer().getPluginManager().registerEvents(new EnchantPolicyListener(configManager, itemMatcher), this);
 
             try {
                 getServer().getPluginManager().registerEvents(curseService, this);

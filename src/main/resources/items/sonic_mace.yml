@@ -3,11 +3,17 @@ singleton: true
 name: "&9&lWARDEN SPEAR"
 material: NETHERITE_SPEAR
 custom-model-data: 10005
+enchant-policy:
+  mode: allowlist
+  allowed:
+    - MENDING
+    - UNBREAKING
+    - SHARPNESS
 lore:
   - "&7A spear from the deep dark resonating with the sonic wave pressure of the Warden."
-  - "&eActive: &fSneak + Left-Click fires a Sonic Boom up to 12 blocks dealing 14 true damage (costs 4 HP)."
-  - "&aPassive: &fMove silently on Sculk blocks and gain bonus fall-hit damage (max +6)."
-  - "&cCurse: &fAfter firing the sonic wave, inflicts Blindness for 1.5s and Slowness II for 2s."
+  - "&eActive: &fSneak + Left-Click fires a Sonic Boom up to 12 blocks dealing 14 damage, no HP cost."
+  - "&aPassive: &fSculk mobility, bonus fall-hit damage, and 10% kill chance to seed a sculk shrine."
+  - "&cCurse: &fAfter firing the sonic wave, Warden Darkness and Slowness echo back."
 recipe:
   enabled: true
   special-crafting-enabled: true
@@ -41,11 +47,12 @@ effects:
     range: 12.0
     damage: 14.0
     knockback: 2.0
-    hp_cost: 4.0
   curses:
-    blindness_duration: 30
+    darkness_duration: 30
     slowness_duration: 40
     slowness_amplifier: 1
+  kill_proc:
+    sculk_shrine_chance: 0.10
 messages:
-  skill-sonic-boom: "&9[Sonic Mace] &fCyan SONIC_BOOM segments travel every 0.5 block with Warden impact sound."
-  insufficient-hp: "&c[Sonic Mace] Not enough HP to activate the sonic wave!"
+  skill-activated: "&9[Warden Spear] &fSonic Boom activated."
+  skill-sonic-boom: "&9[Warden Spear] &fCyan SONIC_BOOM segments rupture the air; no blood price is paid."

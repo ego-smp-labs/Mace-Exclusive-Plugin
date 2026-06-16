@@ -101,13 +101,21 @@ public class MaceCommand implements CommandExecutor, TabCompleter {
     private Optional<String> parseItemId(String[] args, int index) {
         if (args.length <= index) return Optional.empty();
         String arg = args[index].toLowerCase();
-        if (arg.equals("power")) arg = "power_mace";
-        if (arg.equals("chaos")) arg = "chaos_mace";
+        switch (arg) {
+            case "power" -> arg = "power_mace";
+            case "void" -> arg = "void_mace";
+            case "chaos" -> arg = "chaos_mace";
+            case "vampiric" -> arg = "vampiric_mace";
+            case "gravity" -> arg = "gravity_mace";
+            case "soulfire" -> arg = "soulfire_mace";
+            case "sonic" -> arg = "sonic_mace";
+            case "chronos" -> arg = "chronos_anchor_spear";
+        }
         return itemRegistry.find(arg).map(def -> def.id());
     }
 
     private String messageKey(String id, String suffix) { return "chaos_mace".equals(id) ? "chaos." + suffix : "mace." + suffix; }
-    private void sendItemUsage(CommandSender sender) { sender.sendMessage("Usage: /macee <give|reset|info> <item_id>"); }
+    private void sendItemUsage(CommandSender sender) { sender.sendMessage(configManager.getMessage("help.item-usage")); }
     private void sendHelp(CommandSender sender) { sender.sendMessage(configManager.getMessage("help.header")); sender.sendMessage(configManager.getMessage("help.link")); sender.sendMessage(configManager.getMessage("help.commands")); sender.sendMessage(configManager.getMessage("help.footer")); }
     private boolean checkPerm(CommandSender sender, String perm) { if (sender.hasPermission(perm)) return true; sender.sendMessage(configManager.getPrefixedMessage("no-permission")); return false; }
 

@@ -248,11 +248,11 @@ public final class CurseService implements Listener {
 
     private void refreshEventDrivenHoldingEffects(Player player, String itemId) {
         PerformanceConfig performance = configManager.getPerformanceConfig();
-        vn.nirussv.maceexclusive.config.ItemConfig itemCfg = configManager.getItemConfig(itemId);
-        boolean isMace = itemId.contains("mace") && (itemCfg == null || itemCfg.material() != Material.TRIDENT);
-        boolean maceGlowing = isMace && configManager.getItemCurseBoolean(itemId, "hold.glowing", true);
-        if (maceGlowing) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 40, 0, false, false, false));
+        boolean isWeapon = itemId.endsWith("_mace") || itemId.endsWith("_spear") || itemId.equals("cursed_sword");
+        boolean itemGlowing = configManager.getItemCurseBoolean(itemId, "hold.glowing", performance.holdingGlowing());
+        if (isWeapon && itemGlowing) {
+            int durationTicks = Math.max(40, performance.holdingGlowingDurationSeconds() * 20);
+            player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, durationTicks, 0, false, false, false));
         }
         if ("cursed_sword".equals(itemId)) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 40, 0, false, false, true));
@@ -304,6 +304,9 @@ public final class CurseService implements Listener {
                 boolean hasVoid = hasItemInInventory(player, "void_mace");
                 if (hasChaos || hasVoid) {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 60, 1, false, false, true));
+                }
+                if (hasItemInInventory(player, "soulfire_mace")) {
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 60, 1, false, false, true));
                 }
             }
 

@@ -5,6 +5,9 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.FluidCollisionMode;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,7 +16,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockReceiveGameEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.RayTraceResult;
@@ -21,6 +27,8 @@ import org.bukkit.util.Vector;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbility, Listener {
@@ -30,6 +38,7 @@ public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbili
     private final MaceExclusivePlugin plugin;
     private final ConfigManager configManager;
     private final CooldownService cooldownService;
+    private final Map<UUID, TimedSonicAttacker> recentSonicDamage = new HashMap<>();
 
     public SonicWardenMaceAbility(MaceExclusivePlugin plugin, ConfigManager configManager, CooldownService cooldownService) {
         this.plugin = plugin;
@@ -49,13 +58,6 @@ public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbili
 
     @Override
     public boolean canActivate(AbilityContext context) {
-        Player player = context.player();
-        double cost = configManager.getItemEffectDouble("sonic_mace", "effects.active.hp_cost", 4.0D);
-        if (player.getHealth() <= cost) {
-            net.kyori.adventure.text.Component msg = configManager.getItemMessage("sonic_mace", "messages.insufficient-hp");
-            if (msg != null) player.sendMessage(msg);
-            return false;
-        }
         return true;
     }
 
@@ -71,11 +73,7 @@ public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbili
         double range = configManager.getItemEffectDouble("sonic_mace", "effects.active.range", 12.0D);
         double damage = configManager.getItemEffectDouble("sonic_mace", "effects.active.damage", 14.0D);
         double knockback = configManager.getItemEffectDouble("sonic_mace", "effects.active.knockback", 2.0D);
-        double cost = configManager.getItemEffectDouble("sonic_mace", "effects.active.hp_cost", 4.0D);
         long cooldownSec = configManager.getItemEffectInt("sonic_mace", "cooldowns.sonic_boom", 35);
-
-        // Cost HP
-        player.setHealth(Math.max(1.0D, player.getHealth() - cost));
 
         // Fire Sonic Boom: one entity ray trace plus optional block occlusion check.
         Location eye = player.getEyeLocation();
@@ -109,6 +107,7 @@ public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbili
             pLoc.getWorld().spawnParticle(Particle.SONIC_BOOM, pLoc, 1, 0.0, 0.0, 0.0, 0.0);
         }
         if (hit != null) {
+            recentSonicDamage.put(hit.getUniqueId(), new TimedSonicAttacker(player.getUniqueId(), System.currentTimeMillis() + 10_000L));
             hit.damage(damage, player);
             hit.setVelocity(dir.clone().multiply(knockback).setY(0.35));
         }
@@ -119,24 +118,51 @@ public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbili
         net.kyori.adventure.text.Component msg = configManager.getItemMessage("sonic_mace", "messages.skill-sonic-boom");
         if (msg != null) player.sendMessage(msg);
 
-        // Curse: active triggers Blindness 1.5s (30 ticks) and Slowness II 2s (40 ticks)
-        int blindDur = configManager.getItemEffectInt("sonic_mace", "effects.curses.blindness_duration", 30);
+        int darknessDur = configManager.getItemEffectInt("sonic_mace", "effects.curses.darkness_duration", 30);
         int slowDur = configManager.getItemEffectInt("sonic_mace", "effects.curses.slowness_duration", 40);
         int slowAmp = configManager.getItemEffectInt("sonic_mace", "effects.curses.slowness_amplifier", 1);
         
-        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, blindDur, 0));
+        player.addPotionEffect(new PotionEffect(resolveDarknessEffect(), darknessDur, 0));
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, slowDur, slowAmp));
     }
 
     @Override
     public void onAttack(AbilityContext context, EntityDamageByEntityEvent event) {
         Player attacker = context.player();
+        recentSonicDamage.put(event.getEntity().getUniqueId(), new TimedSonicAttacker(attacker.getUniqueId(), System.currentTimeMillis() + 10_000L));
         double fallDistance = attacker.getFallDistance();
         if (fallDistance >= 4.0F) {
             double bonusPer4 = configManager.getItemEffectDouble("sonic_mace", "effects.passive.damage_per_4_blocks", 1.5D);
             double cap = configManager.getItemEffectDouble("sonic_mace", "effects.passive.max_bonus_damage", 6.0D);
             double bonus = Math.min(cap, (fallDistance / 4.0F) * bonusPer4);
             event.setDamage(event.getDamage() + bonus);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity target)) return;
+        if (!(event.getDamager() instanceof Player attacker)) return;
+        if (isHoldingSonicSpear(attacker)) {
+            recentSonicDamage.put(target.getUniqueId(), new TimedSonicAttacker(attacker.getUniqueId(), System.currentTimeMillis() + 10_000L));
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onEntityDeath(EntityDeathEvent event) {
+        Player owner = resolveSonicKiller(event);
+        if (owner == null || owner.getWorld() != event.getEntity().getWorld()) return;
+        double chance = configManager.getItemEffectDouble("sonic_mace", "effects.kill_proc.sculk_shrine_chance", 0.10D);
+        if (Math.random() > chance) return;
+        createSculkShrine(event.getEntity().getLocation(), owner.getUniqueId());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onWardenTarget(EntityTargetLivingEntityEvent event) {
+        if (event.getEntityType() != EntityType.WARDEN || !(event.getTarget() instanceof Player target)) return;
+        if (isOwnedWardenTargetingOwner(event.getEntity(), target.getUniqueId())) {
+            event.setCancelled(true);
+            event.setTarget(null);
         }
     }
 
@@ -160,4 +186,82 @@ public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbili
             player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 40, 0, false, false, false));
         }
     }
+
+    private Player resolveSonicKiller(EntityDeathEvent event) {
+        Player killer = event.getEntity().getKiller();
+        if (killer != null && isHoldingSonicSpear(killer)) {
+            return killer;
+        }
+        TimedSonicAttacker recent = recentSonicDamage.remove(event.getEntity().getUniqueId());
+        if (recent == null || recent.expiresAtMillis() < System.currentTimeMillis()) {
+            return null;
+        }
+        Player player = plugin.getServer().getPlayer(recent.ownerId());
+        return player != null && player.isOnline() ? player : null;
+    }
+
+    private boolean isHoldingSonicSpear(Player player) {
+        return isSonicSpear(player.getInventory().getItemInMainHand())
+            || isSonicSpear(player.getInventory().getItemInOffHand());
+    }
+
+    private boolean isSonicSpear(ItemStack item) {
+        return item != null && plugin.getMaceManager().getExclusiveItemKey(item).filter(id -> id.equals("sonic_mace")).isPresent();
+    }
+
+    private PotionEffectType resolveDarknessEffect() {
+        PotionEffectType darkness = PotionEffectType.getByName("DARKNESS");
+        return darkness == null ? PotionEffectType.BLINDNESS : darkness;
+    }
+
+    private void createSculkShrine(Location deathLocation, UUID ownerId) {
+        Location base = deathLocation.getBlock().getLocation();
+        placeIfSafe(base, Material.SCULK);
+        placeIfSafe(base.clone().add(1, 0, 0), Material.SCULK);
+        placeIfSafe(base.clone().add(-1, 0, 0), Material.SCULK);
+        placeIfSafe(base.clone().add(0, 0, 1), Material.SCULK);
+        placeIfSafe(base.clone().add(0, 0, -1), Material.SCULK);
+        placeIfSafe(base.clone().add(1, 0, 1), Material.SCULK_VEIN);
+        placeIfSafe(base.clone().add(-1, 0, -1), Material.SCULK_VEIN);
+        placeIfSafe(base.clone().add(0, 1, 0), Material.SCULK_CATALYST);
+        placeIfSafe(base.clone().add(0, 1, 1), Material.SCULK_SHRIEKER);
+        tagNearbyWardens(base, ownerId);
+        base.getWorld().spawnParticle(Particle.SCULK_SOUL, base.clone().add(0.5, 1.0, 0.5), 36, 1.2, 0.8, 1.2, 0.05);
+        base.getWorld().playSound(base, Sound.BLOCK_SCULK_SHRIEKER_SHRIEK, 0.8f, 0.8f);
+    }
+
+    private void placeIfSafe(Location location, Material material) {
+        Block block = location.getBlock();
+        if (!isReplaceable(block.getType())) return;
+        block.setType(material, false);
+    }
+
+    private boolean isReplaceable(Material material) {
+        return material.isAir()
+            || material == Material.SHORT_GRASS
+            || material == Material.TALL_GRASS
+            || material == Material.FERN
+            || material == Material.LARGE_FERN
+            || material == Material.SEAGRASS
+            || material == Material.SNOW
+            || material == Material.VINE
+            || material == Material.GLOW_LICHEN;
+    }
+
+    private void tagNearbyWardens(Location origin, UUID ownerId) {
+        for (Entity entity : origin.getWorld().getNearbyEntities(origin, 12.0D, 8.0D, 12.0D)) {
+            if (entity.getType() == EntityType.WARDEN) {
+                entity.setMetadata("mace_exclusive_warden_spear_owner", new FixedMetadataValue(plugin, ownerId.toString()));
+            }
+        }
+    }
+
+    private boolean isOwnedWardenTargetingOwner(Entity warden, UUID targetId) {
+        return warden.getMetadata("mace_exclusive_warden_spear_owner").stream()
+            .filter(value -> value.getOwningPlugin() == plugin)
+            .map(value -> value.asString())
+            .anyMatch(owner -> owner.equals(targetId.toString()));
+    }
+
+    private record TimedSonicAttacker(UUID ownerId, long expiresAtMillis) { }
 }

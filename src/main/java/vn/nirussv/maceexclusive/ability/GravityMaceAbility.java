@@ -21,8 +21,10 @@ import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 
 public final class GravityMaceAbility implements ActiveAbility, PassiveAbility, Listener {
@@ -91,13 +93,14 @@ public final class GravityMaceAbility implements ActiveAbility, PassiveAbility, 
             int ticks = 0;
             final int maxTicks = durationSec * 20;
             final int periodTicks = 5;
+            final Set<UUID> pulledEntityIds = new HashSet<>();
 
             @Override
             public void run() {
                 if (ticks >= maxTicks) {
                     this.cancel();
                     activeWells.remove(center);
-                    triggerCollapse(player, center, pullRadius);
+                    triggerCollapse(player, center, pullRadius, pulledEntityIds.size());
                     return;
                 }
 
@@ -116,6 +119,7 @@ public final class GravityMaceAbility implements ActiveAbility, PassiveAbility, 
                     double distSq = dir.lengthSquared();
                     if (distSq > 0.1) {
                         living.setVelocity(dir.normalize().multiply(0.2D));
+                        pulledEntityIds.add(living.getUniqueId());
                     }
 
                     // Apply short Slowness between pull pulses; collapse handles damage once.
@@ -127,33 +131,51 @@ public final class GravityMaceAbility implements ActiveAbility, PassiveAbility, 
         }.runTaskTimer(plugin, 0L, 5L);
     }
 
-    private void triggerCollapse(Player caster, Location center, double radius) {
+    private void triggerCollapse(Player caster, Location center, double radius, int pulledCount) {
         center.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, center, 1);
         center.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, center, 24, 0.5, 0.5, 0.5, 0.08);
         center.getWorld().playSound(center, Sound.ENTITY_GENERIC_EXPLODE, 1.2f, 0.8f);
 
-        List<LivingEntity> pulled = new ArrayList<>();
+        List<LivingEntity> nearby = new ArrayList<>();
         for (Entity entity : center.getWorld().getNearbyEntities(center, radius, radius, radius)) {
             if (entity instanceof LivingEntity living && !living.equals(caster)) {
-                pulled.add(living);
+                nearby.add(living);
             }
         }
 
-        double baseDamage = configManager.getItemEffectDouble("gravity_mace", "effects.active.base_damage", 2.0D);
-        double dmgPerEntity = configManager.getItemEffectDouble("gravity_mace", "effects.active.damage_per_entity", 1.5D);
-        double maxDmg = configManager.getItemEffectDouble("gravity_mace", "effects.active.max_damage", 15.0D);
-
-        double totalDamage = Math.min(maxDmg, baseDamage + (dmgPerEntity * pulled.size()));
-
-        for (LivingEntity living : pulled) {
-            living.damage(totalDamage, caster);
-            
-            // Blast back
+        for (LivingEntity living : nearby) {
             Vector dir = living.getLocation().toVector().subtract(center.toVector());
             if (dir.lengthSquared() > 0.09) {
                 living.setVelocity(dir.normalize().multiply(0.8D).setY(0.4D));
             }
         }
+
+        if (!caster.isOnline() || caster.isDead()) {
+            return;
+        }
+
+        if (pulledCount <= 0) {
+            caster.damage(3.0D);
+            applyMiningFatigue(caster);
+            cooldownService.setCooldown(caster, id(), 300_000L);
+            return;
+        }
+
+        double capHearts = configManager.getItemEffectDouble("gravity_mace", "effects.active.max_absorption_hearts", 10.0D);
+        double absorptionHp = Math.min(capHearts * 2.0D, pulledCount * 2.0D);
+        if (caster.getAbsorptionAmount() < absorptionHp) {
+            caster.setAbsorptionAmount(absorptionHp);
+        }
+
+        if (pulledCount > 6) {
+            applyMiningFatigue(caster);
+        }
+    }
+
+    private void applyMiningFatigue(Player player) {
+        int durationTicks = configManager.getItemEffectInt("gravity_mace", "effects.active.mining_fatigue_duration", 240);
+        int amplifier = configManager.getItemEffectInt("gravity_mace", "effects.active.mining_fatigue_amplifier", 1);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.MINING_FATIGUE, durationTicks, amplifier, false, true, true));
     }
 
     @Override

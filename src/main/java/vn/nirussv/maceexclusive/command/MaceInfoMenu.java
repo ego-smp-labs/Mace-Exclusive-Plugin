@@ -64,7 +64,7 @@ public final class MaceInfoMenu implements Listener {
 
     public void openOverview(Player player) {
         InfoHolder holder = new InfoHolder(MenuType.OVERVIEW, null);
-        Inventory inventory = Bukkit.createInventory(holder, OVERVIEW_SIZE, Component.text("Mace Recipes"));
+        Inventory inventory = Bukkit.createInventory(holder, OVERVIEW_SIZE, configManager.getMessage("menu.overview-title"));
         holder.setInventory(inventory);
 
         int slot = 0;
@@ -78,7 +78,7 @@ public final class MaceInfoMenu implements Listener {
 
     private void openRecipe(Player player, String id) {
         InfoHolder holder = new InfoHolder(MenuType.RECIPE, id);
-        Inventory inventory = Bukkit.createInventory(holder, RECIPE_SIZE, Component.text("Recipe: " + id));
+        Inventory inventory = Bukkit.createInventory(holder, RECIPE_SIZE, configManager.getMessage("menu.recipe-title", Map.of("id", id, "name", maceManager.displayName(id))));
         holder.setInventory(inventory);
 
         ItemConfig itemConfig = configManager.getItemConfig(id);
@@ -115,9 +115,9 @@ public final class MaceInfoMenu implements Listener {
         if (holder != null) {
             meta.addEnchant(Enchantment.MENDING, 1, true);
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            lore.add(Component.text("Owner: " + holder));
+            lore.add(configManager.getMessage("menu.owner-line", Map.of("player", holder)));
         } else {
-            lore.add(Component.text("Available / unowned"));
+            lore.add(configManager.getMessage("menu.available-line"));
         }
         meta.lore(lore);
         meta.getPersistentDataContainer().set(itemIdKey, PersistentDataType.STRING, id);

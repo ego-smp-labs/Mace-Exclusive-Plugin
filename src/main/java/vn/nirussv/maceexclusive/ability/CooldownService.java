@@ -11,6 +11,8 @@ public final class CooldownService {
 
     private final ConfigManager configManager;
     private final Map<UUID, Map<String, Long>> cooldowns = new HashMap<>();
+    private final Map<UUID, Map<String, Long>> lastNotifications = new HashMap<>();
+    private static final long NOTIFICATION_THROTTLE_MILLIS = 900L;
 
     public CooldownService(ConfigManager configManager) {
         this.configManager = configManager;
@@ -25,8 +27,15 @@ public final class CooldownService {
         if (remaining <= 0L) {
             return true;
         }
+        long now = System.currentTimeMillis();
+        Map<String, Long> playerNotifications = lastNotifications.computeIfAbsent(player.getUniqueId(), ignored -> new HashMap<>());
+        long lastNotification = playerNotifications.getOrDefault(abilityId, 0L);
+        if (now - lastNotification < NOTIFICATION_THROTTLE_MILLIS) {
+            return false;
+        }
+        playerNotifications.put(abilityId, now);
         double seconds = Math.ceil(remaining / 100.0D) / 10.0D;
-        player.sendMessage(configManager.getPrefixedMessage("cooldown", Map.of("seconds", String.valueOf(seconds))));
+        player.sendActionBar(configManager.getMessage("cooldown", Map.of("seconds", String.valueOf(seconds))));
         return false;
     }
 
@@ -47,6 +56,13 @@ public final class CooldownService {
         long remaining = expiresAt - System.currentTimeMillis();
         if (remaining <= 0L) {
             playerCooldowns.remove(abilityId);
+            Map<String, Long> playerNotifications = lastNotifications.get(uuid);
+            if (playerNotifications != null) {
+                playerNotifications.remove(abilityId);
+                if (playerNotifications.isEmpty()) {
+                    lastNotifications.remove(uuid);
+                }
+            }
             if (playerCooldowns.isEmpty()) {
                 cooldowns.remove(uuid);
             }

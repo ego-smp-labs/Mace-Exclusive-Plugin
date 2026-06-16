@@ -503,6 +503,8 @@ public class ConfigManager {
     public boolean isVerboseLogging() { return plugin.getConfig().getBoolean("settings.verbose", false); }
     public boolean isStrictModeDrop() { return plugin.getConfig().getBoolean("settings.strict-mode-drop", false); }
     public boolean isPreventHopperPickup() { return plugin.getConfig().getBoolean("settings.prevent-hopper-pickup", true); }
+    public boolean isGroundPickupRevealEnabled() { return plugin.getConfig().getBoolean("tracking.reveal-on-ground-pickup", true); }
+    public int getTrackingDurationSeconds() { return Math.max(1, plugin.getConfig().getInt("tracking.duration-seconds", 300)); }
 
     public boolean isDiscordWebhookEnabled() {
         return getDiscordBoolean("enabled", "discord.enabled", false);

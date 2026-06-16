@@ -3,6 +3,11 @@ singleton: true
 name: "&b&lMACE OF POWER"
 material: MACE
 custom-model-data: 2001
+enchant-policy:
+  mode: allowlist
+  allowed:
+    - MENDING
+    - UNBREAKING
 lore:
   - "&7A heavy storm-forged mace that turns clean hits into upward force."
   - "&eActive: &fSneak + Left-Click an entity to strike it and roll a 10% radius-10 upward blast."
@@ -26,7 +31,7 @@ recipe:
     - " N "
   ingredients:
     H: HEAVY_CORE
-    B: BREEZE_ROD
+    B: BREEZE_ROD:16
     N: NETHERITE_INGOT
 cooldowns:
   ground_pulse: 8
@@ -44,5 +49,6 @@ effects:
     damage-multiplier: 1.10
     knockback: 0.35
 messages:
+  skill-activated: "&b[Power Mace] &fPower Strike activated."
   skill-ground-pulse: "&b[Power Mace] &fGold-white crack rings burst outward and launch nearby entities upward."
   skill-momentum: "&b[Power Mace] &fStored Momentum detonates in gold-white sparks and a ground-crack ring."

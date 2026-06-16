@@ -3,11 +3,16 @@ singleton: true
 name: "&b&lSOULFIRE PYRE MACE"
 material: MACE
 custom-model-data: 10011
+enchant-policy:
+  mode: allowlist
+  allowed:
+    - MENDING
+    - UNBREAKING
 lore:
   - "&7A soul-forged mace wreathed in blue flame and rising spirits."
-  - "&eActive: &fSneak + Left-Click summons a 5s Soulfire Storm radius 5 at 4 HP cost."
-  - "&aPassive: &fGrants fire/lava protection and sets enemies ablaze with soul fire on melee."
-  - "&cCurse: &fSoul fire doubles hunger pressure and the active always charges current health."
+  - "&eActive: &fSneak + Left-Click creates a 20s radius-10 Soulfire Aura that follows you."
+  - "&aPassive: &fFire/lava protection; while aura is active, lava heals you each pulse."
+  - "&cCurse: &fCarrying this mace in water applies Poison II for 3s."
 recipe:
   enabled: true
   special-crafting-enabled: true
@@ -26,8 +31,8 @@ recipe:
     - "FNF"
   ingredients:
     C: soulfire_core
-    B: BREEZE_ROD
-    F: SOUL_CAMPFIRE
+    B: BREEZE_ROD:16
+    F: SOUL_CAMPFIRE:64
     S: ZOMBIE_HEAD
     G: GHAST_TEAR
     N: NETHERITE_INGOT
@@ -35,12 +40,12 @@ cooldowns:
   fire_storm: 40
 effects:
   active:
-    radius: 5.0
-    duration: 5
+    radius: 10.0
+    duration: 20
     damage_per_second: 3.0
-    hp_cost: 4.0
+    lava_heal_per_pulse: 1.0
   curses:
     hunger_multiplier: 2.0
 messages:
-  skill-fire-storm: "&b[Soulfire Mace] &fFive pulses of blue flame expand outward while soul particles rise and crackle."
-  insufficient-hp: "&c[Soulfire Mace] Not enough health to summon the soulfire storm!"
+  skill-activated: "&b[Soulfire Mace] &fSoulfire Aura activated."
+  skill-fire-storm: "&b[Soulfire Mace] &fA blue flame ring follows you for 20s; lava now heals the pyre bearer."

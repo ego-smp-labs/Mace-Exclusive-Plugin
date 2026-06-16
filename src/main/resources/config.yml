@@ -27,7 +27,8 @@ performance:
     duration: 300 # seconds
   # Passive effects when holding the Mace.
   holding:
-    glowing: false # Default false
+    glowing: true
+    glowing-duration: 300 # seconds; refreshed while holding a custom weapon
     soul-particles: false # Default false
     particle-count: 5
     particle-offset-x: 0.3
@@ -43,6 +44,10 @@ performance:
       enabled: false
       radius: 3
       max-blocks: 64
+
+tracking:
+  reveal-on-ground-pickup: true
+  duration-seconds: 300
 
 crafting:
   remove-vanilla-mace-recipe: true
@@ -111,5 +116,3 @@ netherite-forge:
   max-distance: 4.0
   freeze-player: true
   restore-smithing-table-on-complete: true
-
-

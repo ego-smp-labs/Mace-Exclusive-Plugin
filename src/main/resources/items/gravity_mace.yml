@@ -3,11 +3,16 @@ singleton: true
 name: "&5&lSINGULARITY GRAVITY MACE"
 material: MACE
 custom-model-data: 10004
+enchant-policy:
+  mode: allowlist
+  allowed:
+    - MENDING
+    - UNBREAKING
 lore:
   - "&7A collapsed-star mace that bends weight, falling, and enemy position."
-  - "&eActive: &fSneak + Left-Click opens a gravity well for 3s, then collapses with capped damage."
+  - "&eActive: &fSneak + Left-Click opens a 3s gravity well; collapse grants +1 golden heart per pulled target."
   - "&aPassive: &fReduces fall damage by 70% and lightly pulls melee targets toward you."
-  - "&cCurse: &fHeavy mass applies Slowness pressure and doubles hunger drain."
+  - "&cBackfire: &fPulling no targets deals 1.5 hearts, Mining Fatigue, and a 5 minute cooldown."
 recipe:
   enabled: true
   special-crafting-enabled: true
@@ -21,16 +26,14 @@ recipe:
     audience: player
     text: "&aYou forged %name%!"
   shape:
-    - "COC"
-    - "SES"
-    - "NRN"
+    - "ABA"
+    - " C "
+    - " D "
   ingredients:
-    E: end_core
-    S: sculk_core
-    N: NETHERITE_INGOT
-    R: BREEZE_ROD
-    C: obsidian_chaos
-    O: OBSIDIAN
+    A: OBSIDIAN:64
+    B: NETHERITE_BLOCK
+    C: sculk_core
+    D: BREEZE_ROD:16
 cooldowns:
   gravity_well: 60
 effects:
@@ -39,13 +42,14 @@ effects:
   active:
     pull_radius: 8.0
     duration: 3
-    base_damage: 2.0
-    damage_per_entity: 1.5
-    max_damage: 15.0
+    max_absorption_hearts: 10.0
+    mining_fatigue_duration: 240
+    mining_fatigue_amplifier: 1
   curses:
     slowness_amplifier: 0
     hunger_multiplier: 2.0
 messages:
-  skill-gravity-well: "&5[Gravity Mace] &fAsh orbits feed a portal spiral; collapse flashes like a depleted anchor."
+  skill-activated: "&5[Gravity Mace] &fSingularity Well activated."
+  skill-gravity-well: "&5[Gravity Mace] &fAsh orbits feed a portal spiral; collapse rewards pulled souls with golden hearts."
   no-target: "&c[Gravity Mace] No valid location found to create a gravity well!"
   teleport-blocked: "&c[Gravity Mace] Cannot teleport! Gravity is distorting space."

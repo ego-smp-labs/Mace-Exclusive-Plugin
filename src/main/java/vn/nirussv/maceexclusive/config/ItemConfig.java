@@ -17,6 +17,7 @@ public record ItemConfig(
     Integer customModelData,
     RecipeConfig recipe,
     ConfigurationSection effects,
+    EnchantPolicy enchantPolicy,
     boolean enchanted,
     String faction
 ) {
@@ -32,6 +33,13 @@ public record ItemConfig(
     ) {
     }
 
+    public record EnchantPolicy(
+        String mode,
+        List<String> allowed,
+        List<String> denied
+    ) {
+    }
+
     static ItemConfig fromSection(String id, ConfigurationSection section, Material fallbackMaterial, String fallbackName) {
         boolean enabled = section == null || section.getBoolean("enabled", true);
         Material material = resolveMaterial(section, fallbackMaterial);
@@ -42,11 +50,12 @@ public record ItemConfig(
             : null;
         RecipeConfig recipe = readRecipe(section == null ? null : section.getConfigurationSection("recipe"));
         ConfigurationSection effects = section == null ? null : section.getConfigurationSection("effects");
+        EnchantPolicy enchantPolicy = readEnchantPolicy(section == null ? null : section.getConfigurationSection("enchant-policy"));
         boolean enchanted = section != null && section.getBoolean("enchanted", false);
         String faction = section == null ? null : section.getString("faction");
         if (faction != null) faction = faction.trim().toLowerCase();
         if (faction != null && faction.isBlank()) faction = null;
-        return new ItemConfig(id, enabled, material, name, lore, customModelData, recipe, effects, enchanted, faction);
+        return new ItemConfig(id, enabled, material, name, lore, customModelData, recipe, effects, enchantPolicy, enchanted, faction);
     }
 
     private static Material resolveMaterial(ConfigurationSection section, Material fallbackMaterial) {
@@ -104,6 +113,18 @@ public record ItemConfig(
             section.getBoolean("enabled", false),
             section.getString("audience", "player"),
             section.getString("text", fallbackText)
+        );
+    }
+
+    private static EnchantPolicy readEnchantPolicy(ConfigurationSection section) {
+        if (section == null) {
+            return null;
+        }
+        String mode = section.getString("mode", "allowlist").trim().toLowerCase();
+        return new EnchantPolicy(
+            mode.isBlank() ? "allowlist" : mode,
+            List.copyOf(section.getStringList("allowed")),
+            List.copyOf(section.getStringList("denied"))
         );
     }
 }

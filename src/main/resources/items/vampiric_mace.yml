@@ -3,6 +3,11 @@ singleton: true
 name: "&c&lMACE OF VAMPIRISM"
 material: MACE
 custom-model-data: 10002
+enchant-policy:
+  mode: allowlist
+  allowed:
+    - MENDING
+    - UNBREAKING
 lore:
   - "&7A blood-bound mace that feeds through wounds but gnaws at its owner."
   - "&eActive: &fSneak + Left-Click a target to siphon health and drain 1 temporary max-heart."
@@ -49,5 +54,6 @@ effects:
       fall: 1.10
       projectile: 1.10
 messages:
+  skill-activated: "&c[Vampiric Mace] &fBlood Siphon activated."
   skill-siphon: "&c[Vampiric Mace] &fBlood tethers coil from the target, restoring you while temporary max-health leases are tracked and cleaned up."
   no-target: "&c[Vampiric Mace] Please look directly at a target to siphon blood!"

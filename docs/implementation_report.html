@@ -75,4 +75,27 @@
 <li>Ứng dụng Next.js Wiki (`hoiihesmp-web/`): Khởi tạo một trang web Wiki Next.js + Tailwind CSS xịn xò mang phong cách Minecraft huyền ảo, tích hợp bộ đọc mã màu Minecraft tương tác và bộ lọc tìm kiếm tức thì, được thêm vào <code>.gitignore</code> để không bị commit.</li>
 <li>Bump Version: Nâng phiên bản plugin lên 1.0.6.</li>
 </ul></section>
+<section class="warn"><h2>2026-06-14 Architect update — rescue scope before implementation</h2><ul>
+<li>Project tracking updated per user request before code changes. Active docs now treat Spear gameplay as currently active instead of Phase-4-disabled historical code.</li>
+<li>Scope override: Mace active input remains <code>Sneak + Left Click</code>; Spear vanilla behavior and custom skill behavior must run together where possible.</li>
+<li>Required gameplay fixes queued: Action Bar success feedback for custom skills, rate-limited Action Bar cooldown feedback only on real activation attempts, holding-glow refresh from source config, ground-pickup reveal/tracking preservation, per-weapon enchant allow/deny policy with repair allowed, and i18n cleanup from Java hardcoded UI text into source lang files.</li>
+<li>Documentation workflow rule added to root <code>AGENTS.md</code>: when user asks to update plan/docs, write active docs first and only summarize changed paths in chat; never edit generated <code>build/resources/main</code> resources directly.</li>
+<li>Known docs issue: <code>docs/agent_phase3_prompt.md</code> is referenced by older docs but is currently missing.</li>
+</ul></section>
+<section class="ok"><h2>2026-06-14 Backend pass — UX, i18n & enchant policy fixes</h2><ul>
+<li>Action Bar Cooldown: <code>CooldownService</code> giờ gửi thông báo cooldown dưới dạng Action Bar thay vì spam chat, và có rate-limit 900ms (chỉ thông báo khi thực sự cố gắng spam).</li>
+<li>Skill Feedback: Khi người chơi kích hoạt kỹ năng đặc biệt thành công, một thông báo Action Bar (mặc định lấy từ <code>skill-activated</code> trong config của item đó) sẽ hiện ra thay vì im lặng. Nếu kích hoạt thành công trúng thực thể, đòn đánh vanilla sẽ bị cancel để tránh double-damage. Spear skill và mũi phóng Spear mặc định hoạt động chung.</li>
+<li>Holding Glow: Bật mặc định. Effect <code>GLOWING</code> tự động refresh và kéo dài 5 phút (<code>glowing-duration: 300</code>). Config tracking/reveal (nhặt lên bị sáng do BossBar và Tracker) đã tách rời khỏi `GLOWING` và hoạt động theo config <code>tracking.reveal-on-ground-pickup</code>.</li>
+<li>Enchant Policy: Hệ thống cấm/cho phép enchant trên mỗi vũ khí qua Anvil hoặc Enchanting Table. Mặc định `power_mace`, `void_mace`, `vampiric_mace`, `chaos_mace`, `gravity_mace`, `soulfire_mace` chỉ cho phép `mending`, `unbreaking`. Các vũ khí giáo (`_spear`, `NETHERITE_SPEAR`) được thêm `sharpness`, `damage_all`. Anvil repair vẫn hợp lệ miễn không thêm enchant cấm.</li>
+<li>Translation Cleanup: Loại bỏ text tiếng Anh hardcode trong các menu (`MaceInfoMenu`, `MaceTrackerService`, `MaceCommand`) và di chuyển sang `lang_en.yml` cùng `lang_vi.yml`. </li>
+<li>Build pass hoàn tất.</li>
+</ul></section>
+<section class="warn"><h2>2026-06-16 Architect update — Gravity/Soulfire/Warden Spear rebalance queued</h2><ul>
+<li>User requested immediate gameplay changes; active docs were updated first per project rule. This section is a planning/report handoff, not an implementation-complete claim.</li>
+<li><strong>Singularity Gravity Mace:</strong> plan now requires absorption hearts equal to pulled mob/player count; 5 pulled targets = +5 golden hearts. Pulling 0 targets causes exactly 3 HP damage, Mining Fatigue, and a 5-minute broken-skill cooldown. Pulling more than 6 targets applies Mining Fatigue only, no self-damage.</li>
+<li><strong>Soulfire Pyre Mace:</strong> plan now requires active 20s radius-10 soul fire aura following the caster, 40s cooldown, lava healing only while active, and Poison II for 3s when carrying the mace in water.</li>
+<li><strong>Warden Spear:</strong> plan now removes active HP cost, replaces Blindness with Warden Darkness, keeps holding glow, and adds a 10% kill proc to create a sculk/warden-shrine feature where associated Warden must not target the spear owner.</li>
+<li>Implementation tickets added: Tickets 17-20 in <code>docs/implementation_tickets.html</code>. Todo milestone added: Milestone 7 in <code>docs/scratch_base_todo.html</code>.</li>
+<li>Required builder verification remains: update source Java/YAML/lang, sync root <code>wiki.html</code>, run Gradle build with 120000ms timeout, then convert this section into a backend pass report.</li>
+</ul></section>
 </main></body></html>

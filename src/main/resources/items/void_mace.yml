@@ -3,6 +3,11 @@ singleton: true
 name: "&d&lABYSSAL VOID MACE"
 material: MACE
 custom-model-data: 2003
+enchant-policy:
+  mode: allowlist
+  allowed:
+    - MENDING
+    - UNBREAKING
 lore:
   - "&7An abyssal mace that devours matter and bargains with fatal End damage."
   - "&eActive: &fSneak + Left-Click uses the current Void ability path; Abyss hits can detach minds."
@@ -28,7 +33,7 @@ recipe:
     E: end_core
     A: ENCHANTED_GOLDEN_APPLE
     C: challenger_eye
-    W: WITHER_ROSE
+    W: WITHER_ROSE:16
     H: cursed_player_head
 cooldowns:
   resurrection: 600
@@ -47,6 +52,7 @@ effects:
     water_wither_amplifier: 1
     light_level_threshold: 7
 messages:
+  skill-activated: "&d[Void Mace] &fAbyssal skill activated."
   skill-resurrect: "&d[Void Mace] &fPurple totem particles and dragon breath pull you back from the Abyss."
   skill-mind-detached: "&d[Void Mace] &fA violet ring splits from the target's head: Darkness and freeze applied."
   hotbar-locked: "&d[Void Mace] 2 Hotbar slots have been devoured by the Void!"

@@ -56,4 +56,31 @@
 <div class="todo"><div class="box"></div><span>Test Void fatal resurrection cooldown and no Totem conflict.</span></div>
 <div class="todo"><div class="box"></div><span><code>gradle build</code> pass with timeout 120s.</span></div>
 </section>
+<section class="warn"><h2>Milestone 6 — 2026-06-14 Rescue Scope & UX Fixes</h2>
+<div class="todo done"><div class="box"></div><span>Update root <code>AGENTS.md</code> rule: user-requested docs updates go into active docs first, not full chat paste.</span></div>
+<div class="todo done"><div class="box"></div><span>Record that <code>docs/agent_phase3_prompt.md</code> is currently missing.</span></div>
+<div class="todo done"><div class="box"></div><span>Sync active docs/wiki to current scope: Mace active = Sneak + Left Click; Spear remains active unless user explicitly disables it.</span></div>
+<div class="todo done"><div class="box"></div><span>Add Action Bar success feedback for every custom skill activation.</span></div>
+<div class="todo done"><div class="box"></div><span>Move cooldown feedback to rate-limited Action Bar and only show when player attempts to activate a skill on cooldown.</span></div>
+<div class="todo done"><div class="box"></div><span>Verify mace active success cancels normal damage; cooldown/fail does not cancel vanilla hit.</span></div>
+<div class="todo done"><div class="box"></div><span>Verify Spear vanilla behavior and custom skill behavior run together without projectile dupe/item loss.</span></div>
+<div class="todo done"><div class="box"></div><span>Implement holding-glow refresh from source config for main hand and offhand custom weapons.</span></div>
+<div class="todo done"><div class="box"></div><span>Keep ground-drop pickup reveal/tracking config-driven.</span></div>
+<div class="todo done"><div class="box"></div><span>Implement per-weapon enchant policy with repair allowed; default mace allowlist Mending + Unbreaking, spear additionally Sharpness.</span></div>
+<div class="todo done"><div class="box"></div><span>Move remaining user-facing Java text into <code>src/main/resources/lang_en.yml</code> and <code>lang_vi.yml</code>.</span></div>
+<div class="todo done"><div class="box"></div><span>Run <code>gradle build</code> with timeout 120s before reporting implementation complete.</span></div>
+</section>
+<section class="warn"><h2>Milestone 7 — 2026-06-16 Gravity/Soulfire/Warden Spear Rebalance</h2>
+<div class="todo"><div class="box"></div><span>Singularity Gravity Mace: track pulled mob/player count during active and grant matching absorption hearts on collapse.</span></div>
+<div class="todo"><div class="box"></div><span>Singularity Gravity Mace: if zero entities are pulled, deal exactly 3 HP damage, apply Mining Fatigue, and force cooldown to 5 minutes.</span></div>
+<div class="todo"><div class="box"></div><span>Singularity Gravity Mace: if more than 6 entities are pulled, apply Mining Fatigue only, with no extra self-damage.</span></div>
+<div class="todo"><div class="box"></div><span>Soulfire Pyre Mace: replace old fixed 5s storm/HP cost with 20s radius-10 follow aura, 40s cooldown.</span></div>
+<div class="todo"><div class="box"></div><span>Soulfire Pyre Mace: while active, standing in lava heals the caster; outside active state lava does not heal.</span></div>
+<div class="todo"><div class="box"></div><span>Soulfire Pyre Mace: carrying the mace in inventory/main/offhand and entering water applies Poison II for 3s.</span></div>
+<div class="todo"><div class="box"></div><span>Warden Spear: remove active HP cost and insufficient-HP gate.</span></div>
+<div class="todo"><div class="box"></div><span>Warden Spear: replace Blindness curse with Warden Darkness effect, keep holding glow enabled.</span></div>
+<div class="todo"><div class="box"></div><span>Warden Spear: on player/mob kill, 10% chance to create sculk/warden-shrine feature; associated Warden must not target spear owner.</span></div>
+<div class="todo"><div class="box"></div><span>Update root <code>wiki.html</code> public gameplay docs after code lands.</span></div>
+<div class="todo"><div class="box"></div><span>Run <code>gradle build</code> with timeout 120s before marking this milestone done.</span></div>
+</section>
 </main></body></html>
