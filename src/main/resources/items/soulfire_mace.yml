@@ -34,7 +34,7 @@ recipe:
     B: BREEZE_ROD:16
     F: SOUL_CAMPFIRE:64
     S: ZOMBIE_HEAD
-    G: GHAST_TEAR
+    G: GHAST_TEAR:16
     N: NETHERITE_INGOT
 cooldowns:
   fire_storm: 40

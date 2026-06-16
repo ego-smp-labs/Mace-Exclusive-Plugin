@@ -31,16 +31,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbility, Listener {
+public final class SonicWardenSpearAbility implements ActiveAbility, PassiveAbility, Listener {
 
-    private static final String ID = "sonic_mace.sonic_boom";
+    private static final String ID = "sonic_spear.sonic_boom";
 
     private final MaceExclusivePlugin plugin;
     private final ConfigManager configManager;
     private final CooldownService cooldownService;
     private final Map<UUID, TimedSonicAttacker> recentSonicDamage = new HashMap<>();
 
-    public SonicWardenMaceAbility(MaceExclusivePlugin plugin, ConfigManager configManager, CooldownService cooldownService) {
+    public SonicWardenSpearAbility(MaceExclusivePlugin plugin, ConfigManager configManager, CooldownService cooldownService) {
         this.plugin = plugin;
         this.configManager = configManager;
         this.cooldownService = cooldownService;
@@ -53,7 +53,7 @@ public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbili
 
     @Override
     public String weaponId() {
-        return "sonic_mace";
+        return "sonic_spear";
     }
 
     @Override
@@ -70,10 +70,10 @@ public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbili
             return;
         }
 
-        double range = configManager.getItemEffectDouble("sonic_mace", "effects.active.range", 12.0D);
-        double damage = configManager.getItemEffectDouble("sonic_mace", "effects.active.damage", 14.0D);
-        double knockback = configManager.getItemEffectDouble("sonic_mace", "effects.active.knockback", 2.0D);
-        long cooldownSec = configManager.getItemEffectInt("sonic_mace", "cooldowns.sonic_boom", 35);
+        double range = configManager.getItemEffectDouble("sonic_spear", "effects.active.range", 12.0D);
+        double damage = configManager.getItemEffectDouble("sonic_spear", "effects.active.damage", 14.0D);
+        double knockback = configManager.getItemEffectDouble("sonic_spear", "effects.active.knockback", 2.0D);
+        long cooldownSec = configManager.getItemEffectInt("sonic_spear", "cooldowns.sonic_boom", 35);
 
         // Fire Sonic Boom: one entity ray trace plus optional block occlusion check.
         Location eye = player.getEyeLocation();
@@ -115,12 +115,12 @@ public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbili
         cooldownService.setCooldown(player, id(), cooldownSec * 1000L);
 
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WARDEN_SONIC_BOOM, 1.0f, 1.0f);
-        net.kyori.adventure.text.Component msg = configManager.getItemMessage("sonic_mace", "messages.skill-sonic-boom");
+        net.kyori.adventure.text.Component msg = configManager.getItemMessage("sonic_spear", "messages.skill-sonic-boom");
         if (msg != null) player.sendMessage(msg);
 
-        int darknessDur = configManager.getItemEffectInt("sonic_mace", "effects.curses.darkness_duration", 30);
-        int slowDur = configManager.getItemEffectInt("sonic_mace", "effects.curses.slowness_duration", 40);
-        int slowAmp = configManager.getItemEffectInt("sonic_mace", "effects.curses.slowness_amplifier", 1);
+        int darknessDur = configManager.getItemEffectInt("sonic_spear", "effects.curses.darkness_duration", 30);
+        int slowDur = configManager.getItemEffectInt("sonic_spear", "effects.curses.slowness_duration", 40);
+        int slowAmp = configManager.getItemEffectInt("sonic_spear", "effects.curses.slowness_amplifier", 1);
         
         player.addPotionEffect(new PotionEffect(resolveDarknessEffect(), darknessDur, 0));
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, slowDur, slowAmp));
@@ -132,8 +132,8 @@ public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbili
         recentSonicDamage.put(event.getEntity().getUniqueId(), new TimedSonicAttacker(attacker.getUniqueId(), System.currentTimeMillis() + 10_000L));
         double fallDistance = attacker.getFallDistance();
         if (fallDistance >= 4.0F) {
-            double bonusPer4 = configManager.getItemEffectDouble("sonic_mace", "effects.passive.damage_per_4_blocks", 1.5D);
-            double cap = configManager.getItemEffectDouble("sonic_mace", "effects.passive.max_bonus_damage", 6.0D);
+            double bonusPer4 = configManager.getItemEffectDouble("sonic_spear", "effects.passive.damage_per_4_blocks", 1.5D);
+            double cap = configManager.getItemEffectDouble("sonic_spear", "effects.passive.max_bonus_damage", 6.0D);
             double bonus = Math.min(cap, (fallDistance / 4.0F) * bonusPer4);
             event.setDamage(event.getDamage() + bonus);
         }
@@ -152,7 +152,7 @@ public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbili
     public void onEntityDeath(EntityDeathEvent event) {
         Player owner = resolveSonicKiller(event);
         if (owner == null || owner.getWorld() != event.getEntity().getWorld()) return;
-        double chance = configManager.getItemEffectDouble("sonic_mace", "effects.kill_proc.sculk_shrine_chance", 0.10D);
+        double chance = configManager.getItemEffectDouble("sonic_spear", "effects.kill_proc.sculk_shrine_chance", 0.10D);
         if (Math.random() > chance) return;
         createSculkShrine(event.getEntity().getLocation(), owner.getUniqueId());
     }
@@ -170,7 +170,7 @@ public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbili
     public void onSculkSensor(BlockReceiveGameEvent event) {
         if (event.getEntity() instanceof Player player) {
             ItemStack weapon = player.getInventory().getItemInMainHand();
-            if (weapon != null && plugin.getMaceManager().getExclusiveItemKey(weapon).filter(id -> id.equals("sonic_mace")).isPresent()) {
+            if (weapon != null && plugin.getMaceManager().getExclusiveItemKey(weapon).filter(id -> id.equals("sonic_spear")).isPresent()) {
                 Material blockDown = player.getLocation().getBlock().getRelative(0, -1, 0).getType();
                 if (blockDown == Material.SCULK || blockDown == Material.SCULK_VEIN) {
                     event.setCancelled(true);
@@ -206,7 +206,7 @@ public final class SonicWardenMaceAbility implements ActiveAbility, PassiveAbili
     }
 
     private boolean isSonicSpear(ItemStack item) {
-        return item != null && plugin.getMaceManager().getExclusiveItemKey(item).filter(id -> id.equals("sonic_mace")).isPresent();
+        return item != null && plugin.getMaceManager().getExclusiveItemKey(item).filter(id -> id.equals("sonic_spear")).isPresent();
     }
 
     private PotionEffectType resolveDarknessEffect() {

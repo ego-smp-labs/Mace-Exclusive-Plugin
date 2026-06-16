@@ -108,7 +108,7 @@ public class MaceCommand implements CommandExecutor, TabCompleter {
             case "vampiric" -> arg = "vampiric_mace";
             case "gravity" -> arg = "gravity_mace";
             case "soulfire" -> arg = "soulfire_mace";
-            case "sonic" -> arg = "sonic_mace";
+            case "sonic" -> arg = "sonic_spear";
             case "chronos" -> arg = "chronos_anchor_spear";
         }
         return itemRegistry.find(arg).map(def -> def.id());

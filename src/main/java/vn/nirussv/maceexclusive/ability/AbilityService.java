@@ -170,8 +170,8 @@ public final class AbilityService {
         registerPassive(gravityMaceAbility);
         plugin.getServer().getPluginManager().registerEvents(gravityMaceAbility, plugin);
 
-        // Sonic Mace
-        SonicWardenMaceAbility sonicMaceAbility = new SonicWardenMaceAbility(plugin, configManager, cooldownService);
+        // Sonic Spear
+        SonicWardenSpearAbility sonicMaceAbility = new SonicWardenSpearAbility(plugin, configManager, cooldownService);
         registerActive(sonicMaceAbility);
         registerPassive(sonicMaceAbility);
         plugin.getServer().getPluginManager().registerEvents(sonicMaceAbility, plugin);

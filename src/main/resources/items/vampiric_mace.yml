@@ -32,7 +32,7 @@ recipe:
   ingredients:
     H: blood_core
     B: NETHERITE_INGOT
-    W: NETHER_WART
+    W: NETHER_WART:16
     S: cursed_player_head
     N: MAGMA_BLOCK:64
 cooldowns:

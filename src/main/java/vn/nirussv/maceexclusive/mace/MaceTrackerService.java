@@ -184,7 +184,7 @@ public final class MaceTrackerService implements Listener {
             case "vampiric_mace" -> BarColor.RED;
             case "gravity_mace" -> BarColor.PINK;
             case "power_mace" -> BarColor.YELLOW;
-            case "sonic_mace" -> BarColor.GREEN;
+            case "sonic_spear" -> BarColor.GREEN;
             default -> BarColor.WHITE;
         };
     }

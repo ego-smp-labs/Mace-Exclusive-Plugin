@@ -19,7 +19,7 @@ public final class ResourceBootstrap {
         "items/chaos_mace.yml",
         "items/vampiric_mace.yml",
         "items/gravity_mace.yml",
-        "items/sonic_mace.yml",
+        "items/sonic_spear.yml",
         "items/soulfire_mace.yml",
         "items/challenger_eye.yml",
         "items/obsidian_chaos.yml",

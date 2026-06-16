@@ -26,11 +26,11 @@ recipe:
     audience: player
     text: "&aYou forged %name%!"
   shape:
-    - "GTG"
+    - "GBG"
     - "DSD"
-    - "SSS"
+    - "GSG"
   ingredients:
-    T: NETHERITE_SPEAR
+    B: NETHERITE_SPEAR
     D: DIAMOND:16
     G: glitch_clock
     S: SLIME_BALL

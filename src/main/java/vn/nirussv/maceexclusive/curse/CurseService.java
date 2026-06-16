@@ -444,7 +444,7 @@ public final class CurseService implements Listener {
                 switch (id) {
                     case "power_mace" -> hasPower = true;
                     case "soulfire_mace" -> hasSoulfireMace = true;
-                    case "sonic_mace" -> hasSonic = true;
+                    case "sonic_spear" -> hasSonic = true;
                     case "void_mace" -> hasVoid = true;
                     case "chaos_mace" -> hasChaosMace = true;
                     case "vampiric_mace" -> hasVampiric = true;
@@ -475,7 +475,7 @@ public final class CurseService implements Listener {
                 switch (id) {
                     case "power_mace" -> hasPower = true;
                     case "soulfire_mace" -> hasSoulfireMace = true;
-                    case "sonic_mace" -> hasSonic = true;
+                    case "sonic_spear" -> hasSonic = true;
                     case "void_mace" -> hasVoid = true;
                     case "chaos_mace" -> hasChaosMace = true;
                     case "vampiric_mace" -> hasVampiric = true;

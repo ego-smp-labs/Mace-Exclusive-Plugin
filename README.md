@@ -49,7 +49,7 @@ Phase 3 Mace-first roster with unique active abilities (triggered via **Sneak + 
 *   **Chaos Mace**: Madness rage state, space-warping attacks, and hotbar item shuffling.
 *   **Mace of Vampirism**: Melee final damage lifesteal and temporary max-health siphon.
 *   **Singularity Gravity Mace**: Generates a gravity well pulling entities before collapsing.
-*   **Echoing Warden Mace**: Fires a long-range true damage sonic boom wave.
+*   **Warden Spear**: Fires a long-range true damage sonic boom wave.
 *   **Soulfire Pyre Mace**: Creates an expanding storm of blue flame and Wither ticks.
 
 ---
@@ -82,7 +82,7 @@ Phase 3 Mace-first roster with unique active abilities (triggered via **Sneak + 
 | `/macee reset <weapon_id>` | **Admin**: Resets ownership, allowing the weapon to be forged again | `mace.admin` |
 | `/macee reload` | **Admin**: Reloads plugin configuration and localization files | `mace.admin` |
 
-*Weapon IDs: `power_mace`, `void_mace`, `chaos_mace`, `vampiric_mace`, `gravity_mace`, `sonic_mace`, `soulfire_mace`*
+*Weapon IDs: `power_mace`, `void_mace`, `chaos_mace`, `vampiric_mace`, `gravity_mace`, `sonic_spear`, `soulfire_mace`*
 
 ---
 

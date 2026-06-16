@@ -27,14 +27,14 @@ recipe:
     audience: player
     text: "&aYou forged %name%!"
   shape:
-    - "SCB"
-    - "GDS"
-    - "DEG"
+    - "GBG"
+    - "SCD"
+    - "GEG"
   ingredients:
     C: sculk_core
     B: NETHERITE_SPEAR
-    E: ECHO_SHARD
-    D: DIAMOND:16
+    E: ECHO_SHARD:16
+    D: DIAMOND_BLOCK
     S: SCULK_CATALYST:16
     G: ENCHANTED_GOLDEN_APPLE
 cooldowns:
