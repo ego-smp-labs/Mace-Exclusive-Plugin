@@ -2,7 +2,7 @@ enabled: true
 singleton: false
 name: "&c&lCursed Player Head"
 material: PLAYER_HEAD
-custom-model-data: 4002
+custom-model-data: 4004
 lore:
   - "&7This head has become the dwelling place of spirits."
 recipe:

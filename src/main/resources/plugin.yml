@@ -12,6 +12,28 @@ commands:
     usage: /macee help
     aliases: [me]
 permissions:
-  mace.admin:
-    description: Allows full access to mace commands
+  maceexclusive.command.info:
+    description: Allows use of /macee info
+    default: true
+  maceexclusive.command.give:
+    description: Allows use of /macee give
     default: op
+  maceexclusive.command.reload:
+    description: Allows use of /macee reload
+    default: op
+  maceexclusive.command.reset:
+    description: Allows use of /macee reset
+    default: op
+  maceexclusive.admin:
+    description: Allows full access to Mace Exclusive commands
+    default: op
+    children:
+      maceexclusive.command.info: true
+      maceexclusive.command.give: true
+      maceexclusive.command.reload: true
+      maceexclusive.command.reset: true
+  mace.admin:
+    description: Legacy full-access permission for existing server setups
+    default: op
+    children:
+      maceexclusive.admin: true

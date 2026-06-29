@@ -42,14 +42,29 @@ public final class ContainerGuardListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onInventoryMoveItem(InventoryMoveItemEvent event) {
-        if (shouldGuard() && maceManager.isExclusiveItem(event.getItem())) {
-            event.setCancelled(true);
+        if (!shouldGuard() || !maceManager.isExclusiveItem(event.getItem())) {
+            return;
         }
+        if (isPlayerInventory(event.getDestination())) {
+            return;
+        }
+        if (isVanillaTransport(event.getSource(), event.getDestination(), event.getInitiator())) {
+            event.setCancelled(true);
+            return;
+        }
+        if (configManager.isGraveCompatEnabled()
+            && (!isVanillaContainer(event.getSource()) || !isVanillaContainer(event.getDestination()))) {
+            return;
+        }
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onInventoryPickupItem(InventoryPickupItemEvent event) {
-        if (shouldGuard() && maceManager.isExclusiveItem(event.getItem().getItemStack())) {
+        if (!shouldGuard() || !maceManager.isExclusiveItem(event.getItem().getItemStack())) {
+            return;
+        }
+        if (isVanillaHopperOrDropper(event.getInventory())) {
             event.setCancelled(true);
         }
     }
@@ -91,8 +106,16 @@ public final class ContainerGuardListener implements Listener {
             return;
         }
 
-        if (event.isShiftClick()
-            || event.getClickedInventory() == topInventory
+        if (configManager.isGraveCompatEnabled() && !isStrictModeContainer(topInventory)) {
+            return;
+        }
+
+        boolean clickedTopInventory = event.getClickedInventory() == topInventory;
+        if (clickedTopInventory && maceManager.isExclusiveItem(current) && !maceManager.isExclusiveItem(cursor) && !maceManager.isExclusiveItem(hotbar)) {
+            return;
+        }
+
+        if ((event.isShiftClick() && !clickedTopInventory)
             || maceManager.isExclusiveItem(cursor)
             || maceManager.isExclusiveItem(hotbar)) {
             
@@ -150,6 +173,9 @@ public final class ContainerGuardListener implements Listener {
         if (isAllowedTopInventory(event.getView().getTopInventory().getType())) {
             return;
         }
+        if (configManager.isGraveCompatEnabled() && !isStrictModeContainer(event.getView().getTopInventory())) {
+            return;
+        }
         int topSize = event.getView().getTopInventory().getSize();
         for (int slot : event.getRawSlots()) {
             if (slot < topSize) {
@@ -181,6 +207,42 @@ public final class ContainerGuardListener implements Listener {
             || type == InventoryType.PLAYER;
     }
 
+    private boolean isPlayerInventory(Inventory inventory) {
+        return inventory != null && inventory.getHolder() instanceof Player;
+    }
+
+    private boolean isVanillaHopperOrDropper(Inventory inventory) {
+        Material material = getInventoryBlockType(inventory);
+        return material == Material.HOPPER || material == Material.DROPPER;
+    }
+
+    private boolean isVanillaTransport(Inventory source, Inventory destination, Inventory initiator) {
+        return isVanillaHopperOrDropper(source)
+            || isVanillaHopperOrDropper(destination)
+            || isVanillaHopperOrDropper(initiator);
+    }
+
+    private boolean isStrictModeContainer(Inventory inventory) {
+        return isVanillaContainer(inventory);
+    }
+
+    private boolean isVanillaContainer(Inventory inventory) {
+        Material material = getInventoryBlockType(inventory);
+        if (material == null) return false;
+        return material == Material.CHEST
+            || material == Material.TRAPPED_CHEST
+            || material == Material.BARREL
+            || material == Material.DISPENSER
+            || material == Material.DROPPER
+            || material == Material.HOPPER
+            || material.name().endsWith("SHULKER_BOX");
+    }
+
+    private Material getInventoryBlockType(Inventory inventory) {
+        if (inventory == null || inventory.getLocation() == null) return null;
+        return inventory.getLocation().getBlock().getType();
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof org.bukkit.entity.Item item) {
@@ -205,7 +267,7 @@ public final class ContainerGuardListener implements Listener {
         java.util.Optional<String> idOpt = maceManager.getExclusiveItemKey(item);
         if (idOpt.isEmpty()) return false;
         String id = idOpt.get();
-        return id.endsWith("_mace") || id.endsWith("_spear") || id.equals("cursed_sword");
+        return configManager.isWeaponItem(id);
     }
 
     private boolean hasExclusiveWeapon(Player player) {
@@ -249,6 +311,7 @@ public final class ContainerGuardListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onWeaponPickupLimit(EntityPickupItemEvent event) {
+        if (configManager.isCarryViolationCountdownEnabled()) return;
         if (!(event.getEntity() instanceof Player player)) return;
         ItemStack item = event.getItem().getItemStack();
         if (isExclusiveWeapon(item)) {
@@ -261,6 +324,7 @@ public final class ContainerGuardListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onWeaponInventoryClickLimit(InventoryClickEvent event) {
+        if (configManager.isCarryViolationCountdownEnabled()) return;
         if (!(event.getWhoClicked() instanceof Player player)) return;
 
         ItemStack current = event.getCurrentItem();
@@ -317,6 +381,7 @@ public final class ContainerGuardListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onWeaponInventoryDragLimit(InventoryDragEvent event) {
+        if (configManager.isCarryViolationCountdownEnabled()) return;
         if (!(event.getWhoClicked() instanceof Player player)) return;
         ItemStack dragItem = event.getOldCursor();
         if (isExclusiveWeapon(dragItem)) {

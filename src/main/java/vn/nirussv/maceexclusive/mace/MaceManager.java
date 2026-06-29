@@ -70,6 +70,8 @@ public class MaceManager {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return false;
         meta.getPersistentDataContainer().set(keys.itemId(), PersistentDataType.STRING, id.toLowerCase());
+        var itemConfig = configManager.getItemConfig(id);
+        if (itemConfig != null) meta.getPersistentDataContainer().set(keys.weaponClass(), PersistentDataType.STRING, itemConfig.weaponClass().pdcValue());
         meta.getPersistentDataContainer().set(keys.owner(), PersistentDataType.STRING, owner.toString());
         item.setItemMeta(meta);
         if (configManager.isSingletonItem(id)) repository.setHolder(id, owner);
@@ -86,6 +88,8 @@ public class MaceManager {
             ItemMeta meta = item.getItemMeta();
             if (meta == null) return ClaimResult.DENIED;
             meta.getPersistentDataContainer().set(keys.itemId(), PersistentDataType.STRING, id.toLowerCase());
+            var itemConfig = configManager.getItemConfig(id);
+            if (itemConfig != null) meta.getPersistentDataContainer().set(keys.weaponClass(), PersistentDataType.STRING, itemConfig.weaponClass().pdcValue());
             meta.getPersistentDataContainer().set(keys.owner(), PersistentDataType.STRING, player.getUniqueId().toString());
             item.setItemMeta(meta);
             repository.setHolder(id, player.getUniqueId());
@@ -115,6 +119,7 @@ public class MaceManager {
         if ("cursed_sword".equals(id)) {
             if (reason == AcquisitionReason.CRAFTED) {
                 broadcastOwnership(player, location, id, reason);
+                webhookService.sendMaceNotification(player.getName(), displayName(id), reason.name(), location, id);
                 Map<String, String> placeholders = Map.of("name", displayName(id), "player", player.getName());
                 Component title = configManager.getMessage("cursed_sword.title", placeholders);
                 Component subtitle = configManager.getMessage("cursed_sword.subtitle", placeholders);
@@ -133,8 +138,8 @@ public class MaceManager {
                 if (reason == AcquisitionReason.CRAFTED) {
                     trackerService.startTracking(id);
                 }
-                webhookService.sendMaceNotification(player.getName(), displayName(id), reason.name(), location, id);
             }
+            webhookService.sendMaceNotification(player.getName(), displayName(id), reason.name(), location, id);
         }
         showAcquisitionUI(player, id);
     }

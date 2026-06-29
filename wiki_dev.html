@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mace Exclusive — Dev Spec Wiki</title>
+  <style>
+    :root{--bg:#0b0f19;--panel:#111827;--panel2:#0f172a;--line:#273244;--text:#e5e7eb;--muted:#94a3b8;--gold:#f59e0b;--red:#ef4444;--green:#10b981;--cyan:#06b6d4;--purple:#a855f7;--yellow:#eab308}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Consolas,'Courier New',monospace;line-height:1.55;padding:24px}
+    .layout{display:grid;grid-template-columns:260px 1fr;min-height:100vh;gap:0}
+    nav{position:sticky;top:0;height:100vh;overflow:auto;background:var(--panel2);border-right:1px solid var(--line);padding:18px}
+    nav h1{font-size:.95rem;margin:0 0 12px;color:#fff}
+    nav a{display:block;text-decoration:none;color:#cbd5e1;padding:5px 8px;border-radius:6px;font-size:.82rem;font-family:Inter,Arial,sans-serif}
+    nav a:hover{background:#1e293b;color:#fff}
+    main{max-width:1180px;padding:24px 32px}
+    h1,h2,h3{color:#fff;font-family:Inter,Arial,sans-serif;line-height:1.3}
+    h2{border-bottom:2px solid var(--line);padding-bottom:6px;margin-top:32px}
+    h3{margin-top:22px}
+    code{background:#0b1220;padding:1px 5px;border-radius:4px;color:#93c5fd}
+    pre{background:#0b1220;border:1px solid var(--line);border-radius:6px;padding:12px;overflow:auto;white-space:pre;font-size:.85rem}
+    table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.82rem}
+    th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+    th{background:#172033;color:#fff;font-family:Inter,Arial,sans-serif;font-size:.8rem}
+    tr:hover{background:rgba(74,59,92,.12)}
+    .tag{display:inline-block;border:1px solid #475569;border-radius:999px;padding:1px 7px;font-size:.72rem;font-weight:600}
+    .t-done{border-color:var(--green);color:#bbf7d0;background:rgba(16,185,129,.1)}
+    .t-planned{border-color:var(--gold);color:#fde68a;background:rgba(245,158,11,.1)}
+    .t-partial{border-color:var(--cyan);color:#a5f3fc;background:rgba(6,182,212,.1)}
+    .t-disabled{border-color:var(--muted);color:var(--muted);background:rgba(148,163,184,.08)}
+    .t-warn{border-color:var(--red);color:#fecaca;background:rgba(239,68,68,.1)}
+    .hero{background:linear-gradient(135deg,rgba(168,85,247,.14),rgba(6,182,212,.06));border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:22px}
+    .hero h1{margin:0 0 8px}
+    .warn-box{border-left:4px solid var(--red);background:rgba(239,68,68,.08);padding:12px 16px;border-radius:6px;margin:14px 0}
+    .note-box{border-left:4px solid var(--cyan);background:rgba(6,182,212,.06);padding:12px 16px;border-radius:6px;margin:14px 0}
+    .muted{color:var(--muted)}
+    .center{text-align:center}
+    .mono{font-family:Consolas,monospace}
+    .recipe{display:inline-block;background:#0b1220;border:1px solid var(--line);border-radius:4px;padding:6px 8px;font-size:.78rem;line-height:1.3}
+    a{color:#93c5fd}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:900px){.layout{grid-template-columns:1fr}nav{height:auto;position:relative}}
+  </style>
+</head>
+<body>
+<div class="layout">
+  <nav>
+    <h1>⚒ Dev Spec Wiki</h1>
+    <a href="#status">0. Status Legend</a>
+    <a href="#config">1. Global Config</a>
+    <a href="#layout">1.1 Resource/Saves Layout</a>
+    <a href="#permissions">1.2 Permissions</a>
+    <a href="#discord">1.3 Discord Webhook</a>
+    <a href="#pdc">2. PDC Keys</a>
+    <a href="#weaponclass">3. WeaponClass</a>
+    <a href="#weapons">4. Weapons Spec</a>
+    <a href="#cores">5. Cores Spec</a>
+    <a href="#materials">6. Materials Spec</a>
+    <a href="#recipes">7. Recipe Shapes</a>
+    <a href="#abilities">8. Ability Wiring</a>
+    <a href="#warnings">9. Dev Warnings</a>
+    <a href="#mismatch">10. Wiki vs Code</a>
+    <a href="#tickets">11. Open Tickets</a>
+  </nav>
+  <main>
+    <div class="hero">
+      <h1>Mace Exclusive — Dev Spec Wiki</h1>
+      <p>Bản kỹ thuật cho developer: item id, material, CMD, PDC keys, singleton, weapon-class, recipe shape, enchant policy, cooldown, ability class, status implement. <strong>Không lore, không CSS giả Minecraft.</strong></p>
+      <p class="muted">Source of truth: <code>src/main/resources/</code> + <code>src/main/java/</code>. Player-facing lore: <a href="wiki.html">wiki.html</a>. Plan/tickets: <a href="docs/plan.html">docs/plan.html</a>.</p>
+    </div>
+
+    <section id="status">
+      <h2>0. Status Legend</h2>
+      <table>
+        <tr><th>Tag</th><th>Ý nghĩa</th></tr>
+        <tr><td><span class="tag t-done">Implemented</span></td><td>Có YAML + code + ability wired, build pass.</td></tr>
+        <tr><td><span class="tag t-partial">Partial</span></td><td>YAML/code một phần, ritual/event chưa code hoặc cơ chế lệch wiki.</td></tr>
+        <tr><td><span class="tag t-planned">Planned</span></td><td>Wiki/docs mô tả nhưng chưa có YAML/code.</td></tr>
+        <tr><td><span class="tag t-disabled">Disabled</span></td><td>YAML <code>enabled: false</code>, không đăng ký.</td></tr>
+        <tr><td><span class="tag t-warn">Warning</span></td><td>Collision/lệch dữ liệu cần sửa.</td></tr>
+      </table>
+    </section>
+
+    <section id="config">
+      <h2>1. Global Config <code>config.yml</code></h2>
+      <table>
+        <tr><th>Key</th><th>Giá trị</th><th>Ghi chú</th></tr>
+        <tr><td><code>settings.language</code></td><td>en_US</td><td><code>en_US</code>/<code>vi_VN</code>; aliases <code>en</code>/<code>vi</code> still work and log a migration note.</td></tr>
+        <tr><td><code>settings.allow-drop</code></td><td>true</td><td>Cho phép drop vũ khí</td></tr>
+        <tr><td><code>settings.strict-mode</code></td><td>false</td><td>Strict: chặn drop + container</td></tr>
+        <tr><td><code>settings.prevent-hopper-pickup</code></td><td>true</td><td>Hopper/dropper không kéo vũ khí</td></tr>
+        <tr><td><code>settings.grave-compat</code></td><td>true</td><td>Tương thích plugin Grave</td></tr>
+        <tr><td><code>performance.environment-curse-interval-ticks</code></td><td>100</td><td>Core instability sweep (Blood/Sculk 10s, End 60s)</td></tr>
+        <tr><td><code>performance.holding-effect-tick-rate</code></td><td>5</td><td>Passive hold effect tick</td></tr>
+        <tr><td><code>performance.holding.glowing</code></td><td>true</td><td>Glowing universal curse khi cầm</td></tr>
+        <tr><td><code>performance.holding.glowing-duration</code></td><td>300s</td><td>Refreshed while holding</td></tr>
+        <tr><td><code>tracking.reveal-on-ground-pickup</code></td><td>true</td><td>Reveal khi nhặt từ đất</td></tr>
+        <tr><td><code>crafting.remove-vanilla-mace-recipe</code></td><td>true</td><td>Xóa recipe Mace vanilla</td></tr>
+        <tr><td><code>crafting.prevent-shift-click</code></td><td>true</td><td>Chặn shift-click craft</td></tr>
+        <tr><td><code>forge.block</code></td><td>LODESTONE</td><td>Block forge base</td></tr>
+        <tr><td><code>forge.preforge-charge-seconds</code></td><td>3</td><td>Charge trước countdown</td></tr>
+        <tr><td><code>forge.preforge-explosion-power</code></td><td>2.0</td><td>Nổ giai đoạn 1</td></tr>
+        <tr><td><code>forge.duration-seconds</code></td><td>300</td><td>5 phút nung</td></tr>
+        <tr><td><code>forge.completion-explosion-power</code></td><td>4.0</td><td>Nổ kết thúc</td></tr>
+        <tr><td><code>forge.abort-explosion-power</code></td><td>1.5</td><td>Nổ khi hủy/break altar</td></tr>
+        <tr><td><code>timed-forge.default-duration-seconds</code></td><td>60</td><td>Netherite forge 60s</td></tr>
+        <tr><td><code>timed-forge.max-distance</code></td><td>4.0</td><td>Freeze radius</td></tr>
+        <tr><td><code>timed-forge.freeze-player</code></td><td>true</td><td>Freeze khi rèn Netherite</td></tr>
+      </table>
+      <div class="note-box"><strong>special-crafting-enabled:</strong> Mọi vũ khí/core có <code>special-crafting-enabled: true</code> sẽ đi qua Lodestone Forge flow (3s charge → 5min countdown → nổ 4.0 → drop item). <code>false</code> = craft thường.</div>
+    </section>
+
+    <section id="layout">
+      <h2>1.1 Resource / Saves Layout</h2>
+      <table>
+        <tr><th>Path</th><th>Purpose</th><th>Compatibility</th></tr>
+        <tr><td><code>src/main/resources/weapons/*.yml</code></td><td>Ancient weapon configs: maces, spears, swords.</td><td>Preferred new layout; wins over duplicate legacy weapon ids.</td></tr>
+        <tr><td><code>src/main/resources/items/*.yml</code></td><td>Utility/material item configs: Challenger's Eye, Obsidian Chaos, Glitch Clock, Cursed Player Head.</td><td>Legacy server <code>items/*.yml</code> can still contain old weapon files; duplicates are skipped with warning.</td></tr>
+        <tr><td><code>src/main/resources/cores/*.yml</code></td><td>Core configs and core recipes.</td><td>Same folder name as before.</td></tr>
+        <tr><td><code>src/main/resources/lang/en_US.yml</code>, <code>lang/vi_VN.yml</code></td><td>Bundled localized messages.</td><td>Legacy data-folder <code>lang_en.yml</code>/<code>lang_vi.yml</code> still load when the new locale file is missing.</td></tr>
+        <tr><td><code>Saves/mace-data.yml</code></td><td>Singleton holder state.</td><td>If root <code>mace-data.yml</code> exists and new file is missing, load legacy then save to <code>Saves/</code>.</td></tr>
+        <tr><td><code>Saves/forge-sessions.yml</code></td><td>Active Lodestone Forge sessions.</td><td>Legacy root file fallback; no automatic deletion.</td></tr>
+        <tr><td><code>Saves/ritual_altars.yml</code></td><td>Ritual Altar block locations.</td><td>Legacy root file fallback; no automatic deletion.</td></tr>
+        <tr><td><code>Saves/player-usage.yml</code></td><td>Reserved safe path for future usage logging.</td><td>Parent directory is prepared at startup.</td></tr>
+      </table>
+    </section>
+
+    <section id="permissions">
+      <h2>1.2 Permissions</h2>
+      <table>
+        <tr><th>Node</th><th>Default</th><th>Allows</th></tr>
+        <tr><td><code>maceexclusive.command.info</code></td><td>true</td><td><code>/macee info</code> and <code>/me info</code>.</td></tr>
+        <tr><td><code>maceexclusive.command.give</code></td><td>op</td><td><code>/macee give</code>; command remains player-only.</td></tr>
+        <tr><td><code>maceexclusive.command.reload</code></td><td>op</td><td><code>/macee reload</code>.</td></tr>
+        <tr><td><code>maceexclusive.command.reset</code></td><td>op</td><td><code>/macee reset</code>.</td></tr>
+        <tr><td><code>maceexclusive.admin</code></td><td>op</td><td>All explicit command nodes.</td></tr>
+        <tr><td><code>mace.admin</code></td><td>op</td><td>Legacy full-access fallback; still accepted by command checks.</td></tr>
+      </table>
+      <div class="note-box">Tab completion is permission-aware and hides <code>info</code>/<code>give</code>/<code>reset</code>/<code>reload</code> when the sender lacks the matching explicit node or admin fallback.</div>
+    </section>
+
+    <section id="discord">
+      <h2>1.3 Discord Webhook</h2>
+      <table>
+        <tr><th>Config path</th><th>Purpose</th><th>Fallback</th></tr>
+        <tr><td><code>discord.yml enabled</code></td><td>Global transport on/off.</td><td>Required for all webhook sends.</td></tr>
+        <tr><td><code>discord.yml webhook-url</code></td><td>Webhook endpoint.</td><td>Must start with <code>http</code>.</td></tr>
+        <tr><td><code>weapons/&lt;id&gt;.yml discord.enabled</code></td><td>Per-item notification toggle.</td><td><code>discord.yml default-item-enabled</code>, default true.</td></tr>
+        <tr><td><code>weapons/&lt;id&gt;.yml discord.color</code></td><td>Per-item embed color.</td><td><code>discord.yml colors.&lt;id&gt;</code>, then <code>colors.default</code>.</td></tr>
+      </table>
+      <div class="note-box">T44 changed webhook notifications from singleton-only to per-item configured acquisition notices. Keep noisy utility/material items disabled unless intentionally announced.</div>
+    </section>
+
+    <section id="pdc">
+      <h2>2. PDC Keys <code>PdcKeys.java</code></h2>
+      <p>Namespace root: <code>mace_exclusive</code></p>
+      <table>
+        <tr><th>Key constant</th><th>NamespacedKey</th><th>Dùng cho</th></tr>
+        <tr><td><code>ITEM_ID_KEY</code></td><td><code>mace_exclusive:item_id</code></td><td>ID vũ khí/vật phẩm (String). VD: <code>power_mace</code>, <code>vampiric_mace</code></td></tr>
+        <tr><td><code>CORE_ID_KEY</code></td><td><code>mace_exclusive:core_id</code></td><td>ID core (String). VD: <code>blood_ritual_core</code></td></tr>
+        <tr><td><code>WEAPON_CLASS_KEY</code></td><td><code>mace_exclusive:weapon_class</code></td><td>Class: <code>mace</code> / <code>spear</code> / <code>sword</code> / <code>utility</code> / <code>core</code></td></tr>
+        <tr><td><code>OWNER_KEY</code></td><td><code>mace_exclusive:owner</code></td><td>UUID holder cho singleton tracking</td></tr>
+      </table>
+      <p class="muted">Lưu ý: Vampiric Spear giữ legacy id <code>vampiric_mace</code> trong PDC để tương thích item cũ.</p>
+    </section>
+
+    <section id="weaponclass">
+      <h2>3. WeaponClass Enum <code>WeaponClass.java</code></h2>
+      <table>
+        <tr><th>Enum</th><th>PDC value</th><th>isWeapon</th><th>Infer logic</th></tr>
+        <tr><td><code>MACE</code></td><td>mace</td><td>true</td><td>id kết thúc <code>_mace</code> hoặc material <code>MACE</code></td></tr>
+        <tr><td><code>SPEAR</code></td><td>spear</td><td>true</td><td>id kết thúc <code>_spear</code></td></tr>
+        <tr><td><code>SWORD</code></td><td>sword</td><td>true</td><td>id kết thúc <code>_sword</code>, <code>cursed_sword</code>, hoặc material <code>*SWORD</code></td></tr>
+        <tr><td><code>UTILITY</code></td><td>utility</td><td>false</td><td>Fallback default</td></tr>
+        <tr><td><code>CORE</code></td><td>core</td><td>false</td><td>id kết thúc <code>_core</code> hoặc material <code>HEAVY_CORE</code></td></tr>
+        <tr><td><code>UNKNOWN</code></td><td>unknown</td><td>false</td><td>—</td></tr>
+      </table>
+      <p>Config field: <code>weapon-class: SPEAR</code> (chỉ Vampiric khai báo tường minh). Các vũ khí khác infer từ id/material.</p>
+    </section>
+
+    <section id="weapons">
+      <h2>4. Weapons Spec</h2>
+      <table>
+        <tr>
+          <th>Tên</th><th>id (file)</th><th>Material</th><th>CMD</th><th>Singleton</th><th>Class</th><th>Enchant Policy</th><th>Cooldowns</th><th>Ability Class</th><th>Status</th>
+        </tr>
+        <tr>
+          <td>Power Mace</td><td><code>power_mace</code></td><td>MACE</td><td>2001</td><td>true</td><td>MACE</td><td>allowlist: MENDING, UNBREAKING</td><td>ground_pulse 8s</td><td>PowerGroundPulseAbility (active) + PowerStoredMomentumAbility (passive)</td><td><span class="tag t-done">Implemented</span></td>
+        </tr>
+        <tr>
+          <td>Abyssal Void Mace</td><td><code>void_mace</code></td><td>MACE</td><td>2003</td><td>true</td><td>MACE</td><td>allowlist: MENDING, UNBREAKING</td><td>resurrection 600s</td><td>VoidMaceAbility (active+passive, listener)</td><td><span class="tag t-done">Implemented</span></td>
+        </tr>
+        <tr>
+          <td>Chaos Mace</td><td><code>chaos_mace</code></td><td>MACE</td><td>2002</td><td>true</td><td>MACE</td><td>allowlist: MENDING, UNBREAKING</td><td>rage 300s</td><td>ChaosMaceAbility (active+passive)</td><td><span class="tag t-done">Implemented</span></td>
+        </tr>
+        <tr>
+          <td>Gravity Mace</td><td><code>gravity_mace</code></td><td>MACE</td><td>10004</td><td>true</td><td>MACE</td><td>allowlist: MENDING, UNBREAKING</td><td>gravity_well 60s</td><td>GravityMaceAbility (active+passive, listener)</td><td><span class="tag t-done">Implemented</span></td>
+        </tr>
+        <tr>
+          <td>Soulfire Mace</td><td><code>soulfire_mace</code></td><td>MACE</td><td>10011</td><td>true</td><td>MACE</td><td>allowlist: MENDING, UNBREAKING</td><td>fire_storm 40s</td><td>SoulfirePyreMaceAbility (active+passive, listener)</td><td><span class="tag t-done">Implemented</span></td>
+        </tr>
+        <tr>
+          <td>Vampiric Spear</td><td><code>vampiric_mace</code></td><td>NETHERITE_SPEAR</td><td>10002</td><td>true</td><td>SPEAR (explicit)</td><td>allowlist: MENDING, UNBREAKING</td><td>siphon 75s</td><td>VampiricMaceAbility (active+passive, listener)</td><td><span class="tag t-done">Implemented</span></td>
+        </tr>
+        <tr>
+          <td>Warden Spear</td><td><code>sonic_spear</code></td><td>NETHERITE_SPEAR</td><td>10005</td><td>true</td><td>SPEAR (inferred)</td><td>allowlist: MENDING, UNBREAKING, SHARPNESS</td><td>sonic_boom 35s</td><td>SonicWardenSpearAbility (active+passive, listener)</td><td><span class="tag t-done">Implemented</span></td>
+        </tr>
+        <tr>
+          <td>Chronos Anchor Spear</td><td><code>chronos_anchor_spear</code></td><td>NETHERITE_SPEAR</td><td>2006</td><td>true</td><td>SPEAR (inferred)</td><td>allowlist: MENDING, UNBREAKING, SHARPNESS</td><td>time_pin 55s</td><td>SpearProjectileService (throw-based, KHÔNG qua AbilityService)</td><td><span class="tag t-partial">Partial</span></td>
+        </tr>
+        <tr>
+          <td>Cursed Sword</td><td><code>cursed_sword</code></td><td>NETHERITE_SWORD</td><td>5001</td><td>false</td><td>SWORD (inferred)</td><td>deny-all</td><td>—</td><td>CursedSwordListener</td><td><span class="tag t-done">Implemented</span></td>
+        </tr>
+        <tr>
+          <td>Void Edge</td><td><code>void_edge</code></td><td>NETHERITE_SWORD</td><td>5003</td><td>true</td><td>SWORD (explicit)</td><td>allowlist: MENDING, UNBREAKING</td><td>void_blink 15s</td><td>VoidEdgeAbility (active+passive, listener)</td><td><span class="tag t-done">Implemented</span></td>
+        </tr>
+        <tr>
+          <td>Avarice Blade</td><td><code>avarice_sword</code></td><td>NETHERITE_SWORD</td><td>5005</td><td>true</td><td>SWORD (explicit)</td><td>allowlist: MENDING, UNBREAKING</td><td>bounty_hunt 120s</td><td>AvariceSwordAbility (active+passive, listener)</td><td><span class="tag t-done">Implemented</span></td>
+        </tr>
+        <tr>
+          <td>The Soul Sever Spear</td><td><code>soul_sever_spear</code></td><td>TRIDENT</td><td>5004</td><td>true</td><td>SPEAR (explicit)</td><td>allowlist: MENDING, UNBREAKING</td><td>passive-only</td><td>SoulSeverSpearAbility (passive, listener)</td><td><span class="tag t-done">Implemented</span></td>
+        </tr>
+      </table>
+      <div class="note-box"><strong>CMD audit:</strong> T38-T43 fixed known collisions: Chronos = 2006, Avarice Ritual Core = 3012, Avarice Blade = 5005.</div>
+    </section>
+
+    <section id="cores">
+      <h2>5. Cores Spec</h2>
+      <table>
+        <tr><th>Tên</th><th>id</th><th>Material</th><th>CMD</th><th>Recipe</th><th>Branch</th><th>Status</th></tr>
+        <tr><td>Avarice Ritual Core (Legacy)</td><td><code>ego_core</code></td><td>HEAVY_CORE</td><td>3001</td><td>legacy/compat</td><td>Heavy Core</td><td><span class="tag t-partial">Legacy compat</span></td></tr>
+        <tr><td>Avarice Ritual Core</td><td><code>avarice_ritual_core</code></td><td>HEAVY_CORE</td><td>3012</td><td>shape EPE/ERE/EEE</td><td>Ritual Core</td><td><span class="tag t-done">Implemented</span></td></tr>
+        <tr><td>Soulfire Core</td><td><code>soulfire_core</code></td><td>HEAVY_CORE</td><td>3002</td><td>shape LML/MHM/LML</td><td>Heavy Core</td><td><span class="tag t-done">Implemented</span></td></tr>
+        <tr><td>Blood Ritual Core</td><td><code>blood_ritual_core</code></td><td>HEAVY_CORE</td><td>3003</td><td>disabled (ritual: Nether hunt 5%)</td><td>Ritual Core</td><td><span class="tag t-done">Implemented</span></td></tr>
+        <tr><td>Sculk Ritual Core</td><td><code>sculk_ritual_core</code></td><td>HEAVY_CORE</td><td>3004</td><td>recipe uses Warden Resonance Shard + Ritual Core + Echo/Sculk block</td><td>Ritual Core</td><td><span class="tag t-done">Implemented</span></td></tr>
+        <tr><td>End Core</td><td><code>end_core</code></td><td>HEAVY_CORE</td><td>3005</td><td>disabled (ritual: throw Heavy Core qua End Portal, 20%)</td><td>Heavy Core</td><td><span class="tag t-done">Implemented</span></td></tr>
+        <tr><td>Ruined Core</td><td><code>ruined_core</code></td><td>HEAVY_CORE</td><td>3006</td><td>disabled (drop từ forge fail)</td><td>—</td><td><span class="tag t-done">Implemented</span></td></tr>
+        <tr><td>Ritual Core</td><td><code>ritual_core</code></td><td>HEAVY_CORE</td><td>3007</td><td>shape OOO/ONO/OOO</td><td>Ritual Core</td><td><span class="tag t-done">Implemented</span></td></tr>
+        <tr><td>Echo Ritual Core</td><td><code>echo_ritual_core</code></td><td>HEAVY_CORE</td><td>3008</td><td>shape " G " / " R " / "   " (plain craft)</td><td>Ritual Core</td><td><span class="tag t-partial">Partial — YAML dùng shape recipe, wiki nói Ritual Altar</span></td></tr>
+        <tr><td>Void Ritual Core</td><td><code>void_ritual_core</code></td><td>HEAVY_CORE</td><td>3009</td><td>disabled (portal ritual: Ritual Core + Challenger's Eye, 50/50)</td><td>Ritual Core</td><td><span class="tag t-done">Implemented</span></td></tr>
+        <tr><td>Reaper Ritual Core</td><td><code>reaper_ritual_core</code></td><td>HEAVY_CORE</td><td>3010</td><td>disabled (ritual: Nether Wither Skeleton death, 20%)</td><td>Ritual Core</td><td><span class="tag t-done">Implemented</span></td></tr>
+        <tr><td>Chaos Core</td><td><code>chaos_core</code></td><td>HEAVY_CORE</td><td>3011</td><td>disabled</td><td>—</td><td><span class="tag t-disabled">Disabled (deprecated)</span></td></tr>
+      </table>
+      <div class="note-box"><strong>Core naming convention:</strong> Cores từ Ritual Core branch phải có "Ritual" trong display name: Blood/Sculk/Echo/Void/Reaper/Avarice Ritual Core. Heavy-Core legacy Ego remains compat only.</div>
+    </section>
+
+    <section id="materials">
+      <h2>6. Materials Spec</h2>
+      <table>
+        <tr><th>Tên</th><th>id</th><th>Material</th><th>CMD</th><th>Singleton</th><th>Cách lấy</th><th>Status</th></tr>
+        <tr><td>Obsidian Chaos</td><td><code>obsidian_chaos</code></td><td>OBSIDIAN</td><td>4001</td><td>false</td><td>Cầm Obsidian, Creeper nổ chết, 5%</td><td><span class="tag t-done">Implemented</span></td></tr>
+        <tr><td>Challenger's Eye</td><td><code>challenger_eye</code></td><td>ENDER_EYE</td><td>4002</td><td>false</td><td>Enderman chí mạng, bypass Totem, chết thật</td><td><span class="tag t-done">Implemented</span></td></tr>
+        <tr><td>Glitch Clock</td><td><code>glitch_clock</code></td><td>CLOCK</td><td>4003</td><td>false</td><td>Cầm Clock + quit game, no damage 10s, 20% success</td><td><span class="tag t-done">Implemented</span></td></tr>
+        <tr><td>Cursed Player Head</td><td><code>cursed_player_head</code></td><td>PLAYER_HEAD</td><td>4004</td><td>false</td><td>Player bị curse chết, 20% drop head</td><td><span class="tag t-done">Implemented</span></td></tr>
+        <tr><td>Warden Resonance Shard</td><td><code>warden_resonance_shard</code></td><td>ECHO_SHARD</td><td>4005</td><td>false</td><td>10% từ Warden death</td><td><span class="tag t-done">Implemented</span></td></tr>
+        <tr><td>Plundered Heart</td><td><code>plundered_heart</code></td><td>EMERALD</td><td>4006</td><td>false</td><td>25% khi giết Evoker bằng rìu; gần villager sẽ consume và trigger raid/omen fallback</td><td><span class="tag t-done">Implemented</span></td></tr>
+        <tr><td>Vile Ledger</td><td><code>vile_ledger</code></td><td>BOOK</td><td>4007</td><td>false</td><td>First slice: rare Evoker death + nearby Ravager</td><td><span class="tag t-done">Implemented</span></td></tr>
+      </table>
+      <div class="note-box"><strong>CMD audit:</strong> Challenger's Eye 4002, Glitch Clock 4003, Cursed Player Head 4004, Warden Resonance 4005, Plundered Heart 4006, Vile Ledger 4007.</div>
+    </section>
+
+    <section id="recipes">
+      <h2>7. Recipe Shapes (3x3, core ở ô giữa slot 4)</h2>
+      <h3>Weapons</h3>
+      <table>
+        <tr><th>Weapon</th><th>Shape</th><th>Ingredients</th><th>Center core</th></tr>
+        <tr><td>Power Mace</td><td><span class="recipe"> B &nbsp;/ H / N</span></td><td>B=BREEZE_ROD×16, H=HEAVY_CORE, N=NETHERITE_INGOT</td><td>Heavy Core</td></tr>
+        <tr><td>Void Mace</td><td><span class="recipe">AWA / HEH / ACA</span></td><td>A=ENCHANTED_GOLDEN_APPLE, W=WITHER_ROSE×16, H=cursed_player_head, E=end_core, C=challenger_eye</td><td>End Core</td></tr>
+        <tr><td>Chaos Mace</td><td><span class="recipe">OBO / HVH / OWO</span></td><td>O=obsidian_chaos, B=blood_ritual_core, V=void_ritual_core, H=cursed_player_head, W=WITHER_ROSE</td><td>Void Ritual Core</td></tr>
+        <tr><td>Gravity Mace</td><td><span class="recipe">ABA / C / D</span></td><td>A=OBSIDIAN×64, B=NETHERITE_BLOCK, C=sculk_ritual_core, D=BREEZE_ROD×16</td><td>Sculk Ritual Core</td></tr>
+        <tr><td>Soulfire Mace</td><td><span class="recipe">FBF / GCS / FNF</span></td><td>F=SOUL_CAMPFIRE×64, B=BREEZE_ROD×16, G=GHAST_TEAR×16, C=soulfire_core, S=ZOMBIE_HEAD, N=NETHERITE_INGOT</td><td>Soulfire Core</td></tr>
+        <tr><td>Vampiric Spear</td><td><span class="recipe">NSN / BHB / NWN</span></td><td>N=MAGMA_BLOCK×64, S=cursed_player_head, B=NETHERITE_INGOT, H=blood_ritual_core, W=NETHER_WART×16</td><td>Blood Ritual Core</td></tr>
+        <tr><td>Warden Spear</td><td><span class="recipe">GBG / SCD / GEG</span></td><td>G=ENCHANTED_GOLDEN_APPLE, B=NETHERITE_SPEAR, S=SCULK_CATALYST×16, C=sculk_ritual_core, D=DIAMOND_BLOCK, E=ECHO_SHARD×16</td><td>Sculk Ritual Core</td></tr>
+        <tr><td>Chronos Anchor Spear</td><td><span class="recipe">GBG / DED / GSG</span></td><td>G=glitch_clock, B=NETHERITE_SPEAR, D=DIAMOND×16, E=echo_ritual_core, S=SLIME_BALL</td><td>Echo Ritual Core</td></tr>
+        <tr><td>Cursed Sword</td><td><span class="recipe"> W / P / S</span></td><td>W=ANY_HEAD, P=ANY_POISON_POTION, S=STICK</td><td>— (no core)</td></tr>
+        <tr><td>Void Edge <span class="tag t-done">Implemented</span></td><td><span class="recipe"> C / TVT / S</span></td><td>C=challenger_eye, T=TOTEM_OF_UNDYING×2, V=void_ritual_core, S=NETHERITE_SWORD</td><td>Void Ritual Core</td></tr>
+        <tr><td>Avarice Blade <span class="tag t-done">Implemented</span></td><td><span class="recipe">EVE / CAC /  S </span></td><td>E=EMERALD_BLOCK×8, V=vile_ledger, C=GOLD_BLOCK×8, A=avarice_ritual_core, S=NETHERITE_SWORD</td><td>Avarice Ritual Core</td></tr>
+        <tr><td>The Soul Sever Spear <span class="tag t-done">Implemented</span></td><td><span class="recipe">VSS / CRC /  N </span></td><td>V=vile_ledger, S=SCULK_BLOCK×64, C=SOUL_SAND×64, R=reaper_ritual_core, N=NETHERITE_INGOT</td><td>Reaper Ritual Core</td></tr>
+      </table>
+      <h3>Cores</h3>
+      <table>
+        <tr><th>Core</th><th>Shape</th><th>Ingredients</th></tr>
+        <tr><td>Avarice Ritual Core (Legacy)</td><td><span class="recipe">NRN / RHR / NRN</span></td><td>N=NETHERITE_INGOT, R=WITHER_ROSE, H=HEAVY_CORE</td></tr>
+        <tr><td>Soulfire Core</td><td><span class="recipe">LML / MHM / LML</span></td><td>L=SOUL_LANTERN, M=MAGMA_BLOCK×64, H=HEAVY_CORE</td></tr>
+        <tr><td>Ritual Core</td><td><span class="recipe">OOO / ONO / OOO</span></td><td>O=OBSIDIAN, N=NETHERITE_INGOT</td></tr>
+        <tr><td>Echo Ritual Core</td><td><span class="recipe"> G / R /</span></td><td>G=glitch_clock, R=ritual_core <span class="tag t-warn">plain craft, wiki nói Ritual Altar</span></td></tr>
+        <tr><td>End Core</td><td colspan="2">Ritual: ném Heavy Core qua End Portal, 20% thành công / 80% Ruined Core + curse 15p</td></tr>
+        <tr><td>Blood Ritual Core</td><td colspan="2">Ritual: cầm Ritual Core trong inventory, giết hostile mob ở Nether, 5% tiêu thụ 1 Ritual Core và drop Blood Ritual Core</td></tr>
+        <tr><td>Sculk Ritual Core</td><td colspan="2">Recipe: Warden Resonance Shards + Ritual Core + Echo/Sculk summon block. Curse: held core can trigger Darkness.</td></tr>
+        <tr><td>Avarice Ritual Core</td><td colspan="2">Recipe: Plundered Heart + Ritual Core + 8 Emerald Blocks.</td></tr>
+        <tr><td>Void Ritual Core</td><td colspan="2">Ritual: Ritual Core + Challenger's Eye qua End Portal, 50% thành công / 50% mất cả hai</td></tr>
+        <tr><td>Reaper Ritual Core</td><td colspan="2">Ritual: cầm Ritual Core trên main/offhand, bị Wither Skeleton giết ở Nether, 20% tiêu thụ Ritual Core và drop Reaper Ritual Core; fail giữ nguyên Ritual Core trong death drops</td></tr>
+        <tr><td>Ruined Core</td><td colspan="2">Drop từ forge fail 40%. Recycle: regular shaped craft 8 Obsidian + Ruined Core center → Ritual Core</td></tr>
+      </table>
+    </section>
+
+    <section id="abilities">
+      <h2>8. Ability Wiring <code>AbilityService.java</code></h2>
+      <p>Active input: <strong>Sneak + Left Click</strong> (ray-trace target 8 blocks). Miss → curse.</p>
+      <table>
+        <tr><th>Weapon</th><th>Active</th><th>Passive</th><th>Listener</th><th>Cơ chế</th></tr>
+        <tr><td>power_mace</td><td>PowerGroundPulseAbility</td><td>PowerStoredMomentumAbility</td><td>—</td><td>AbilityService</td></tr>
+        <tr><td>void_mace</td><td>VoidMaceAbility</td><td>VoidMaceAbility</td><td>registerEvents</td><td>AbilityService</td></tr>
+        <tr><td>chaos_mace</td><td>ChaosMaceAbility</td><td>ChaosMaceAbility</td><td>—</td><td>AbilityService</td></tr>
+        <tr><td>gravity_mace</td><td>GravityMaceAbility</td><td>GravityMaceAbility</td><td>registerEvents</td><td>AbilityService</td></tr>
+        <tr><td>soulfire_mace</td><td>SoulfirePyreMaceAbility</td><td>SoulfirePyreMaceAbility</td><td>registerEvents</td><td>AbilityService</td></tr>
+        <tr><td>vampiric_mace</td><td>VampiricMaceAbility</td><td>VampiricMaceAbility</td><td>registerEvents</td><td>AbilityService</td></tr>
+        <tr><td>sonic_spear</td><td>SonicWardenSpearAbility</td><td>SonicWardenSpearAbility</td><td>registerEvents</td><td>AbilityService</td></tr>
+        <tr><td>chronos_anchor_spear</td><td>—</td><td>—</td><td>SpearProjectileService</td><td><span class="tag t-warn">Throw-based, không qua AbilityService</span></td></tr>
+        <tr><td>cursed_sword</td><td>—</td><td>—</td><td>CursedSwordListener</td><td>Combat listener</td></tr>
+        <tr><td>void_edge</td><td>VoidEdgeAbility</td><td>VoidEdgeAbility</td><td>registerEvents</td><td>AbilityService</td></tr>
+        <tr><td>avarice_sword</td><td>AvariceSwordAbility</td><td>AvariceSwordAbility</td><td>registerEvents</td><td>AbilityService</td></tr>
+        <tr><td>soul_sever_spear</td><td>—</td><td>SoulSeverSpearAbility</td><td>registerEvents</td><td>Passive-only</td></tr>
+      </table>
+      <div class="warn-box"><strong>⚠ Chronos lệch rule:</strong> Active input rule là "Sneak + Left Click only", nhưng Chronos Anchor Spear dùng <code>SpearProjectileService</code> (throw-based). Cần xác nhận: Chronos có nên chuyển sang AbilityService Sneak+LeftClick, hay giữ throw và cập nhật rule?</div>
+      <h3>Miss Curse (khi Sneak+LeftClick hụt)</h3>
+      <table>
+        <tr><th>Weapon</th><th>Miss effect</th></tr>
+        <tr><td>power_mace</td><td>Slowness 60s</td></tr>
+        <tr><td>vampiric_mace</td><td>Tự dính 6 damage</td></tr>
+        <tr><td>void_edge</td><td>Tự dính 4 damage</td></tr>
+        <tr><td>chronos_anchor_spear</td><td>Freeze bản thân 1.25s (qua SpearProjectileService)</td></tr>
+      </table>
+    </section>
+
+    <section id="warnings">
+      <h2>9. Dev Warnings & Data Issues</h2>
+      <div class="note-box">
+        <strong>1. CMD audit:</strong> Known collisions were fixed. Current new IDs: Chronos 2006, Cursed Player Head 4004, Warden Resonance 4005, Plundered Heart 4006, Vile Ledger 4007, Avarice Ritual Core 3012, Soul Sever 5004, Avarice Blade 5005.
+      </div>
+      <div class="warn-box">
+        <strong>2. Chronos Anchor Spear — cơ chế lệch rule:</strong> Dùng <code>SpearProjectileService</code> (throw) thay vì <code>AbilityService</code> (Sneak+LeftClick). Rule hiện tại: "Active input = Sneak + Left Click only". Cần quyết định: chuyển sang AbilityService hoặc cập nhật rule cho spear.
+      </div>
+      <div class="warn-box">
+        <strong>3. Ritual Crafting Table:</strong> T39 added delayed transform, timed craft locking, and table cooldown. Live-server anti-dupe tests are still recommended for reload/disconnect mid-craft.
+      </div>
+      <div class="warn-box">
+        <strong>4. Vampiric Spear — legacy id:</strong> File YAML là <code>vampiric_mace.yml</code>, id PDC là <code>vampiric_mace</code>, nhưng display name là "VAMPIRIC SPEAR", material là <code>NETHERITE_SPEAR</code>, weapon-class <code>SPEAR</code>. Ability class vẫn tên <code>VampiricMaceAbility</code>. Follow-up T30: rename class/id sâu hơn (optional).
+      </div>
+      <div class="note-box">
+        <strong>5. Warden Blade replaced:</strong> <code>warden_blade</code> source resource and generated output are removed. <code>soul_sever_spear</code> is the replacement weapon.
+      </div>
+      <div class="warn-box">
+        <strong>6. Vile Ledger first slice:</strong> Current drop hook uses Evoker death + nearby Ravager fallback. Full max-level final-wave raid boss encounter remains a future refinement.
+      </div>
+    </section>
+
+    <section id="mismatch">
+      <h2>10. wiki.html vs Code — Status Mismatch</h2>
+      <p>Current code-facing status after T38-T43. Player wiki should only describe build-passing behavior.</p>
+      <table>
+        <tr><th>wiki.html section</th><th>Mô tả</th><th>Code status</th><th>Ticket</th></tr>
+        <tr><td>Ritual Crafting Table</td><td>Delayed transform, timed GUI craft, table cooldown</td><td><span class="tag t-done">Implemented</span></td><td>T39</td></tr>
+        <tr><td>Blood Ritual Core ritual</td><td>Săn mob Nether 5%</td><td><span class="tag t-done">Implemented</span></td><td>T29</td></tr>
+        <tr><td>Sculk Ritual Core</td><td>Warden Resonance Shard recipe + held Darkness curse</td><td><span class="tag t-done">Implemented</span></td><td>T40</td></tr>
+        <tr><td>Reaper Ritual Core ritual</td><td>Wither Skeleton kill 20%</td><td><span class="tag t-done">Implemented</span></td><td>T29</td></tr>
+        <tr><td>Avarice Blade</td><td>Tax Evade, Bounty Hunt, greed tribute curse</td><td><span class="tag t-done">Implemented</span></td><td>T41</td></tr>
+        <tr><td>Soul Sever Spear</td><td>Passive-only anti-heal/totem reversal, Soul Anchor</td><td><span class="tag t-done">Implemented</span></td><td>T42</td></tr>
+        <tr><td>Void Edge</td><td>Full recipe + Void Blink + Void Phase</td><td><span class="tag t-done">Implemented</span></td><td>T32</td></tr>
+        <tr><td>Ruined Core recycle</td><td>8 Obsidian + Ruined Core → Ritual Core</td><td><span class="tag t-done">Implemented as regular shaped recipe</span></td><td>T29</td></tr>
+        <tr><td>Lodestone Forge / Netherite Forge</td><td>5 bước / 4 bước</td><td><span class="tag t-done">Implemented</span> (ForgeService, NetheriteForgeService)</td><td>—</td></tr>
+      </table>
+    </section>
+
+    <section id="tickets">
+      <h2>11. Open Tickets (thứ tự ưu tiên)</h2>
+      <p>Chi tiết: <a href="docs/implementation_tickets.html">docs/implementation_tickets.html</a>. Checklist: <a href="docs/scratch_base_todo.html">docs/scratch_base_todo.html</a>.</p>
+      <table>
+        <tr><th>Ticket</th><th>Mô tả</th><th>Status</th><th>Blocker cho</th></tr>
+        <tr><td><strong>T39</strong> Ritual Crafting Table</td><td>Delayed transform, timed crafting, cooldown, anti-dupe GUI locking</td><td><span class="tag t-done">Implemented</span></td><td>—</td></tr>
+        <tr><td><strong>T42</strong> Soul Sever Spear</td><td>Replaces Warden Blade with passive-only spear</td><td><span class="tag t-done">Implemented</span></td><td>—</td></tr>
+        <tr><td><strong>T29</strong> Core rituals</td><td>Blood/Sculk/Reaper events and Ruined recycle done; Echo altar craft/loot table remain follow-up</td><td><span class="tag t-partial">Requested slice done</span></td><td>—</td></tr>
+        <tr><td><strong>T24</strong> Action Bar HUD</td><td><code>AbilityHudService</code> every 10 ticks; main/offhand weapon ready/cooldown display via <code>ability-hud</code> config</td><td><span class="tag t-done">Implemented</span></td><td>—</td></tr>
+        <tr><td><strong>T25</strong> Carry-limit boom</td><td><code>CarryViolationService</code> scans inventory + offhand; illegal carry starts 3s Action Bar countdown then no-block-damage explosion/lethal punishment via <code>carry-limit</code> config</td><td><span class="tag t-done">Implemented</span></td><td>—</td></tr>
+        <tr><td><strong>T26</strong> Data-driven hold effects</td><td>Per-weapon <code>effects.hold</code> YAML profiles drive SafeParticleSpawner particles (count capped 10) and optional sounds</td><td><span class="tag t-done">Implemented</span></td><td>—</td></tr>
+        <tr><td><strong>T30</strong> Vampiric Spear rename</td><td>Rename class/id sâu hơn + lunge thrust ability (optional)</td><td><span class="tag t-partial">Compat slice done</span></td><td>—</td></tr>
+        <tr><td><strong>T33</strong> Info Menu UX</td><td>Tabs, pagination, admin give</td><td><span class="tag t-planned">Planned</span></td><td>—</td></tr>
+        <tr><td><strong>T34/T37</strong> Resource/Saves/Permissions</td><td>Split weapons/items/cores/lang, Saves/ runtime data, LuckPerms-friendly permissions</td><td><span class="tag t-done">Implemented</span></td><td>—</td></tr>
+        <tr><td><strong>T35</strong> Balance pass</td><td>Tune costs/curse/CD</td><td><span class="tag t-planned">Planned</span></td><td>—</td></tr>
+      </table>
+      <div class="note-box"><strong>Quick wins (sửa data nhỏ, không cần ticket lớn):</strong>
+        <ul>
+          <li>Manual anti-dupe validation still needed on a live Paper server: ritual GUI close/death/disconnect/reload, Avarice steal full inventory, Soul Sever totem reversal.</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+</body>
+</html>

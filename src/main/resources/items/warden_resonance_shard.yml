@@ -1,0 +1,10 @@
+enabled: true
+singleton: false
+name: "&3Warden Resonance Shard"
+material: ECHO_SHARD
+custom-model-data: 4005
+lore:
+  - "&7A deep-dark echo cut from a Warden's fall."
+  - "&eObtain: &f10% from Warden death."
+recipe:
+  enabled: false

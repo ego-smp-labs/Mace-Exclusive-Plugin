@@ -7,6 +7,13 @@ cooldown: "&cVui lòng chờ &e%seconds%s &ctrước khi dùng lại."
 ability:
   activated: "&aĐã kích hoạt kỹ năng: &f%ability%"
   enchant-blocked: "&cVũ khí này không thể nhận phù phép &e%enchant%&c."
+  hud-ready: "&f%weapon% &7| &a%ability% SẴN SÀNG"
+  hud-cooldown: "&f%weapon% &7| &e%seconds%s"
+
+carry-limit:
+  warning: "&cBạn đang mang %count% vũ khí đặc biệt! Bỏ bớt trong &e%seconds%s&c."
+  cancelled: "&aGiới hạn mang vũ khí đã ổn định."
+  punished: "&cCác cổ vật từ chối bị mang cùng nhau!"
 
 mace:
   received: "&aBạn đã nhận được %name%&a!"
@@ -80,20 +87,57 @@ timed-forge:
   failed: "&cRèn theo thời gian thất bại."
   collect-failed: "&cKhông thể thu vật phẩm đã chế tạo để đưa vào lò rèn."
 
+ritual-altar:
+  transform-start: "&7Khói bao quanh bàn. Giữ Ritual Core ổn định..."
+  transform-cancelled: "&cBiến đổi Bàn Chế Tạo Hiến Tế đã hủy an toàn."
+  transformed: "&aBàn Chế Tạo Hiến Tế đã được tạo!"
+  open: "&7Bạn mở Bàn Chế Tạo Hiến Tế."
+  craft-success: "&aNghi thức thành công! Lõi cộng hưởng sức mạnh."
+  craft-fail: "&cNghi thức thất bại! Nguyên liệu bị tiêu hao và còn lại một Ruined Core."
+  cooldown: "&cBàn Chế Tạo Hiến Tế này đang hồi lại."
+  use-table: "&cCore/vũ khí cổ phải chế trong Bàn Chế Tạo Hiến Tế."
+  no-core: "&cPhải đặt core vào ô chính giữa!"
+  invalid-recipe: "&cBàn không nhận ra công thức này."
+  broken: "&cBàn Chế Tạo Hiến Tế vỡ tan trong năng lượng huyền thuật!"
+  returned: "&7Nguyên liệu của bạn đã được trả lại."
+  crafting: "&cBàn khóa nguyên liệu và bắt đầu nghi thức..."
+
 core:
+  received: "&aĐã nhận core: &f%name%&a."
   take-one-at-a-time: "&cHãy lấy core từng cái một."
   craft-locked: "&cBạn đang trong trạng thái bị khóa chế tạo core. (Trạng thái nguyền rủa đang hoạt động)"
   insufficient-xp: "&cKhông đủ XP để chế tạo core này."
   craft-failed: "&8[Core Forge] Core vỡ vụn trong quá trình truyền năng lượng. Lockout được áp dụng. Một Ruined Core đã được tạo ra."
+  craft-success: "&8[Core Forge] Nghi thức lõi đã thành công."
   cannot-place: "&cBạn không thể đặt các lõi (Core) tùy chỉnh xuống đất!"
   ego-backfire: "&cEgo Core từ chối độ cao của bạn! Bạn nhận %damage% tim sát thương."
   soulfire-burn: "&cLõi Soulfire bùng cháy!"
+  blood-hunt-success: "&aRitual Core của bạn đã hấp thụ máu kẻ ngã xuống! Blood Ritual Core xuất hiện."
+  sculk-ritual-success: "&aCái chết của Warden cộng hưởng qua Sculk! Sculk Ritual Core xuất hiện."
+  sculk-shard-drop: "&3Warden để lại một Resonance Shard."
+  sculk-curse: "&3Sculk Ritual Core nhấn chìm giác quan của bạn."
+  reaper-ritual-success: "&aDấu ấn tử thần của Wither Skeleton đã biến Ritual Core thành Reaper Ritual Core!"
+  reaper-ritual-fail: "&eDấu ấn của Wither Skeleton thất bại. Ritual Core của bạn vẫn nguyên vẹn."
 
 special:
   obsidian-chaos-drop: "&2[Mace-Exclusive] Một mảnh Obsidian Chaos đã rơi ra từ vụ nổ!"
   void-totem-blocked: "&d[Void Mace] Sức mạnh Vực Thẳm từ chối và vô hiệu hóa Totem của bạn!"
   enderman-totem-blocked: "&d[Mace-Exclusive] Thử thách của Enderman từ chối Totem của bạn. Mắt sẽ rơi cùng với bạn."
   totem-dropped: "&d[Void Mace] Sức mạnh Vực Thẳm từ chối sự hiện diện của Totem! Totem của bạn đã bị rơi ra."
+  plundered-heart-drop: "&aTrái Tim Cướp Bóc rơi ra từ Evoker."
+  plundered-heart-raid: "&2Trái Tim Cướp Bóc gọi cướp tới làng này."
+  vile-ledger-drop: "&5Vile Ledger rơi ra từ Evoker trong raid."
+
+avarice:
+  stolen: "&6Tax Evade cướp &f%item%&6. Nộ: &e%rage%&6/5."
+  bounty: "&6Bounty Hunt đánh dấu &f%target%&6."
+  curse-paid: "&eAvarice đã ăn cống phẩm."
+  curse-starved: "&cAvarice đói và cắn người cầm."
+
+soul-sever:
+  marked: "&9Soul Sever đánh dấu &f%target%&9 trong 10s."
+  totem: "&9Dấu ấn đảo ngược Totem thành sát thương linh hồn."
+  heal-reversed: "&9Soul Sever đảo hồi máu thành đau đớn."
 
 nether:
   cursed-head-forged: "&c[Mace-Exclusive] Một luồng linh hồn tà ác trong Nether đã ám vào chiếc đầu player bạn đang cầm!"
@@ -102,8 +146,10 @@ help:
   header: "&8&m--------&r &bMace Exclusive &8&m--------"
   link: "&7Website: &b/sabicoder.xyz/"
   commands: "&7Lệnh: &b/macee <info|give|reset|reload> <tên_vũ_khí>"
-  item-usage: "&7Cách dùng: &b/macee <give|reset|info> <item_id>"
+  item-usage: "&7Cách dùng: &b/macee <give|reset|info> <item_id|core_id|all>"
   footer: "&8&m-----------------------------"
+
+give-all-complete: "&aĐã đưa &f%count% &avật phẩm/core. Bỏ qua &f%skipped% &avật phẩm độc nhất đã đăng ký. Đồ tràn được thả dưới chân bạn."
 
 menu:
   overview-title: "&bCông thức Mace"

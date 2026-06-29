@@ -19,6 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
+import vn.nirussv.maceexclusive.effect.SafeParticleSpawner;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -105,8 +106,8 @@ public final class GravityMaceAbility implements ActiveAbility, PassiveAbility, 
                 }
 
                 // Play swirling black hole particles
-                center.getWorld().spawnParticle(Particle.PORTAL, center, 5, 0.5, 0.5, 0.5, 0.05);
-                center.getWorld().spawnParticle(Particle.DRAGON_BREATH, center, 2, 0.3, 0.3, 0.3, 0.01);
+                SafeParticleSpawner.spawn(center.getWorld(), Particle.END_ROD, center, 5, 0.5, 0.5, 0.5, 0.05);
+                SafeParticleSpawner.spawn(center.getWorld(), Particle.SMOKE, center, 2, 0.3, 0.3, 0.3, 0.01);
                 if (ticks % 10 == 0) {
                     center.getWorld().playSound(center, Sound.BLOCK_BEACON_DEACTIVATE, 1.0f, 0.5f);
                 }
@@ -132,8 +133,8 @@ public final class GravityMaceAbility implements ActiveAbility, PassiveAbility, 
     }
 
     private void triggerCollapse(Player caster, Location center, double radius, int pulledCount) {
-        center.getWorld().spawnParticle(Particle.EXPLOSION_EMITTER, center, 1);
-        center.getWorld().spawnParticle(Particle.ELECTRIC_SPARK, center, 24, 0.5, 0.5, 0.5, 0.08);
+        SafeParticleSpawner.spawn(center.getWorld(), Particle.EXPLOSION_EMITTER, center, 1);
+        SafeParticleSpawner.spawn(center.getWorld(), Particle.ELECTRIC_SPARK, center, 24, 0.5, 0.5, 0.5, 0.08);
         center.getWorld().playSound(center, Sound.ENTITY_GENERIC_EXPLODE, 1.2f, 0.8f);
 
         List<LivingEntity> nearby = new ArrayList<>();
@@ -188,7 +189,7 @@ public final class GravityMaceAbility implements ActiveAbility, PassiveAbility, 
         Vector dir = attacker.getLocation().toVector().subtract(target.getLocation().toVector());
         if (dir.lengthSquared() > 0.19) {
             target.setVelocity(dir.normalize().multiply(0.25D));
-            attacker.getWorld().spawnParticle(Particle.CRIT, target.getLocation().add(0.0, 1.0, 0.0), 6);
+            SafeParticleSpawner.spawn(attacker.getWorld(), Particle.CRIT, target.getLocation().add(0.0, 1.0, 0.0), 6);
         }
     }
 

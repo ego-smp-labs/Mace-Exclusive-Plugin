@@ -1,0 +1,70 @@
+﻿enabled: true
+singleton: true
+name: "&d&lVoid Edge"
+material: NETHERITE_SWORD
+weapon-class: SWORD
+custom-model-data: 5003
+discord:
+  enabled: true
+  color: 3447003
+enchant-policy:
+  mode: allowlist
+  allowed:
+    - MENDING
+    - UNBREAKING
+lore:
+  - "&7A blade split by abyssal space and lonely silence."
+  - "&eActive: &fSneak + Left-Click to blink 8 blocks and prime a 3s x2 backstab."
+  - "&aPassive: &f15% chance to phase through attacks; standing still grants Invisibility."
+  - "&cCurse: &fHolding reduces max health by 4 HP, forbids shields, and increases void damage taken."
+recipe:
+  enabled: true
+  special-crafting-enabled: true
+  glow-after-craft: false
+  start-message:
+    enabled: false
+    audience: player
+    text: "&7You begin forging %name%..."
+  complete-message:
+    enabled: false
+    audience: player
+    text: "&aYou forged %name%!"
+  shape:
+    - " C "
+    - "TVT"
+    - " S "
+  ingredients:
+    C: challenger_eye
+    T: TOTEM_OF_UNDYING
+    V: void_ritual_core
+    S: NETHERITE_SWORD
+cooldowns:
+  void_blink: 15
+effects:
+  hold:
+    enabled: true
+    particle: REVERSE_PORTAL
+    count: 7
+    offset-x: 0.35
+    offset-y: 0.25
+    offset-z: 0.35
+    extra: 0.02
+    sound: ENTITY_ENDERMAN_TELEPORT
+    sound-volume: 0.08
+    sound-pitch: 1.4
+    interval-ticks: 20
+  active:
+    range: 8.0
+    backstab_window_ticks: 60
+    backstab_multiplier: 2.0
+  passive:
+    phase_chance: 0.15
+    phase_distance: 2.0
+    still_invisibility_ticks: 60
+  curses:
+    max_health_penalty: 4.0
+    void_damage_multiplier: 1.50
+messages:
+  skill-activated: "&d[Void Edge] &fVoid Blink activated."
+  skill-void-blink: "&d[Void Edge] &fYou slip through the void and prepare a backstab."
+  skill-backstab: "&d[Void Edge] &fBackstab consumed."

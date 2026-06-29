@@ -1,8 +1,11 @@
-enabled: true
+﻿enabled: true
 singleton: true
 name: "&5&lSINGULARITY GRAVITY MACE"
 material: MACE
 custom-model-data: 10004
+discord:
+  enabled: true
+  color: 15277667
 enchant-policy:
   mode: allowlist
   allowed:
@@ -27,16 +30,29 @@ recipe:
     text: "&aYou forged %name%!"
   shape:
     - "ABA"
-    - " C "
+    - "HCH"
     - " D "
   ingredients:
     A: OBSIDIAN:64
     B: NETHERITE_BLOCK
-    C: sculk_core
+    C: sculk_ritual_core
+    H: HEAVY_CORE
     D: BREEZE_ROD:16
 cooldowns:
   gravity_well: 60
 effects:
+  hold:
+    enabled: true
+    particle: REVERSE_PORTAL
+    count: 8
+    offset-x: 0.4
+    offset-y: 0.2
+    offset-z: 0.4
+    extra: 0.02
+    sound: BLOCK_BEACON_AMBIENT
+    sound-volume: 0.12
+    sound-pitch: 0.7
+    interval-ticks: 20
   fall_reduction: 0.70
   pull_range: 2.5
   active:

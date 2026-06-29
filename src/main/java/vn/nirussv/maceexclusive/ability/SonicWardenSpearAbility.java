@@ -26,6 +26,7 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
+import vn.nirussv.maceexclusive.effect.SafeParticleSpawner;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -104,7 +105,7 @@ public final class SonicWardenSpearAbility implements ActiveAbility, PassiveAbil
         // Spawn capped Sonic particles along trace line.
         for (double d = 0.75D; d <= beamDistance; d += 1.0D) {
             Location pLoc = eye.clone().add(dir.clone().multiply(d));
-            pLoc.getWorld().spawnParticle(Particle.SONIC_BOOM, pLoc, 1, 0.0, 0.0, 0.0, 0.0);
+            SafeParticleSpawner.spawn(pLoc.getWorld(), Particle.SONIC_BOOM, pLoc, 1, 0.0, 0.0, 0.0, 0.0);
         }
         if (hit != null) {
             recentSonicDamage.put(hit.getUniqueId(), new TimedSonicAttacker(player.getUniqueId(), System.currentTimeMillis() + 10_000L));
@@ -226,7 +227,7 @@ public final class SonicWardenSpearAbility implements ActiveAbility, PassiveAbil
         placeIfSafe(base.clone().add(0, 1, 0), Material.SCULK_CATALYST);
         placeIfSafe(base.clone().add(0, 1, 1), Material.SCULK_SHRIEKER);
         tagNearbyWardens(base, ownerId);
-        base.getWorld().spawnParticle(Particle.SCULK_SOUL, base.clone().add(0.5, 1.0, 0.5), 36, 1.2, 0.8, 1.2, 0.05);
+        SafeParticleSpawner.spawn(base.getWorld(), Particle.SCULK_SOUL, base.clone().add(0.5, 1.0, 0.5), 36, 1.2, 0.8, 1.2, 0.05);
         base.getWorld().playSound(base, Sound.BLOCK_SCULK_SHRIEKER_SHRIEK, 0.8f, 0.8f);
     }
 

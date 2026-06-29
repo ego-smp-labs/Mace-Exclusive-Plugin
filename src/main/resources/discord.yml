@@ -1,5 +1,6 @@
 enabled: false
 webhook-url: ""
+default-item-enabled: true
 embed:
   title: "⚔️ ANCIENT ARTIFACT CLAIMED ⚔️"
   description: "**%player%** has %action% the legendary **%item%**!"
@@ -18,3 +19,8 @@ colors:
   power_mace: 15844367
   sonic_spear: 1752220
   soulfire_mace: 2062527
+  chronos_anchor_spear: 9807270
+  void_edge: 3447003
+  avarice_sword: 5763719
+  soul_sever_spear: 3447003
+  cursed_sword: 15158332

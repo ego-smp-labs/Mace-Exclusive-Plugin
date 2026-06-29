@@ -1,0 +1,26 @@
+enabled: true
+name: "&bEcho Ritual Core"
+material: HEAVY_CORE
+custom-model-data: 3008
+lore:
+  - "&7A time-fractured ritual core resonating with temporal echoes."
+  - "&cInstability: &fTemporal fluctuations may occur when carried."
+recipe:
+  enabled: true
+  special-crafting-enabled: true
+  glow-after-craft: false
+  start-message:
+    enabled: false
+    audience: player
+    text: "&7You begin crafting %name%..."
+  complete-message:
+    enabled: false
+    audience: player
+    text: "&aYou crafted %name%!"
+  shape:
+    - " G "
+    - " R "
+    - "   "
+  ingredients:
+    G: glitch_clock
+    R: ritual_core

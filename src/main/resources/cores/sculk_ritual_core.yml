@@ -1,0 +1,21 @@
+enabled: true
+name: "&3Sculk Ritual Core"
+material: HEAVY_CORE
+custom-model-data: 3004
+lore:
+  - "&7A Ritual Core tuned by Warden resonance."
+  - "&eCraft: &f4 Resonance Shards, Echo Shard, Shrieker."
+  - "&cCurse: &f20% Darkness every 20s."
+recipe:
+  enabled: true
+  special-crafting-enabled: true
+  glow-after-craft: false
+  shape:
+    - "WSW"
+    - "WRW"
+    - " E "
+  ingredients:
+    W: warden_resonance_shard
+    S: SCULK_SHRIEKER
+    E: ECHO_SHARD
+    R: ritual_core

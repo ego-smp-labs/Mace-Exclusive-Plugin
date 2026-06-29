@@ -1,0 +1,41 @@
+﻿enabled: true
+singleton: true
+name: "&9&lThe Soul Sever Spear"
+material: NETHERITE_SPEAR
+weapon-class: SPEAR
+custom-model-data: 5004
+discord:
+  enabled: true
+  color: 3447003
+enchant-policy:
+  mode: allowlist
+  allowed:
+    - MENDING
+    - UNBREAKING
+lore:
+  - "&7A spear that cuts healing away from the soul."
+  - "&ePassive: &f20% Soul Sever mark on hit."
+  - "&cCurse: &fSoul Anchor forbids jumping."
+recipe:
+  enabled: true
+  special-crafting-enabled: true
+  glow-after-craft: false
+  shape:
+    - "NBN"
+    - "CRC"
+    - " V "
+  ingredients:
+    B: NETHERITE_SPEAR
+    V: vile_ledger
+    S: SCULK_BLOCK:64
+    C: SOUL_SAND:64
+    R: reaper_ritual_core
+    N: NETHERITE_INGOT
+effects:
+  passive:
+    mark_chance: 0.20
+    mark_seconds: 10
+  curses:
+    linked_heal_chance: 0.20
+messages:
+  skill-activated: "&9[Soul Sever] &fThis weapon is passive-only."

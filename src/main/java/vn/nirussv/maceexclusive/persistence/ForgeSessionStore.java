@@ -19,16 +19,18 @@ import java.util.logging.Level;
 public final class ForgeSessionStore {
 
     private final MaceExclusivePlugin plugin;
-    private final File dataFile;
+    private final File loadFile;
+    private final File saveFile;
 
     public ForgeSessionStore(MaceExclusivePlugin plugin) {
         this.plugin = plugin;
-        this.dataFile = new File(plugin.getDataFolder(), "forge-sessions.yml");
+        this.loadFile = SavePaths.resolve(plugin, "forge-sessions.yml");
+        this.saveFile = SavePaths.target(plugin, "forge-sessions.yml");
     }
 
     public List<StoredForgeSession> load() {
-        if (!dataFile.exists()) return List.of();
-        FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
+        if (!loadFile.exists()) return List.of();
+        FileConfiguration config = YamlConfiguration.loadConfiguration(loadFile);
         ConfigurationSection section = config.getConfigurationSection("sessions");
         if (section == null) return List.of();
         List<StoredForgeSession> sessions = new ArrayList<>();
@@ -58,7 +60,8 @@ public final class ForgeSessionStore {
         }
         try {
             // TODO Phase 2.2: write to a temp file then atomic move to harden restart-at-completion semantics.
-            config.save(dataFile);
+            SavePaths.ensureParent(saveFile);
+            config.save(saveFile);
             return true;
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to save forge sessions", e);

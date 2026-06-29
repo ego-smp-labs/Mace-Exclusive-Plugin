@@ -1,6 +1,7 @@
 package vn.nirussv.maceexclusive;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import vn.nirussv.maceexclusive.ability.AbilityHudService;
 import vn.nirussv.maceexclusive.ability.AbilityService;
 import vn.nirussv.maceexclusive.command.MaceCommand;
 import vn.nirussv.maceexclusive.command.MaceInfoMenu;
@@ -12,6 +13,9 @@ import vn.nirussv.maceexclusive.core.CoreRegistry;
 import vn.nirussv.maceexclusive.core.RitualService;
 import vn.nirussv.maceexclusive.curse.CurseService;
 import vn.nirussv.maceexclusive.curse.LockoutService;
+import vn.nirussv.maceexclusive.carry.CarryService;
+import vn.nirussv.maceexclusive.carry.CarryViolationService;
+import vn.nirussv.maceexclusive.carry.WeaponCarryPolicy;
 import vn.nirussv.maceexclusive.listener.CursedSwordListener;
 import vn.nirussv.maceexclusive.effect.FreezeService;
 import vn.nirussv.maceexclusive.forge.ForgeListener;
@@ -32,11 +36,15 @@ import vn.nirussv.maceexclusive.listener.SpecialItemListener;
 import vn.nirussv.maceexclusive.mace.MaceManager;
 import vn.nirussv.maceexclusive.mace.MaceRepository;
 import vn.nirussv.maceexclusive.mace.MaceTrackerService;
+import vn.nirussv.maceexclusive.persistence.SavePaths;
 import vn.nirussv.maceexclusive.discord.DiscordWebhookService;
 import vn.nirussv.maceexclusive.persistence.ForgeSessionStore;
 import vn.nirussv.maceexclusive.recipe.RecipeRegistry;
 import vn.nirussv.maceexclusive.projectile.SpearProjectileService;
 import vn.nirussv.maceexclusive.listener.SpearListener;
+import vn.nirussv.maceexclusive.ritual.RitualAltarListener;
+import vn.nirussv.maceexclusive.ritual.RitualAltarService;
+import vn.nirussv.maceexclusive.ritual.RitualAltarStore;
 
 import java.util.logging.Level;
 
@@ -57,15 +65,20 @@ public class MaceExclusivePlugin extends JavaPlugin {
     private CoreRegistry coreRegistry;
     private ExclusiveItemFactory itemFactory;
     private SpearProjectileService spearProjectileService;
+    private RitualAltarService ritualAltarService;
+    private CarryViolationService carryViolationService;
+    private AbilityHudService abilityHudService;
 
     @Override
     public void onEnable() {
         try {
             saveDefaultConfig();
             ResourceBootstrap.BootstrapSummary bootstrapSummary = ResourceBootstrap.ensureAll(this);
+            SavePaths.ensureParent(SavePaths.playerUsage(this));
             getLogger().info("Resource bootstrap: copied=" + bootstrapSummary.copied()
                 + ", missingBundled=" + bootstrapSummary.missing()
-                + ", expected(root/items/cores)=" + bootstrapSummary.rootExpected() + "/"
+                + ", expected(root/lang/weapons/items/cores)=" + bootstrapSummary.rootExpected() + "/"
+                + bootstrapSummary.langExpected() + "/" + bootstrapSummary.weaponsExpected() + "/"
                 + bootstrapSummary.itemsExpected() + "/" + bootstrapSummary.coresExpected() + ".");
             reloadConfig();
             this.configManager = new ConfigManager(this);
@@ -86,14 +99,18 @@ public class MaceExclusivePlugin extends JavaPlugin {
             this.curseService = new CurseService(this, configManager, itemMatcher);
             this.freezeService = new FreezeService(this);
             this.abilityService = new AbilityService(this, configManager, itemMatcher, freezeService);
+            CarryService carryService = new CarryService(maceManager, new WeaponCarryPolicy());
+            this.carryViolationService = new CarryViolationService(this, configManager, carryService);
+            this.abilityHudService = new AbilityHudService(this, configManager, itemMatcher, abilityService.cooldownService(), carryViolationService);
             // Enable Spear gameplay
             this.spearProjectileService = new SpearProjectileService(this, configManager, itemMatcher, freezeService);
             this.recipeRegistry = new RecipeRegistry(this, configManager, itemRegistry, itemFactory, coreRegistry, coreItemFactory, itemMatcher);
             this.forgeService = new ForgeService(this, configManager, itemFactory, itemRegistry, maceManager, new ForgeSessionStore(this), new ForgeVisualService());
             this.netheriteForgeService = new NetheriteForgeService(this, configManager);
+            this.ritualAltarService = new RitualAltarService(this, configManager, coreItemFactory, itemFactory, itemRegistry, coreRegistry, itemMatcher, freezeService, recipeRegistry, new RitualAltarStore(this));
 
             MaceInfoMenu infoMenu = new MaceInfoMenu(this, configManager, maceManager, itemFactory, itemRegistry, coreRegistry, coreItemFactory);
-            MaceCommand cmd = new MaceCommand(this, maceManager, configManager, itemFactory, itemRegistry, infoMenu);
+            MaceCommand cmd = new MaceCommand(this, maceManager, configManager, itemFactory, itemRegistry, coreRegistry, coreItemFactory, infoMenu);
             if (getCommand("macee") != null) {
                 getCommand("macee").setExecutor(cmd);
                 getCommand("macee").setTabCompleter(cmd);
@@ -110,13 +127,15 @@ public class MaceExclusivePlugin extends JavaPlugin {
             getServer().getPluginManager().registerEvents(new AbilityListener(abilityService), this);
             getServer().getPluginManager().registerEvents(freezeService, this);
             getServer().getPluginManager().registerEvents(new ForgeListener(forgeService, maceManager, configManager), this);
+            getServer().getPluginManager().registerEvents(new RitualAltarListener(ritualAltarService, this, forgeService, itemMatcher, configManager), this);
             getServer().getPluginManager().registerEvents(new NetheriteForgeListener(netheriteForgeService, configManager), this);
             getServer().getPluginManager().registerEvents(new CoreCraftListener(configManager, coreRegistry, coreItemFactory, itemMatcher, freezeService, lockoutService, recipeRegistry), this);
             getServer().getPluginManager().registerEvents(new CursedSwordListener(lockoutService, configManager, itemMatcher), this);
-            getServer().getPluginManager().registerEvents(new RitualService(coreItemFactory, itemMatcher, lockoutService, configManager), this);
+            getServer().getPluginManager().registerEvents(new RitualService(coreItemFactory, itemMatcher, lockoutService, configManager, itemFactory), this);
             getServer().getPluginManager().registerEvents(new SpecialItemListener(this, itemFactory, itemMatcher, configManager), this);
             getServer().getPluginManager().registerEvents(new SpearListener(spearProjectileService), this);
             getServer().getPluginManager().registerEvents(new EnchantPolicyListener(configManager, itemMatcher), this);
+            getServer().getPluginManager().registerEvents(carryViolationService, this);
 
             try {
                 getServer().getPluginManager().registerEvents(curseService, this);
@@ -127,6 +146,9 @@ public class MaceExclusivePlugin extends JavaPlugin {
             if (configManager.shouldRemoveVanillaMaceRecipe()) recipeRegistry.removeVanillaMaceRecipe();
             recipeRegistry.registerAll();
             forgeService.start();
+            ritualAltarService.start();
+            carryViolationService.start();
+            abilityHudService.start();
             getLogger().info("Mace-Exclusive has been enabled! Version: " + getDescription().getVersion());
         } catch (Throwable t) {
             getLogger().log(Level.SEVERE, "CRITICAL ERROR: Failed to enable Mace-Exclusive!", t);
@@ -139,6 +161,9 @@ public class MaceExclusivePlugin extends JavaPlugin {
         if (curseService != null) curseService.shutdown();
         if (freezeService != null) freezeService.shutdown();
         if (forgeService != null) forgeService.shutdown();
+        if (ritualAltarService != null) ritualAltarService.shutdown();
+        if (abilityHudService != null) abilityHudService.shutdown();
+        if (carryViolationService != null) carryViolationService.shutdown();
         if (netheriteForgeService != null) netheriteForgeService.shutdown();
         if (spearProjectileService != null) spearProjectileService.shutdown();
         if (maceRepository != null) maceRepository.save();

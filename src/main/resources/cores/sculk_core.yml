@@ -1,9 +1,0 @@
-enabled: true
-name: "&3Sculk Core"
-material: HEAVY_CORE
-custom-model-data: 3004
-lore:
-  - "&7A Heavy Core awakened by a Warden death over a Sculk Catalyst."
-  - "&cInstability: &fWhen held in either hand, every 10s has 19% chance to apply Darkness/Blindness for 29s."
-recipe:
-  enabled: false

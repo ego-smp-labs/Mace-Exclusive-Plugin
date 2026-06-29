@@ -90,26 +90,15 @@ public final class ForgeListener implements Listener {
 
     private boolean hasExclusiveWeapon(Player player) {
         for (ItemStack item : player.getInventory().getContents()) {
-            if (item != null) {
-                java.util.Optional<String> idOpt = maceManager.getExclusiveItemKey(item);
-                if (idOpt.isPresent()) {
-                    String id = idOpt.get();
-                    if (id.endsWith("_mace") || id.endsWith("_spear") || id.equals("cursed_sword")) {
-                        return true;
-                    }
-                }
-            }
+            if (item != null && isExclusiveWeapon(item)) return true;
         }
         ItemStack offHand = player.getInventory().getItemInOffHand();
-        if (offHand != null) {
-            java.util.Optional<String> idOpt = maceManager.getExclusiveItemKey(offHand);
-            if (idOpt.isPresent()) {
-                String id = idOpt.get();
-                if (id.endsWith("_mace") || id.endsWith("_spear") || id.equals("cursed_sword")) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return offHand != null && isExclusiveWeapon(offHand);
+    }
+
+    private boolean isExclusiveWeapon(ItemStack item) {
+        return maceManager.getExclusiveItemKey(item)
+            .filter(configManager::isWeaponItem)
+            .isPresent();
     }
 }

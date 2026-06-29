@@ -19,6 +19,7 @@ import org.bukkit.Sound;
 import org.bukkit.inventory.ItemStack;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
+import vn.nirussv.maceexclusive.effect.SafeParticleSpawner;
 import vn.nirussv.maceexclusive.util.Scheduler;
 
 import java.util.HashMap;
@@ -188,7 +189,7 @@ public final class VampiricMaceAbility implements ActiveAbility, PassiveAbility,
             ? attacker.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() 
             : 20.0D;
         attacker.setHealth(Math.min(maxHealthAttr, attacker.getHealth() + heal));
-        attacker.getWorld().spawnParticle(org.bukkit.Particle.DAMAGE_INDICATOR, target.getLocation().add(0.0, 1.0, 0.0), 3);
+        SafeParticleSpawner.spawn(attacker.getWorld(), org.bukkit.Particle.DAMAGE_INDICATOR, target.getLocation().add(0.0, 1.0, 0.0), 3);
         attacker.getWorld().playSound(attacker.getLocation(), Sound.ENTITY_PLAYER_HURT_SWEET_BERRY_BUSH, 0.6f, 1.5f);
 
         // Low health damage boost: +20% damage if health < 30%

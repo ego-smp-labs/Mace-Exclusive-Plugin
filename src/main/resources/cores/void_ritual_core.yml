@@ -1,0 +1,9 @@
+enabled: true
+name: "&dVoid Ritual Core"
+material: HEAVY_CORE
+custom-model-data: 3009
+lore:
+  - "&7A ritual core warped by the void between worlds."
+  - "&cInstability: &fMay randomly teleport the holder when carried."
+recipe:
+  enabled: false

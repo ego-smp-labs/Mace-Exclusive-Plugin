@@ -3,16 +3,20 @@ package vn.nirussv.maceexclusive.listener;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Ravager;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import vn.nirussv.maceexclusive.config.ConfigManager;
+import vn.nirussv.maceexclusive.effect.SafeParticleSpawner;
 import vn.nirussv.maceexclusive.item.ExclusiveItemFactory;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
 
@@ -24,8 +28,11 @@ import java.util.Set;
 import java.util.UUID;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public final class SpecialItemListener implements Listener {
 
@@ -36,6 +43,8 @@ public final class SpecialItemListener implements Listener {
     private final Random random = new Random();
     private final Set<UUID> pendingChallengerEyeDeaths = new HashSet<>();
     private final Map<UUID, SlaughterTracker> slaughterMap = new HashMap<>();
+    private final Map<UUID, Long> lastDamageTime = new HashMap<>();
+    private final Map<UUID, Long> plunderedHeartCooldowns = new HashMap<>();
 
     private static final class SlaughterTracker {
         int killCount = 0;
@@ -138,26 +147,36 @@ public final class SpecialItemListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onPlayerDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player player)) return;
+        lastDamageTime.put(player.getUniqueId(), System.currentTimeMillis());
+    }
+
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        slaughterMap.remove(player.getUniqueId());
+        UUID uuid = player.getUniqueId();
+        slaughterMap.remove(uuid);
 
-        // Glitch Clock logic: quit with CLOCK in main hand and <= 0.5 hearts (1.0 HP)
-        if (player.getHealth() <= 1.0D) {
-            ItemStack mainHand = player.getInventory().getItemInMainHand();
-            if (mainHand != null && mainHand.getType() == Material.CLOCK) {
-                if (random.nextDouble() < 0.20D) {
-                    mainHand.setAmount(mainHand.getAmount() - 1);
-                    player.getInventory().setItemInMainHand(mainHand.getAmount() > 0 ? mainHand : null);
+        // Glitch Clock logic: quit with CLOCK in main hand, no damage taken in last 10 seconds
+        Long lastDamage = lastDamageTime.remove(uuid);
+        if (lastDamage != null && (System.currentTimeMillis() - lastDamage) < 10_000L) {
+            return;
+        }
 
-                    ItemStack glitchClock = itemFactory.create("glitch_clock");
-                    java.util.HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(glitchClock);
-                    for (ItemStack item : leftover.values()) {
-                        player.getWorld().dropItemNaturally(player.getLocation(), item);
-                    }
-                    plugin.getLogger().info("Player " + player.getName() + " forged a Glitch Clock by quitting at 0.5 hearts!");
+        ItemStack mainHand = player.getInventory().getItemInMainHand();
+        if (mainHand != null && mainHand.getType() == Material.CLOCK) {
+            if (random.nextDouble() < 0.20D) {
+                mainHand.setAmount(mainHand.getAmount() - 1);
+                player.getInventory().setItemInMainHand(mainHand.getAmount() > 0 ? mainHand : null);
+
+                ItemStack glitchClock = itemFactory.create("glitch_clock");
+                java.util.HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(glitchClock);
+                for (ItemStack item : leftover.values()) {
+                    player.getWorld().dropItemNaturally(player.getLocation(), item);
                 }
+                plugin.getLogger().info("Player " + player.getName() + " forged a Glitch Clock by quitting with no recent damage!");
             }
         }
     }
@@ -166,6 +185,8 @@ public final class SpecialItemListener implements Listener {
     public void onMobSlaughter(EntityDeathEvent event) {
         Player player = event.getEntity().getKiller();
         if (player == null) return;
+        handleEvokerAxeDrop(event, player);
+        handleVileLedgerDrop(event, player);
         if (player.getWorld().getEnvironment() != org.bukkit.World.Environment.NETHER) return;
 
         ItemStack mainHand = player.getInventory().getItemInMainHand();
@@ -203,11 +224,64 @@ public final class SpecialItemListener implements Listener {
                     player.getWorld().dropItemNaturally(player.getLocation(), item);
                 }
                 player.getWorld().strikeLightningEffect(player.getLocation());
-                player.getWorld().spawnParticle(org.bukkit.Particle.SOUL_FIRE_FLAME, player.getLocation().add(0, 1, 0), 32, 0.5, 0.5, 0.5, 0.05);
+                SafeParticleSpawner.spawn(player.getWorld(), org.bukkit.Particle.SOUL_FIRE_FLAME, player.getLocation().add(0, 1, 0), 32, 0.5, 0.5, 0.5, 0.05);
                 player.getWorld().playSound(player.getLocation(), org.bukkit.Sound.ENTITY_EVOKER_PREPARE_ATTACK, 1.0f, 0.8f);
                 player.sendMessage(configManager.getMessage("nether.cursed-head-forged"));
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onMove(PlayerMoveEvent event) {
+        if (event.getTo() == null || event.getFrom().getBlock().equals(event.getTo().getBlock())) return;
+        Player player = event.getPlayer();
+        long now = System.currentTimeMillis();
+        if (now < plunderedHeartCooldowns.getOrDefault(player.getUniqueId(), 0L)) return;
+        if (!nearVillager(player) || !consumeOneCustomItem(player, "plundered_heart")) return;
+        plunderedHeartCooldowns.put(player.getUniqueId(), now + 60_000L);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.WEAKNESS, 20 * 300, 0, false, true, true));
+        PotionEffectType nausea = PotionEffectType.getByName("NAUSEA");
+        if (nausea == null) nausea = PotionEffectType.getByName("CONFUSION");
+        if (nausea != null) player.addPotionEffect(new PotionEffect(nausea, 20 * 300, 0, false, true, true));
+        PotionEffectType omen = PotionEffectType.getByName("BAD_OMEN");
+        if (omen == null) omen = PotionEffectType.getByName("RAID_OMEN");
+        if (omen != null) player.addPotionEffect(new PotionEffect(omen, 20 * 120, 4, false, true, true));
+        player.sendMessage(configManager.getMessage("special.plundered-heart-raid"));
+    }
+
+    private void handleEvokerAxeDrop(EntityDeathEvent event, Player player) {
+        if (event.getEntityType() != EntityType.EVOKER || !isAxe(player.getInventory().getItemInMainHand()) || random.nextDouble() >= 0.25D) return;
+        event.getDrops().add(itemFactory.create("plundered_heart"));
+        player.sendMessage(configManager.getMessage("special.plundered-heart-drop"));
+    }
+
+    private void handleVileLedgerDrop(EntityDeathEvent event, Player player) {
+        if (event.getEntityType() != EntityType.EVOKER || random.nextDouble() >= 0.08D) return;
+        boolean ravagerNearby = event.getEntity().getNearbyEntities(16, 8, 16).stream().anyMatch(Ravager.class::isInstance);
+        if (!ravagerNearby) return;
+        event.getDrops().add(itemFactory.create("vile_ledger"));
+        player.sendMessage(configManager.getMessage("special.vile-ledger-drop"));
+    }
+
+    private boolean nearVillager(Player player) {
+        return player.getNearbyEntities(48, 16, 48).stream().anyMatch(Villager.class::isInstance);
+    }
+
+    private boolean isAxe(ItemStack item) { return item != null && item.getType().name().endsWith("_AXE"); }
+
+    private boolean consumeOneCustomItem(Player player, String id) {
+        for (int slot = 0; slot < player.getInventory().getSize(); slot++) {
+            ItemStack item = player.getInventory().getItem(slot);
+            if (!itemMatcher.is(item, id)) continue;
+            item.setAmount(item.getAmount() - 1);
+            player.getInventory().setItem(slot, item.getAmount() > 0 ? item : null);
+            return true;
+        }
+        ItemStack offHand = player.getInventory().getItemInOffHand();
+        if (!itemMatcher.is(offHand, id)) return false;
+        offHand.setAmount(offHand.getAmount() - 1);
+        player.getInventory().setItemInOffHand(offHand.getAmount() > 0 ? offHand : null);
+        return true;
     }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

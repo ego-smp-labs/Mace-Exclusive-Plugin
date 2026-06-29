@@ -21,6 +21,7 @@ import org.bukkit.scheduler.BukkitTask;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.effect.FreezeService;
+import vn.nirussv.maceexclusive.effect.SafeParticleSpawner;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
 
 import java.util.HashMap;
@@ -210,8 +211,8 @@ public final class SpearProjectileService {
             }
 
             Location location = active.getLocation();
-            active.getWorld().spawnParticle(Particle.END_ROD, location, 2, 0.05, 0.05, 0.05, 0.0);
-            active.getWorld().spawnParticle(Particle.ENCHANT, location, 1, 0.08, 0.08, 0.08, 0.0);
+            SafeParticleSpawner.spawn(active.getWorld(), Particle.END_ROD, location, 2, 0.05, 0.05, 0.05, 0.0);
+            SafeParticleSpawner.spawn(active.getWorld(), Particle.ENCHANT, location, 1, 0.08, 0.08, 0.08, 0.0);
         }, 1L, 2L);
         trailTasks.put(projectileId, task);
     }
@@ -248,8 +249,8 @@ public final class SpearProjectileService {
     }
 
     private void playFreezeImpact(Location location) {
-        location.getWorld().spawnParticle(Particle.END_ROD, location.add(0.0, 1.0, 0.0), 24, 0.45, 0.5, 0.45, 0.02);
-        location.getWorld().spawnParticle(Particle.ENCHANT, location, 32, 0.7, 0.7, 0.7, 0.1);
+        SafeParticleSpawner.spawn(location.getWorld(), Particle.END_ROD, location.add(0.0, 1.0, 0.0), 24, 0.45, 0.5, 0.45, 0.02);
+        SafeParticleSpawner.spawn(location.getWorld(), Particle.ENCHANT, location, 32, 0.7, 0.7, 0.7, 0.1);
         location.getWorld().playSound(location, Sound.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.PLAYERS, 1.0f, 1.35f);
     }
 }

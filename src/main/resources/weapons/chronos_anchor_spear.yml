@@ -1,8 +1,11 @@
-enabled: true
+﻿enabled: true
 singleton: true
 name: "&6&lCHRONOS ANCHOR SPEAR"
 material: NETHERITE_SPEAR
-custom-model-data: 2003
+custom-model-data: 2006
+discord:
+  enabled: true
+  color: 9807270
 enchant-policy:
   mode: allowlist
   allowed:
@@ -27,16 +30,30 @@ recipe:
     text: "&aYou forged %name%!"
   shape:
     - "GBG"
-    - "DSD"
+    - "DED"
     - "GSG"
   ingredients:
     B: NETHERITE_SPEAR
     D: DIAMOND:16
     G: glitch_clock
+    E: echo_ritual_core
     S: SLIME_BALL
 cooldowns:
   time_pin: 55
 curse: {}
+effects:
+  hold:
+    enabled: true
+    particle: GLOW
+    count: 5
+    offset-x: 0.3
+    offset-y: 0.2
+    offset-z: 0.3
+    extra: 0.02
+    sound: BLOCK_AMETHYST_BLOCK_CHIME
+    sound-volume: 0.12
+    sound-pitch: 1.5
+    interval-ticks: 20
 messages:
   skill-activated: "&6[Chronos Spear] &fTime Pin activated."
   skill-time-pin: "&6[Chronos Spear] &fTime Pin activated! Target has been frozen."

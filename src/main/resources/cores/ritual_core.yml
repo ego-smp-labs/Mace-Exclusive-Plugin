@@ -1,0 +1,26 @@
+enabled: true
+name: "&fRitual Core"
+material: HEAVY_CORE
+custom-model-data: 3007
+lore:
+  - "&7A foundational ritual core used to forge advanced cores and weapons."
+  - "&cInstability: &fNone when carried."
+recipe:
+  enabled: true
+  special-crafting-enabled: true
+  glow-after-craft: false
+  start-message:
+    enabled: false
+    audience: player
+    text: "&7You begin crafting %name%..."
+  complete-message:
+    enabled: false
+    audience: player
+    text: "&aYou crafted %name%!"
+  shape:
+    - "OOO"
+    - "ONO"
+    - "OOO"
+  ingredients:
+    O: OBSIDIAN
+    N: NETHERITE_INGOT

@@ -53,7 +53,7 @@ public final class FreezeService implements Listener {
         entity.setVelocity(new Vector(0.0, 0.0, 0.0));
         entity.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, durationTicks + 10, 10, false, false, true));
         entity.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, durationTicks + 10, 200, false, false, false));
-        entity.getWorld().spawnParticle(Particle.END_ROD, entity.getLocation().add(0.0, 1.0, 0.0), 18, 0.35, 0.5, 0.35, 0.02);
+        SafeParticleSpawner.spawn(entity.getWorld(), Particle.END_ROD, entity.getLocation().add(0.0, 1.0, 0.0), 18, 0.35, 0.5, 0.35, 0.02);
         entity.getWorld().playSound(entity.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.PLAYERS, 0.8f, 0.8f);
         ensureLockTask();
     }

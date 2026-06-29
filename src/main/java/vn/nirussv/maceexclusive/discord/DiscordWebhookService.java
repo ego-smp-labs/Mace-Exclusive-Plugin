@@ -24,6 +24,7 @@ public final class DiscordWebhookService {
 
     public void sendMaceNotification(String playerName, String maceName, String action, Location loc, String maceId) {
         if (!configManager.isDiscordWebhookEnabled()) return;
+        if (!configManager.isDiscordItemNotificationEnabled(maceId)) return;
         String urlString = configManager.getDiscordWebhookUrl();
         if (urlString == null || urlString.isBlank() || !urlString.startsWith("http")) return;
 

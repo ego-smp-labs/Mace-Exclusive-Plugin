@@ -1,0 +1,20 @@
+enabled: true
+name: "&aAvarice Ritual Core"
+material: HEAVY_CORE
+custom-model-data: 3012
+lore:
+  - "&7A ritual core that feeds on tribute and theft."
+  - "&eCraft: &fPlundered Heart + Ritual Core + Emerald Blocks."
+  - "&cCurse: &fGreed demands payment."
+recipe:
+  enabled: true
+  special-crafting-enabled: true
+  glow-after-craft: false
+  shape:
+    - "EPE"
+    - "ERE"
+    - "EEE"
+  ingredients:
+    E: EMERALD_BLOCK
+    R: ritual_core
+    P: plundered_heart

@@ -32,6 +32,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.config.PerformanceConfig;
+import vn.nirussv.maceexclusive.effect.SafeParticleSpawner;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
 import vn.nirussv.maceexclusive.util.Scheduler;
 
@@ -56,6 +57,8 @@ public final class CurseService implements Listener {
     private final Random random = new Random();
     private long coreCurseTickCounter;
     private long environmentIntervalTicks;
+    private long particleTickRate = 1L;
+    private long holdEffectTickCounter;
     private BukkitTask environmentTask;
     private BukkitTask particleTask;
 
@@ -75,7 +78,7 @@ public final class CurseService implements Listener {
             environmentIntervalTicks,
             environmentIntervalTicks
         );
-        long particleTickRate = Math.max(1L, configManager.getPerformanceConfig().holdingEffectTickRate());
+        particleTickRate = Math.max(1L, configManager.getPerformanceConfig().holdingEffectTickRate());
         particleTask = plugin.getServer().getScheduler().runTaskTimer(
             plugin,
             this::tickFeetParticles,
@@ -248,7 +251,7 @@ public final class CurseService implements Listener {
 
     private void refreshEventDrivenHoldingEffects(Player player, String itemId) {
         PerformanceConfig performance = configManager.getPerformanceConfig();
-        boolean isWeapon = itemId.endsWith("_mace") || itemId.endsWith("_spear") || itemId.equals("cursed_sword");
+        boolean isWeapon = configManager.isWeaponItem(itemId);
         boolean itemGlowing = configManager.getItemCurseBoolean(itemId, "hold.glowing", performance.holdingGlowing());
         if (isWeapon && itemGlowing) {
             int durationTicks = Math.max(40, performance.holdingGlowingDurationSeconds() * 20);
@@ -259,7 +262,8 @@ public final class CurseService implements Listener {
             player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 40, 0, false, false, true));
         }
         if (performance.holdingSoulParticles()) {
-            player.getWorld().spawnParticle(
+            SafeParticleSpawner.spawn(
+                player.getWorld(),
                 Particle.SOUL,
                 player.getLocation(),
                 performance.particleCount(),
@@ -330,15 +334,15 @@ public final class CurseService implements Listener {
 
     private void tickCoreInstability(Player player) {
         if (coreCurseTickCounter % (20L * 10L) == 0L) {
-            if (hasCoreInInventory(player, "blood_core") && random.nextDouble() < 0.10D) {
+            if (hasCoreInInventory(player, "blood_ritual_core") && random.nextDouble() < 0.10D) {
                 player.damage(2.0D);
-                player.getWorld().spawnParticle(Particle.DAMAGE_INDICATOR, player.getLocation().add(0, 1.0, 0), 8, 0.3, 0.4, 0.3, 0.02);
+                SafeParticleSpawner.spawn(player.getWorld(), Particle.DAMAGE_INDICATOR, player.getLocation().add(0, 1.0, 0), 8, 0.3, 0.4, 0.3, 0.02);
             }
-            if (hasCoreInInventory(player, "sculk_core") && random.nextDouble() < 0.19D) {
+            if (hasCoreInInventory(player, "sculk_ritual_core") && random.nextDouble() < 0.19D) {
                 PotionEffectType darkness = PotionEffectType.getByName("DARKNESS");
                 if (darkness == null) darkness = PotionEffectType.BLINDNESS;
                 player.addPotionEffect(new PotionEffect(darkness, 20 * 29, 0, false, true, true));
-                player.getWorld().spawnParticle(Particle.SCULK_SOUL, player.getLocation().add(0, 1.0, 0), 24, 0.5, 0.6, 0.5, 0.03);
+                SafeParticleSpawner.spawn(player.getWorld(), Particle.SCULK_SOUL, player.getLocation().add(0, 1.0, 0), 24, 0.5, 0.6, 0.5, 0.03);
                 player.getWorld().playSound(player.getLocation(), org.bukkit.Sound.ENTITY_WARDEN_HEARTBEAT, 0.8f, 0.7f);
             }
         }
@@ -380,9 +384,9 @@ public final class CurseService implements Listener {
             Material head = candidate.clone().add(0, 1, 0).getBlock().getType();
             Material below = candidate.clone().add(0, -1, 0).getBlock().getType();
             if (feet.isAir() && head.isAir() && below.isSolid() && below != Material.LAVA && below != Material.FIRE) {
-                origin.getWorld().spawnParticle(Particle.REVERSE_PORTAL, origin.add(0, 1, 0), 32, 0.5, 0.6, 0.5, 0.05);
+                SafeParticleSpawner.spawn(origin.getWorld(), Particle.END_ROD, origin.add(0, 1, 0), 32, 0.5, 0.6, 0.5, 0.05);
                 player.teleport(candidate.setDirection(origin.getDirection()));
-                player.getWorld().spawnParticle(Particle.PORTAL, player.getLocation().add(0, 1, 0), 32, 0.5, 0.6, 0.5, 0.05);
+                SafeParticleSpawner.spawn(player.getWorld(), Particle.END_ROD, player.getLocation().add(0, 1, 0), 32, 0.5, 0.6, 0.5, 0.05);
                 player.getWorld().playSound(player.getLocation(), org.bukkit.Sound.ENTITY_ENDERMAN_TELEPORT, 0.8f, 1.0f);
                 return;
             }
@@ -406,7 +410,7 @@ public final class CurseService implements Listener {
             if (targetY >= attackerY) {
                 double damage = 2.0D + (random.nextDouble() * 2.0D);
                 attacker.damage(damage);
-                attacker.getWorld().spawnParticle(Particle.DAMAGE_INDICATOR, attacker.getLocation().add(0, 1.0, 0), 8, 0.3, 0.4, 0.3, 0.02);
+                SafeParticleSpawner.spawn(attacker.getWorld(), Particle.DAMAGE_INDICATOR, attacker.getLocation().add(0, 1.0, 0), 8, 0.3, 0.4, 0.3, 0.02);
                 attacker.getWorld().playSound(attacker.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 0.8f, 0.5f);
                 java.util.Map<String, String> placeholders = java.util.Map.of(
                     "damage", String.format("%.1f", damage / 2.0)
@@ -417,13 +421,71 @@ public final class CurseService implements Listener {
     }
 
     private void tickFeetParticles() {
+        holdEffectTickCounter += particleTickRate;
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             if (!player.isOnline() || player.isDead()) continue;
+            if (spawnConfiguredHoldEffect(player)) continue;
             Particle particle = getFeetParticleType(player);
             if (particle != null) {
                 spawnFeetParticles(player, particle);
             }
         }
+    }
+
+    private boolean spawnConfiguredHoldEffect(Player player) {
+        Optional<String> heldWeaponId = heldWeaponId(player);
+        if (heldWeaponId.isEmpty()) return false;
+        String itemId = heldWeaponId.get();
+        if (!configManager.getItemEffectBoolean(itemId, "hold.enabled", false)) return false;
+        int intervalTicks = Math.max(1, configManager.getItemEffectInt(itemId, "hold.interval-ticks", 20));
+        if (holdEffectTickCounter % intervalTicks >= particleTickRate) return true;
+
+        Particle particle = resolveParticle(configManager.getItemEffectString(itemId, "hold.particle", "SOUL"));
+        int count = Math.max(0, Math.min(10, configManager.getItemEffectInt(itemId, "hold.count", 5)));
+        Location location = player.getLocation().add(0.0D, 1.0D, 0.0D);
+        SafeParticleSpawner.spawn(
+            player.getWorld(),
+            particle,
+            location,
+            count,
+            configManager.getItemEffectDouble(itemId, "hold.offset-x", 0.3D),
+            configManager.getItemEffectDouble(itemId, "hold.offset-y", 0.2D),
+            configManager.getItemEffectDouble(itemId, "hold.offset-z", 0.3D),
+            configManager.getItemEffectDouble(itemId, "hold.extra", 0.02D)
+        );
+        playConfiguredHoldSound(player, itemId);
+        return true;
+    }
+
+    private Optional<String> heldWeaponId(Player player) {
+        Optional<String> mainHand = itemMatcher.match(player.getInventory().getItemInMainHand()).filter(configManager::isWeaponItem);
+        if (mainHand.isPresent()) return mainHand;
+        return itemMatcher.match(player.getInventory().getItemInOffHand()).filter(configManager::isWeaponItem);
+    }
+
+    private Particle resolveParticle(String configuredParticle) {
+        if (configuredParticle != null) {
+            try {
+                return Particle.valueOf(configuredParticle.trim().toUpperCase(java.util.Locale.ROOT));
+            } catch (IllegalArgumentException ignored) {
+                return Particle.SOUL;
+            }
+        }
+        return Particle.SOUL;
+    }
+
+    private void playConfiguredHoldSound(Player player, String itemId) {
+        String soundName = configManager.getItemEffectString(itemId, "hold.sound", "");
+        if (soundName == null || soundName.isBlank()) return;
+        Sound sound;
+        try {
+            sound = Sound.valueOf(soundName.trim().toUpperCase(java.util.Locale.ROOT));
+        } catch (IllegalArgumentException ignored) {
+            return;
+        }
+        float volume = (float) configManager.getItemEffectDouble(itemId, "hold.sound-volume", 0.2D);
+        float pitch = (float) configManager.getItemEffectDouble(itemId, "hold.sound-pitch", 1.0D);
+        player.getWorld().playSound(player.getLocation(), sound, volume, pitch);
     }
 
     private Particle getFeetParticleType(Player player) {
@@ -458,10 +520,10 @@ public final class CurseService implements Listener {
                 switch (id) {
                     case "ego_core" -> hasEgo = true;
                     case "soulfire_core" -> hasSoulfireCore = true;
-                    case "sculk_core" -> hasSculk = true;
+                    case "sculk_ritual_core" -> hasSculk = true;
                     case "end_core" -> hasEnd = true;
                     case "chaos_core" -> hasChaosCore = true;
-                    case "blood_core" -> hasBlood = true;
+                    case "blood_ritual_core" -> hasBlood = true;
                     case "ruined_core" -> hasRuined = true;
                 }
             }
@@ -489,10 +551,10 @@ public final class CurseService implements Listener {
                 switch (id) {
                     case "ego_core" -> hasEgo = true;
                     case "soulfire_core" -> hasSoulfireCore = true;
-                    case "sculk_core" -> hasSculk = true;
+                    case "sculk_ritual_core" -> hasSculk = true;
                     case "end_core" -> hasEnd = true;
                     case "chaos_core" -> hasChaosCore = true;
-                    case "blood_core" -> hasBlood = true;
+                    case "blood_ritual_core" -> hasBlood = true;
                     case "ruined_core" -> hasRuined = true;
                 }
             }
@@ -519,7 +581,7 @@ public final class CurseService implements Listener {
             double angle = i * (Math.PI / 4.0);
             double dx = Math.cos(angle) * radius;
             double dz = Math.sin(angle) * radius;
-            world.spawnParticle(particle, loc.clone().add(dx, 0.05, dz), 1, 0, 0, 0, 0);
+            SafeParticleSpawner.spawn(world, particle, loc.clone().add(dx, 0.05, dz), 1, 0, 0, 0, 0);
         }
     }
 }

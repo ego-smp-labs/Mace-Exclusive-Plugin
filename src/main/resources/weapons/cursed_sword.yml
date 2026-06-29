@@ -3,6 +3,9 @@ singleton: false
 name: "&c&lCursed Sword"
 material: NETHERITE_SWORD
 custom-model-data: 5001
+discord:
+  enabled: true
+  color: 15158332
 enchant-policy:
   mode: deny-all
 lore:

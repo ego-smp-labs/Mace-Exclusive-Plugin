@@ -9,6 +9,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.core.CoreConfig;
+import vn.nirussv.maceexclusive.item.WeaponClass;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +31,10 @@ import java.util.jar.JarFile;
 
 public class ConfigManager {
 
-    private static final String ITEM_CONFIG_DIRECTORY = "items";
+    public static final String WEAPON_CONFIG_DIRECTORY = ResourceBootstrap.WEAPON_CONFIG_DIRECTORY;
+    public static final String UTILITY_ITEM_CONFIG_DIRECTORY = ResourceBootstrap.UTILITY_ITEM_CONFIG_DIRECTORY;
+    public static final String CORE_CONFIG_DIRECTORY = ResourceBootstrap.CORE_CONFIG_DIRECTORY;
+    public static final String LANG_DIRECTORY = ResourceBootstrap.LANG_DIRECTORY;
     private static final String YAML_EXTENSION = ".yml";
     private static final Set<Material> LEGACY_NETHERITE_FORGE_ITEMS = EnumSet.of(
         Material.NETHERITE_SWORD,
@@ -53,10 +57,13 @@ public class ConfigManager {
     private PerformanceConfig performanceConfig;
     private final Map<String, ItemConfig> itemConfigs = new LinkedHashMap<>();
     private final Map<String, YamlConfiguration> itemFiles = new HashMap<>();
+    private final Map<String, File> itemConfigFiles = new LinkedHashMap<>();
+    private final Map<String, String> itemDefaultResourcePaths = new HashMap<>();
     private final Map<String, String> messageCache = new HashMap<>();
     private final Map<String, Boolean> itemEffectBooleanCache = new HashMap<>();
     private final Map<String, Integer> itemEffectIntCache = new HashMap<>();
     private final Map<String, Double> itemEffectDoubleCache = new HashMap<>();
+    private final Map<String, String> itemEffectStringCache = new HashMap<>();
 
     public ConfigManager(MaceExclusivePlugin plugin) {
         this.plugin = plugin;
@@ -100,15 +107,22 @@ public class ConfigManager {
     }
 
     private void loadLanguage() {
-        ensureLanguageResource("lang_en.yml");
-        ensureLanguageResource("lang_vi.yml");
-        String langCode = plugin.getConfig().getString("settings.language", "en").toLowerCase();
-        if (!langCode.equals("en") && !langCode.equals("vi")) {
-            plugin.getLogger().warning("Unsupported language '" + langCode + "', falling back to en.");
-            langCode = "en";
+        String configuredLanguage = plugin.getConfig().getString("settings.language", "en_US");
+        String langCode = normalizeLanguage(configuredLanguage);
+        if (!langCode.equals(configuredLanguage)) {
+            plugin.getLogger().warning("Language setting '" + configuredLanguage + "' is a legacy alias or unsupported value; using '" + langCode + "'. Update settings.language when convenient.");
         }
-        String fileName = "lang_" + langCode + ".yml";
+        String fileName = LANG_DIRECTORY + "/" + langCode + YAML_EXTENSION;
+        File preferredLangFile = new File(plugin.getDataFolder(), fileName);
+        boolean preferredExistedBeforeBootstrap = preferredLangFile.exists();
+        ensureLanguageResource("en_US");
+        ensureLanguageResource("vi_VN");
         File langFile = new File(plugin.getDataFolder(), fileName);
+        File legacyFile = legacyLanguageFile(configuredLanguage);
+        if (!preferredExistedBeforeBootstrap && legacyFile != null && legacyFile.exists()) {
+            plugin.getLogger().warning("Loading legacy language file " + legacyFile.getName() + "; new bundled language files are in lang/. User files are not deleted automatically.");
+            langFile = legacyFile;
+        }
         langConfig = YamlConfiguration.loadConfiguration(langFile);
         try (InputStream defStream = plugin.getResource(fileName)) {
             if (defStream != null) {
@@ -120,35 +134,65 @@ public class ConfigManager {
         messageCache.clear();
     }
 
-    private void ensureLanguageResource(String fileName) {
-        ResourceBootstrap.ensure(plugin, fileName);
+    private String normalizeLanguage(String configuredLanguage) {
+        String normalized = configuredLanguage == null ? "en_US" : configuredLanguage.trim();
+        return switch (normalized.toLowerCase()) {
+            case "vi", "vi_vn", "vi-vn" -> "vi_VN";
+            case "en", "en_us", "en-us" -> "en_US";
+            default -> {
+                plugin.getLogger().warning("Unsupported language '" + normalized + "', falling back to en_US.");
+                yield "en_US";
+            }
+        };
+    }
+
+    private File legacyLanguageFile(String configuredLanguage) {
+        String normalized = configuredLanguage == null ? "" : configuredLanguage.trim().toLowerCase();
+        if (normalized.startsWith("vi")) return new File(plugin.getDataFolder(), "lang_vi.yml");
+        return new File(plugin.getDataFolder(), "lang_en.yml");
+    }
+
+    private void ensureLanguageResource(String locale) {
+        ResourceBootstrap.ensure(plugin, LANG_DIRECTORY + "/" + locale + YAML_EXTENSION);
     }
 
     private void loadTypedConfigs() {
         performanceConfig = PerformanceConfig.fromConfig(plugin.getConfig());
         itemConfigs.clear();
         itemFiles.clear();
+        itemConfigFiles.clear();
+        itemDefaultResourcePaths.clear();
         clearItemEffectCaches();
-        ensureBundledYamlCopied(ITEM_CONFIG_DIRECTORY);
-        File directory = getItemConfigDirectory();
-        if (!directory.exists() && !directory.mkdirs()) {
-            plugin.getLogger().warning("Could not create weapon config directory: " + directory.getPath());
-            return;
-        }
-        File[] files = directory.listFiles((dir, name) -> name.endsWith(YAML_EXTENSION));
-        if (files == null) {
-            return;
-        }
-        for (File file : files) {
-            String id = file.getName().substring(0, file.getName().length() - YAML_EXTENSION.length()).toLowerCase();
+        ensureBundledYamlCopied(WEAPON_CONFIG_DIRECTORY, ResourceBootstrap.WEAPON_RESOURCES);
+        ensureBundledYamlCopied(UTILITY_ITEM_CONFIG_DIRECTORY, ResourceBootstrap.ITEM_RESOURCES);
+        scanItemConfigDirectory(WEAPON_CONFIG_DIRECTORY, false);
+        scanItemConfigDirectory(UTILITY_ITEM_CONFIG_DIRECTORY, true);
+        for (String id : itemConfigFiles.keySet()) {
             ConfigurationSection section = loadItemFile(id);
             Material fallback = resolveWeaponFallbackMaterial(id);
             itemConfigs.put(id, ItemConfig.fromSection(id, section, fallback, "&f" + id));
         }
     }
 
-    private File getItemConfigDirectory() {
-        return new File(plugin.getDataFolder(), ITEM_CONFIG_DIRECTORY);
+    private void scanItemConfigDirectory(String directoryName, boolean legacyMixedDirectory) {
+        File directory = new File(plugin.getDataFolder(), directoryName);
+        if (!directory.exists() && !directory.mkdirs()) {
+            plugin.getLogger().warning("Could not create item config directory: " + directory.getPath());
+            return;
+        }
+        File[] files = directory.listFiles((dir, name) -> name.endsWith(YAML_EXTENSION));
+        if (files == null) return;
+        for (File file : files) {
+            String id = file.getName().substring(0, file.getName().length() - YAML_EXTENSION.length()).toLowerCase();
+            if (itemConfigFiles.containsKey(id)) {
+                if (legacyMixedDirectory) {
+                    plugin.getLogger().warning("Skipping legacy duplicate item config '" + id + "' from " + directoryName + "; new layout wins.");
+                }
+                continue;
+            }
+            itemConfigFiles.put(id, file);
+            itemDefaultResourcePaths.put(id, directoryName + "/" + file.getName());
+        }
     }
 
     private Material resolveWeaponFallbackMaterial(String id) {
@@ -164,12 +208,15 @@ public class ConfigManager {
         if (itemFiles.containsKey(id)) {
             return itemFiles.get(id);
         }
-        File file = new File(getItemConfigDirectory(), id + YAML_EXTENSION);
+        File file = itemConfigFiles.get(id);
+        if (file == null) {
+            return null;
+        }
         if (!file.exists()) {
             return null;
         }
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-        try (InputStream defaultStream = plugin.getResource(itemResourcePath(id))) {
+        try (InputStream defaultStream = plugin.getResource(itemDefaultResourcePaths.get(id))) {
             if (defaultStream != null) {
                 configuration.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream, StandardCharsets.UTF_8)));
             }
@@ -178,10 +225,6 @@ public class ConfigManager {
         }
         itemFiles.put(id, configuration);
         return configuration;
-    }
-
-    private String itemResourcePath(String id) {
-        return ITEM_CONFIG_DIRECTORY + "/" + id + YAML_EXTENSION;
     }
 
     public Collection<ItemConfig> getItemConfigs() {
@@ -247,6 +290,20 @@ public class ConfigManager {
         return itemConfigs.get(id == null ? null : id.toLowerCase());
     }
 
+    public boolean isWeaponItem(String id) {
+        ItemConfig itemConfig = getItemConfig(id);
+        return itemConfig != null && itemConfig.weaponClass().isWeapon();
+    }
+
+    public WeaponClass getWeaponClass(String id) {
+        ItemConfig itemConfig = getItemConfig(id);
+        return itemConfig == null ? WeaponClass.UNKNOWN : itemConfig.weaponClass();
+    }
+
+    public boolean isMaceItem(String id) {
+        return getWeaponClass(id) == WeaponClass.MACE;
+    }
+
     public PerformanceConfig getPerformanceConfig() {
         if (performanceConfig == null) {
             loadTypedConfigs();
@@ -267,6 +324,21 @@ public class ConfigManager {
     public float getPreforgeExplosionPower() { return (float) Math.max(0.0D, plugin.getConfig().getDouble("forge.preforge-explosion-power", 2.0D)); }
     public float getCompletionExplosionPower() { return (float) Math.max(0.0D, plugin.getConfig().getDouble("forge.completion-explosion-power", 4.0D)); }
     public float getForgeAbortExplosionPower() { return (float) Math.max(0.0D, plugin.getConfig().getDouble("forge.abort-explosion-power", 1.5D)); }
+    public int getRitualAltarTransformCost() { return Math.max(1, plugin.getConfig().getInt("ritual-altar.transform-cost", 1)); }
+    public double getRitualAltarWeaponFailChance() { return Math.max(0.0D, Math.min(1.0D, plugin.getConfig().getDouble("ritual-altar.weapon-fail-chance", 0.0D))); }
+    public int getRitualAltarTransformSeconds() { return Math.max(1, plugin.getConfig().getInt("ritual-altar.transform-seconds", 4)); }
+    public int getRitualAltarCraftSeconds() { return Math.max(1, plugin.getConfig().getInt("ritual-altar.ritual-core-table-craft-seconds", 10)); }
+    public long getRitualAltarCooldownMillis() { return Math.max(0L, plugin.getConfig().getLong("ritual-altar.table-cooldown-seconds", 3600L)) * 1000L; }
+    public boolean isRitualAltarSmokeEnabled() { return plugin.getConfig().getBoolean("ritual-altar.effects.smoke.enabled", true); }
+    public String getRitualAltarSmokeParticle() { return plugin.getConfig().getString("ritual-altar.effects.smoke.particle", "SMOKE"); }
+    public boolean isRitualAltarSoundEnabled() { return plugin.getConfig().getBoolean("ritual-altar.effects.sound.enabled", true); }
+    public String getRitualAltarTransformSound() { return plugin.getConfig().getString("ritual-altar.effects.sound.name", "BLOCK_ENCHANTMENT_TABLE_USE"); }
+    public boolean isRitualAltarLightningEnabled() { return plugin.getConfig().getBoolean("ritual-altar.effects.lightning", true); }
+    public float getRitualAltarFailExplosionPower() { return (float) Math.max(0.0D, plugin.getConfig().getDouble("ritual-altar.fail-explosion-power", 1.5D)); }
+    public int getRitualAltarCraftDamageMin() { return Math.max(0, plugin.getConfig().getInt("ritual-altar.craft-damage-min", 10)); }
+    public int getRitualAltarCraftDamageMax() { return Math.max(getRitualAltarCraftDamageMin(), plugin.getConfig().getInt("ritual-altar.craft-damage-max", 18)); }
+    public int getRitualAltarCraftFreezeSeconds() { return Math.max(0, plugin.getConfig().getInt("ritual-altar.craft-freeze-seconds", 5)); }
+    public float getRitualAltarBreakExplosionPower() { return (float) Math.max(0.0D, plugin.getConfig().getDouble("ritual-altar.break-explosion-power", 1.5D)); }
     public double getCoreFailureChance() { return Math.max(0.0D, Math.min(1.0D, plugin.getConfig().getDouble("forge.core-failure-chance", 0.30D))); }
     public long getCoreCraftLockoutSeconds() { return Math.max(1L, plugin.getConfig().getLong("forge.craft-lockout-seconds", 900L)); }
     public boolean isTimedForgeEnabled() { return plugin.getConfig().getBoolean("timed-forge.enabled", plugin.getConfig().getBoolean("netherite-forge.enabled", true)); }
@@ -444,6 +516,15 @@ public class ConfigManager {
         });
     }
 
+    public String getItemEffectString(String itemId, String path, String fallback) {
+        String normalizedPath = normalizeEffectPath(path);
+        return itemEffectStringCache.computeIfAbsent(itemEffectCacheKey(itemId, normalizedPath, fallback == null ? "" : fallback), ignored -> {
+            ItemConfig weaponConfig = getItemConfig(itemId);
+            ConfigurationSection effects = weaponConfig == null ? null : weaponConfig.effects();
+            return effects == null ? fallback : effects.getString(normalizedPath, fallback);
+        });
+    }
+
     private String itemEffectCacheKey(String itemId, String normalizedPath, String fallback) {
         String id = itemId == null ? "" : itemId;
         return (itemId == null ? -1 : id.length()) + ":" + id + ":" + normalizedPath.length() + ":" + normalizedPath + ":" + fallback;
@@ -453,6 +534,7 @@ public class ConfigManager {
         itemEffectBooleanCache.clear();
         itemEffectIntCache.clear();
         itemEffectDoubleCache.clear();
+        itemEffectStringCache.clear();
     }
 
     private String normalizeEffectPath(String path) {
@@ -502,9 +584,15 @@ public class ConfigManager {
     public boolean isStrictMode() { return plugin.getConfig().getBoolean("settings.strict-mode", false); }
     public boolean isVerboseLogging() { return plugin.getConfig().getBoolean("settings.verbose", false); }
     public boolean isStrictModeDrop() { return plugin.getConfig().getBoolean("settings.strict-mode-drop", false); }
+    public boolean isGraveCompatEnabled() { return plugin.getConfig().getBoolean("settings.grave-compat", true); }
     public boolean isPreventHopperPickup() { return plugin.getConfig().getBoolean("settings.prevent-hopper-pickup", true); }
     public boolean isGroundPickupRevealEnabled() { return plugin.getConfig().getBoolean("tracking.reveal-on-ground-pickup", true); }
     public int getTrackingDurationSeconds() { return Math.max(1, plugin.getConfig().getInt("tracking.duration-seconds", 300)); }
+    public boolean isAbilityHudEnabled() { return plugin.getConfig().getBoolean("ability-hud.enabled", true); }
+    public long getAbilityHudIntervalTicks() { return Math.max(1L, plugin.getConfig().getLong("ability-hud.interval-ticks", 10L)); }
+    public boolean isCarryViolationCountdownEnabled() { return plugin.getConfig().getBoolean("carry-limit.enabled", true); }
+    public int getCarryViolationCountdownSeconds() { return Math.max(1, plugin.getConfig().getInt("carry-limit.countdown-seconds", 3)); }
+    public float getCarryViolationExplosionPower() { return (float) Math.max(0.0D, plugin.getConfig().getDouble("carry-limit.explosion-power", 2.0D)); }
 
     public boolean isDiscordWebhookEnabled() {
         return getDiscordBoolean("enabled", "discord.enabled", false);
@@ -542,11 +630,28 @@ public class ConfigManager {
 
     public int getDiscordColor(String itemId) {
         String normalizedItemId = itemId == null ? "" : itemId.toLowerCase();
+        ConfigurationSection itemSection = getItemSection(normalizedItemId, "items." + normalizedItemId);
+        if (itemSection != null && itemSection.contains("discord.color", true)) {
+            return itemSection.getInt("discord.color");
+        }
         String path = "colors." + normalizedItemId;
         if (isDiscordConfigLoaded() && discordConfig.contains(path, true)) {
             return discordConfig.getInt(path);
         }
         return isDiscordConfigLoaded() ? discordConfig.getInt("colors.default", 9807270) : 9807270;
+    }
+
+    public boolean isDiscordItemNotificationEnabled(String itemId) {
+        String normalizedItemId = itemId == null ? "" : itemId.toLowerCase();
+        ConfigurationSection itemSection = getItemSection(normalizedItemId, "items." + normalizedItemId);
+        if (itemSection != null && itemSection.contains("discord.enabled", true)) {
+            return itemSection.getBoolean("discord.enabled");
+        }
+        String path = "items." + normalizedItemId + ".enabled";
+        if (isDiscordConfigLoaded() && discordConfig.contains(path, true)) {
+            return discordConfig.getBoolean(path);
+        }
+        return getDiscordBoolean("default-item-enabled", null, true);
     }
 
     private boolean getDiscordBoolean(String path, String legacyPath, boolean fallback) {
@@ -572,11 +677,10 @@ public class ConfigManager {
         return discordConfig != null;
     }
 
-    private void ensureBundledYamlCopied(String resourceDirectory) {
+    private void ensureBundledYamlCopied(String resourceDirectory, List<String> explicitResources) {
         File dir = new File(plugin.getDataFolder(), resourceDirectory);
         if (!dir.exists() && !dir.mkdirs()) plugin.getLogger().warning("Could not create config directory: " + dir.getPath());
-        List<String> explicit = ITEM_CONFIG_DIRECTORY.equals(resourceDirectory) ? ResourceBootstrap.ITEM_RESOURCES : List.of();
-        for (String resource : explicit) {
+        for (String resource : explicitResources) {
             ResourceBootstrap.ensure(plugin, resource);
         }
         for (String resource : bundledYamlResources(resourceDirectory)) {

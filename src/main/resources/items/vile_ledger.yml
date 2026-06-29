@@ -1,0 +1,10 @@
+enabled: true
+singleton: false
+name: "&5Vile Ledger of the Raid Captain"
+material: BOOK
+custom-model-data: 4007
+lore:
+  - "&7A raid captain's debt book, inked in souls."
+  - "&eObtain: &frare raid Evoker drop."
+recipe:
+  enabled: false

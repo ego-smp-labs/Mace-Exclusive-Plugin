@@ -42,6 +42,9 @@ public final class ExclusiveItemFactory {
             meta.addItemFlags(org.bukkit.inventory.ItemFlag.HIDE_ENCHANTS);
         }
         meta.getPersistentDataContainer().set(keys.itemId(), PersistentDataType.STRING, definition.id());
+        if (itemConfig != null) {
+            meta.getPersistentDataContainer().set(keys.weaponClass(), PersistentDataType.STRING, itemConfig.weaponClass().pdcValue());
+        }
         item.setItemMeta(meta);
         return item;
     }

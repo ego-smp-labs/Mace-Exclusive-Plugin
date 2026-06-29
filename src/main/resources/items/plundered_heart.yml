@@ -1,0 +1,11 @@
+enabled: true
+singleton: false
+name: "&aPlundered Heart"
+material: EMERALD
+custom-model-data: 4006
+lore:
+  - "&7Greed crystallized inside an Evoker's chest."
+  - "&eObtain: &f25% Evoker kill with axe."
+  - "&cCurse: &fCalls raids near villagers."
+recipe:
+  enabled: false

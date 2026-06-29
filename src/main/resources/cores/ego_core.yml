@@ -1,10 +1,11 @@
 enabled: true
-name: "&fEgo Core"
+name: "&aAvarice Ritual Core"
 material: HEAVY_CORE
 custom-model-data: 3001
 lore:
-  - "&7A self-aware core forged from netherite, wither roses, and a Heavy Core."
-  - "&cInstability: &fIts pride rejects easy growth and remains a future weapon-control hook."
+  - "&7Legacy Ego id now points to Avarice ritual power."
+  - "&eCompat: &fold ego_core recipes/items still load."
+  - "&cCurse: &fGreed rejects empty hands."
 recipe:
   enabled: true
   special-crafting-enabled: true

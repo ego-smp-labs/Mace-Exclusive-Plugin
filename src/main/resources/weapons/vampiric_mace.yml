@@ -1,15 +1,19 @@
-enabled: true
+﻿enabled: true
 singleton: true
-name: "&c&lMACE OF VAMPIRISM"
-material: MACE
+name: "&c&lVAMPIRIC SPEAR"
+material: NETHERITE_SPEAR
+weapon-class: SPEAR
 custom-model-data: 10002
+discord:
+  enabled: true
+  color: 15158332
 enchant-policy:
   mode: allowlist
   allowed:
     - MENDING
     - UNBREAKING
 lore:
-  - "&7A blood-bound mace that feeds through wounds but gnaws at its owner."
+  - "&7A blood-bound spear that feeds through wounds but gnaws at its owner."
   - "&eActive: &fSneak + Left-Click a target to siphon health and drain 1 temporary max-heart."
   - "&aPassive: &fMelee heals 12% of final damage, capped at 2 HP per hit; low HP increases damage."
   - "&cCurse: &fHolding/carrying reduces max health by 4 HP; missing a target deals 6 damage to you."
@@ -26,11 +30,11 @@ recipe:
     audience: player
     text: "&aYou forged %name%!"
   shape:
-    - "NHN"
-    - "BSB"
+    - "NSN"
+    - "BHB"
     - "NWN"
   ingredients:
-    H: blood_core
+    H: blood_ritual_core
     B: NETHERITE_INGOT
     W: NETHER_WART:16
     S: cursed_player_head
@@ -40,6 +44,18 @@ cooldowns:
 curse:
   max_health_penalty: 4.0
 effects:
+  hold:
+    enabled: true
+    particle: DAMAGE_INDICATOR
+    count: 5
+    offset-x: 0.25
+    offset-y: 0.2
+    offset-z: 0.25
+    extra: 0.01
+    sound: ENTITY_PLAYER_HURT
+    sound-volume: 0.08
+    sound-pitch: 0.6
+    interval-ticks: 20
   lifesteal:
     percent: 0.12
     max_heal: 2.0
@@ -54,6 +70,6 @@ effects:
       fall: 1.10
       projectile: 1.10
 messages:
-  skill-activated: "&c[Vampiric Mace] &fBlood Siphon activated."
-  skill-siphon: "&c[Vampiric Mace] &fBlood tethers coil from the target, restoring you while temporary max-health leases are tracked and cleaned up."
-  no-target: "&c[Vampiric Mace] Please look directly at a target to siphon blood!"
+  skill-activated: "&c[Vampiric Spear] &fBlood Siphon activated."
+  skill-siphon: "&c[Vampiric Spear] &fBlood tethers coil from the target, restoring you while temporary max-health leases are tracked and cleaned up."
+  no-target: "&c[Vampiric Spear] Please look directly at a target to siphon blood!"

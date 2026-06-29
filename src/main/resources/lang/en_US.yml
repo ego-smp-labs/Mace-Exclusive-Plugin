@@ -7,6 +7,13 @@ cooldown: "&cPlease wait &e%seconds%s &cbefore using this again."
 ability:
   activated: "&aSkill activated: &f%ability%"
   enchant-blocked: "&cThis weapon cannot receive &e%enchant%&c."
+  hud-ready: "&f%weapon% &7| &a%ability% READY"
+  hud-cooldown: "&f%weapon% &7| &e%seconds%s"
+
+carry-limit:
+  warning: "&cCarrying %count% exclusive weapons! Drop one in &e%seconds%s&c."
+  cancelled: "&aCarry limit stabilized."
+  punished: "&cThe artifacts reject being carried together!"
 
 mace:
   received: "&aYou have received %name%&a!"
@@ -80,20 +87,57 @@ timed-forge:
   failed: "&cTimed forging failed."
   collect-failed: "&cCould not collect the crafted item for timed forging."
 
+ritual-altar:
+  transform-start: "&7Smoke coils around the table. Hold the Ritual Core steady..."
+  transform-cancelled: "&cThe Ritual Crafting Table transform was cancelled safely."
+  transformed: "&aRitual Crafting Table created! The table accepts sacrifices."
+  open: "&7You open the Ritual Crafting Table."
+  craft-success: "&aRitual successful! The core resonates with power."
+  craft-fail: "&cThe ritual fails! Materials are consumed and a Ruined Core remains."
+  cooldown: "&cThis Ritual Crafting Table is cooling down."
+  use-table: "&cAncient cores and weapons must be crafted inside a Ritual Crafting Table."
+  no-core: "&cA core must be placed in the center slot!"
+  invalid-recipe: "&cThis recipe is not recognized by the altar."
+  broken: "&cThe Ritual Crafting Table shatters with a burst of arcane energy!"
+  returned: "&7Your materials have been returned."
+  crafting: "&cThe Ritual Crafting Table locks your ingredients and begins..."
+
 core:
+  received: "&aReceived core: &f%name%&a."
   take-one-at-a-time: "&cPlease take cores one at a time."
   craft-locked: "&cYou are locked out from crafting cores. (Cursed state active)"
   insufficient-xp: "&cNot enough XP to craft this core."
   craft-failed: "&8[Core Forge] Core shattered during infusion. Lockout applied. A Ruined Core remains."
+  craft-success: "&8[Core Forge] The core ritual succeeded."
   cannot-place: "&cYou cannot place custom cores on the ground!"
   ego-backfire: "&cThe Ego Core rejects your Y-altitude! You received %damage% hearts of damage."
   soulfire-burn: "&cThe Soulfire Core bursts into flames!"
+  blood-hunt-success: "&aYour Ritual Core has absorbed the blood of the fallen! A Blood Ritual Core materializes."
+  sculk-ritual-success: "&aThe Warden's death resonates through the Sculk! A Sculk Ritual Core materializes."
+  sculk-shard-drop: "&3The Warden left a Resonance Shard."
+  sculk-curse: "&3The Sculk Ritual Core drowns your senses in Darkness."
+  reaper-ritual-success: "&aThe Wither Skeleton's death claim has transformed your Ritual Core into a Reaper Ritual Core!"
+  reaper-ritual-fail: "&eThe Wither Skeleton's claim failed. Your Ritual Core remains intact."
 
 special:
   obsidian-chaos-drop: "&2[Mace-Exclusive] A shard of Obsidian Chaos has fallen from the explosion!"
   void-totem-blocked: "&d[Void Mace] The Abyss's power refuses and nullifies your Totem!"
   enderman-totem-blocked: "&d[Mace-Exclusive] The Enderman's challenge rejects your Totem. The Eye will fall with you."
   totem-dropped: "&d[Void Mace] The Abyss's power rejected your Totem's presence! It has fallen."
+  plundered-heart-drop: "&aAn Evoker's Plundered Heart fell from your axe strike."
+  plundered-heart-raid: "&2The Plundered Heart calls raiders to this village."
+  vile-ledger-drop: "&5A Vile Ledger of the Raid Captain drops from the raid Evoker."
+
+avarice:
+  stolen: "&6Tax Evade stole &f%item%&6. Rage: &e%rage%&6/5."
+  bounty: "&6Bounty Hunt marks &f%target%&6."
+  curse-paid: "&eAvarice consumes tribute."
+  curse-starved: "&cAvarice starves and bites its holder."
+
+soul-sever:
+  marked: "&9Soul Sever marked &f%target%&9 for 10s."
+  totem: "&9The mark reverses the Totem into soul damage."
+  heal-reversed: "&9Soul Sever reverses healing into pain."
 
 nether:
   cursed-head-forged: "&c[Mace-Exclusive] A dark soul force in the Nether has cursed the player head in your hand!"
@@ -102,8 +146,10 @@ help:
   header: "&8&m--------&r &bMace Exclusive &8&m--------"
   link: "&7Website: &b/sabicoder.xyz/"
   commands: "&7Commands: &b/macee <info|give|reset|reload> <weapon_name>"
-  item-usage: "&7Usage: &b/macee <give|reset|info> <item_id>"
+  item-usage: "&7Usage: &b/macee <give|reset|info> <item_id|core_id|all>"
   footer: "&8&m-----------------------------"
+
+give-all-complete: "&aGave &f%count% &aitems/cores. Skipped &f%skipped% &aalready-registered singleton items. Overflow was dropped at your feet."
 
 menu:
   overview-title: "&bMace Recipes"

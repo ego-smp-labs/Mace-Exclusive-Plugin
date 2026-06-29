@@ -64,11 +64,15 @@ All agents MUST set explicit timeouts for build/test commands.
   - up to 2 builds after fixes.
   - If still failing, stop and report logs.
 
-Windows PowerShell build command:
+Windows PowerShell build command (MUST use `--no-daemon` + `cmd /c` to prevent terminal hang):
 
 ```powershell
-if (Test-Path -LiteralPath ".\\gradlew.bat") { .\\gradlew.bat build } else { gradle build }
+cmd /c "gradle build --no-daemon"
 ```
+
+> **Why `--no-daemon` + `cmd /c`**: On Windows, the Gradle daemon keeps the console handle open after build completes, causing the terminal process to never exit. This makes agent tasks hang indefinitely even though the build succeeded. `--no-daemon` prevents the daemon from spawning; `cmd /c` ensures the cmd process exits immediately after the command finishes.
+>
+> **Note**: This project does NOT have a `gradlew.bat` wrapper. Use system `gradle` directly. If a `gradlew.bat` is added later, switch to `cmd /c ".\gradlew.bat build --no-daemon"`.
 
 When using shell tools, set `timeout: 120000`.
 
@@ -95,6 +99,9 @@ Archive docs under `docs/archive/` are historical references only.
 - After writing docs, only summarize the changed file paths and current status in chat.
 - Do not edit generated files under `build/resources/main`; edit source resources under `src/main/resources` and rebuild.
 - If a documented source file is missing (for example `docs/agent_phase3_prompt.md`), note the missing file in the active docs instead of silently ignoring it.
+- Treat `docs/plan.html` as the planning/idea source of truth. Use status tags (`Idea`, `Planned`, `In Progress`, `Done`) for planned work.
+- Treat root `wiki.html` as the released/done gameplay source of truth for players, developers, and future agents. Do not document unfinished mechanics there as final behavior.
+- When gameplay work becomes `Done`, sync the user-facing behavior into `wiki.html` and leave only a summary/link in `docs/plan.html`.
 
 ## Current gameplay scope override
 
@@ -103,4 +110,69 @@ Archive docs under `docs/archive/` are historical references only.
 - Custom skill feedback should use Action Bar on successful activation and rate-limited Action Bar cooldown feedback only when the player attempts to activate a skill on cooldown.
 - Holding a custom weapon should refresh configured glowing behavior from source config; pickup-from-ground reveal/tracking behavior remains config-driven.
 - Enchant restrictions are data-driven per weapon. Repair is allowed; adding disallowed enchantments must be blocked.
+- All special weapon/core recipes must keep the core in the center slot of the 3x3 layout.
+- Ritual Altar planning: a normal Crafting Table transforms into Ritual Altar when a sneaking player right-clicks it while holding Ritual Core. Lodestone Forge mechanics remain unchanged unless a ticket explicitly changes them.
+- Core naming convention: cores derived from Ritual Core must include "Ritual" in their display name (e.g., "Blood Ritual Core", "Sculk Ritual Core", "Echo Ritual Core", "Void Ritual Core", "Reaper Ritual Core"). Cores derived from Heavy Core (Ego, Soulfire, End) do not use the "Ritual" prefix.
+- Glitch Clock: player must hold a Clock and quit the game with no damage taken in the last 10 seconds. No HP threshold requirement. 20% success rate. On success, Clock is consumed and Glitch Clock is created.
+- Void Core ritual: throw Ritual Core + carry Challenger's Eye through End Portal. 50% → Void Ritual Core, 50% → both items lost (no return, no Ruined Core). This prevents infinite Ritual Core dupe.
+- All weapons must have 3 components: Active skill, Passive skill, and Curse. Glowing (Phát Sáng) is a universal curse shared by all ancient weapons and should NOT be documented as a per-weapon curse.
+- 6 Weapon Systems (Hệ): Kình (Kinetic), Vực (Abyssal), Huyết (Hemocraft), Âm (Sonic), Hồn (Soulbourn), Trọng (Gravitational). Each weapon belongs to exactly one system. See `docs/plan.html` section 19.1.
 - Build must pass before reporting implementation complete.
+
+## Material rules (1.21+)
+
+- **NETHERITE_SPEAR** is the correct Material for spear-class weapons in Minecraft 1.21+. It is a thrust-based weapon with attack-speed scaling, NOT a TRIDENT. Never use `Material.TRIDENT` for custom spears. Always use `Material.NETHERITE_SPEAR` and `weapon-class: SPEAR` in YAML. Future spear abilities should account for thrust mechanics (attack speed, sweep-free) rather than throw mechanics unless explicitly designed as a throw weapon.
+
+## Core naming convention
+
+- All cores derived from `ritual_core` MUST use id convention `<type>_ritual_core` (e.g., `blood_ritual_core`, `sculk_ritual_core`, `echo_ritual_core`, `void_ritual_core`, `reaper_ritual_core`, `avarice_ritual_core`). Display name MUST include "Ritual Core" (e.g., "Blood Ritual Core", "Sculk Ritual Core").
+- Cores derived from `HEAVY_CORE` directly (Ego, Soulfire, End) do NOT use the "Ritual" prefix or `_ritual_core` suffix.
+- `ruined_core` and `chaos_core` are special/disabled cores that do not follow either convention.
+
+## Mandatory execution workflow (all agents)
+
+When implementing a batch of tickets/tasks, agents MUST follow this pipeline in order. Do NOT skip steps or interleave them.
+
+### Phase 1 — Plan
+1. **Read all active docs** (`docs/plan.html`, `docs/implementation_tickets.html`, `docs/scratch_base_todo.html`, `docs/implementation_report.html`) before any code changes.
+2. **Draft the overall plan** for the entire batch of work (all tickets together), not one ticket at a time.
+3. **Update `docs/plan.html`** with the plan: status tags (`Planned`, `In Progress`, `Done`), ticket references, and any new decisions.
+4. **Review (duyệt)**: Present the plan to the user for approval before writing any production code. Wait for the user to confirm.
+
+### Phase 2 — Execute (one pass, no interruptions)
+5. **Implement ALL tickets in one pass.** Do not stop after each ticket to ask for review. Work through the entire batch sequentially.
+6. **Commit per ticket**: After finishing each ticket (code compiles, logic complete), make a git commit with a clear message. Do NOT wait for user approval between commits. The remaining tickets continue immediately.
+7. **If interrupted** (e.g., context limit, tool failure, user message): update `docs/plan.html` and `docs/implementation_report.html` with current progress (which tickets done, which pending), so the next agent/session can resume.
+
+### Phase 3 — Test & build (after ALL code is written)
+8. **Only after all tickets are coded**, run the build: `cmd /c "gradle build --no-daemon"` (timeout 120000ms).
+9. If there is a separate test suite or test agent configuration, run it. Otherwise, verify via build + static analysis.
+10. **Fix loop**: If build fails, read errors, fix, rebuild. Max 2 fix attempts. No need to re-review with user during fix loop — just fix and rebuild until green or until max attempts reached.
+11. If still failing after 2 fixes, stop and report logs.
+
+### Phase 4 — Docs sync (only after build passes)
+12. **Update `wiki_dev.html`** with final spec data (item id, CMD, PDC, recipe, status). This is the dev-facing source of truth and MUST reflect actual code state.
+13. **Update `wiki.html`** only for features that are fully implemented and build-passing. NEVER document planned/unimplemented mechanics in `wiki.html` as final behavior. If a feature is still Planned, leave its wiki section unchanged or add a visible "Planned" tag.
+14. Update `docs/implementation_report.html`, `docs/implementation_tickets.html`, `docs/scratch_base_todo.html` with final status.
+15. Update `docs/plan.html` status tags to `Done` for completed work.
+
+### Phase 5 — Notify & report
+16. **Only after all of the above is complete**, send a short completion notification to the user with:
+    - What was done (ticket list + status).
+    - Build result.
+    - Files changed (summary count, not full diff).
+    - Any remaining issues or deviations.
+17. Do NOT send partial reports mid-batch unless interrupted.
+
+### Summary of forbidden patterns
+- ❌ Implement one ticket → build → report → wait → implement next. (Too slow, breaks flow.)
+- ❌ Update `wiki.html` with planned mechanics before code passes build.
+- ❌ Ask for user approval between each ticket during Phase 2.
+- ❌ Build/test after each individual ticket instead of after the full batch.
+- ❌ Report "done" before Phase 4 (docs sync) is complete.
+
+### Summary of correct patterns
+- ✅ Plan all tickets → update plan.html → user reviews → code ALL tickets → build → fix → docs sync → report.
+- ✅ Commit per ticket during Phase 2, continue immediately.
+- ✅ wiki.html and wiki_dev.html updated only in Phase 4 after build passes.
+- ✅ If interrupted, write progress to plan.html + report so resumption is possible.

@@ -18,6 +18,6 @@ public record ParticleProfile(
             return;
         }
         World world = location.getWorld();
-        world.spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, extra);
+        SafeParticleSpawner.spawn(world, particle, location, count, offsetX, offsetY, offsetZ, extra);
     }
 }

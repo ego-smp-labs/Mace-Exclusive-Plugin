@@ -1,7 +1,7 @@
 enabled: false
 name: "&5Chaos Core"
 material: HEAVY_CORE
-custom-model-data: 3006
+custom-model-data: 3011
 lore:
   - "&7Historical disabled core; Chaos Mace now crafts directly from its ingredients."
   - "&cInstability: &fNo active recipe or registry requirement in Phase 3."

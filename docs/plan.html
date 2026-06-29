@@ -3,311 +3,195 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mace Exclusive — Master Wiki Plan</title>
+  <title>Mace Exclusive — Plan</title>
   <style>
-    :root{--bg:#0b0f19;--panel:#111827;--panel2:#0f172a;--line:#273244;--text:#e5e7eb;--muted:#94a3b8;--gold:#f59e0b;--purple:#a855f7;--red:#ef4444;--cyan:#06b6d4;--green:#10b981;--pink:#ec4899;--blue:#3b82f6;--gray:#64748b}
-    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;line-height:1.65}a{color:#93c5fd}.layout{display:grid;grid-template-columns:280px 1fr;min-height:100vh}.nav{position:sticky;top:0;height:100vh;overflow:auto;background:#0f172a;border-right:1px solid var(--line);padding:22px}.nav h1{font-size:1.05rem;margin:0 0 14px}.nav a{display:block;text-decoration:none;color:#cbd5e1;padding:7px 8px;border-radius:8px;font-size:.9rem}.nav a:hover{background:#1e293b;color:#fff}.content{max-width:1180px;padding:32px 42px}.hero{background:linear-gradient(135deg,rgba(168,85,247,.16),rgba(6,182,212,.08));border:1px solid var(--line);border-radius:18px;padding:26px;margin-bottom:22px}section{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;margin:22px 0}h1,h2,h3,h4{color:#fff;line-height:1.25}h2{border-bottom:1px solid var(--line);padding-bottom:8px;margin-top:0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}.card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px}.warn{border-left:4px solid var(--gold)}.danger{border-left:4px solid var(--red)}.ok{border-left:4px solid var(--green)}.tag{display:inline-block;border:1px solid #475569;border-radius:999px;padding:2px 8px;margin:2px;color:#cbd5e1;font-size:.82rem}code,pre{font-family:Consolas,monospace;background:#0b1220;border-radius:6px}code{padding:2px 5px}pre{padding:12px;overflow:auto;border:1px solid var(--line)}table{width:100%;border-collapse:collapse;margin:12px 0}td,th{border:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}th{background:#172033}.muted{color:var(--muted)}.recipe{white-space:pre;text-align:center;font-family:Consolas,monospace;font-size:1.05rem}.toc-note{font-size:.85rem;color:var(--muted);margin-top:12px}
+    :root{--bg:#0b0f19;--panel:#111827;--panel2:#0f172a;--line:#273244;--text:#e5e7eb;--muted:#94a3b8;--gold:#f59e0b;--red:#ef4444;--green:#10b981;--cyan:#06b6d4;--purple:#a855f7}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;line-height:1.65}.layout{display:grid;grid-template-columns:280px 1fr;min-height:100vh}.nav{position:sticky;top:0;height:100vh;overflow:auto;background:#0f172a;border-right:1px solid var(--line);padding:22px}.nav h1{font-size:1.05rem;margin:0 0 14px}.nav a{display:block;text-decoration:none;color:#cbd5e1;padding:7px 8px;border-radius:8px;font-size:.9rem}.nav a:hover{background:#1e293b;color:#fff}.content{max-width:1180px;padding:32px 42px}.hero{background:linear-gradient(135deg,rgba(168,85,247,.16),rgba(6,182,212,.08));border:1px solid var(--line);border-radius:18px;padding:26px;margin-bottom:22px}section{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;margin:22px 0}h1,h2,h3{color:#fff;line-height:1.25}h2{border-bottom:1px solid var(--line);padding-bottom:8px;margin-top:0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}.card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px}.tag{display:inline-block;border:1px solid #475569;border-radius:999px;padding:2px 8px;margin:2px;color:#cbd5e1;font-size:.82rem}.done{border-color:var(--green);color:#bbf7d0}.planned{border-color:var(--gold);color:#fde68a}.progress{border-color:var(--cyan);color:#a5f3fc}.risk{border-color:var(--red);color:#fecaca}.muted{color:var(--muted)}code,pre{font-family:Consolas,monospace;background:#0b1220;border-radius:6px}code{padding:2px 5px}pre{padding:12px;overflow:auto;border:1px solid var(--line)}table{width:100%;border-collapse:collapse;margin:12px 0}td,th{border:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}th{background:#172033}.note{border-left:4px solid var(--cyan)}.warn{border-left:4px solid var(--gold)}.danger{border-left:4px solid var(--red)}
   </style>
 </head>
 <body>
 <div class="layout">
-    <aside class="nav">
-      <h1>⚒ Mace Exclusive Wiki</h1>
-      <a href="#status">0. Trạng thái</a>
-      <a href="#vision">1. Tầm nhìn</a>
-      <a href="#scope">2. Scope Phase 3</a>
-      <a href="#architecture">3. Kiến trúc</a>
-      <a href="#identity">4. Item Identity</a>
-      <a href="#forge">5. Lodestone Forge</a>
-      <a href="#cores">6. Cores & Materials</a>
-      <a href="#input">7. Input chuẩn</a>
-      <a href="#balance">8. Luật cân bằng</a>
-      <a href="#weapons">9. Mace Wiki</a>
-      <a href="#particles">10. Particle/Sound</a>
-      <a href="#recipes">11. Recipe summary</a>
-      <a href="#qa">12. QA/Test Matrix</a>
-      <a href="#agent">13. Agent Rules</a>
-      <a href="#roadmap">14. Roadmap</a>
-      <a href="#phase3-updates">15. Update Phase 3</a>
-      <p class="toc-note">Root docs là bản hiện hành. Archive chỉ để tham khảo lịch sử.</p>
-    </aside>
+  <aside class="nav">
+    <h1>⚒ Plan</h1>
+    <a href="#doc-map">0. Docs Map</a>
+    <a href="#status">1. Status</a>
+    <a href="#rules">2. Hard Rules</a>
+    <a href="#systems">3. 6 Hệ</a>
+    <a href="#cores">4. Core Model</a>
+    <a href="#recipes">5. Recipe Corrections</a>
+    <a href="#weapons">6. Weapon Design</a>
+    <a href="#tickets">7. Ticket Roadmap</a>
+    <a href="#risks">8. Risks / Tests</a>
+  </aside>
   <main class="content">
     <div class="hero">
-      <h1>Mace Exclusive — Master Project Plan / Wiki</h1>
-      <p>Đây là tài liệu tổng thể của project: gameplay design, architecture, recipes, skills, curses, particles, tests và quy tắc giao việc cho agents. Không rút gọn thành notes ngắn. Agent phải xem file này như wiki nguồn sự thật.</p>
-      <p class="muted">Target: Java 21, Paper/Spigot, Minecraft/Paper 1.21.11+. Phase hiện tại: <strong>Mace-first</strong>.</p>
+      <h1>Mace Exclusive — Active Plan</h1>
+      <p>File này là nguồn ý tưởng/kế hoạch đang hoạt động. Nội dung gameplay đã phát hành cho người chơi nằm ở <a href="../wiki.html">wiki.html</a>. Việc triển khai chi tiết nằm ở <a href="implementation_tickets.html">implementation_tickets.html</a>; checklist ngắn nằm ở <a href="scratch_base_todo.html">scratch_base_todo.html</a>.</p>
+      <p><span class="tag done">Phase 4 cleanup batch T34+ done</span> <span class="tag done">P0 fixes mostly implemented</span> <span class="tag done">T32 Warden/Void swords implemented</span> <span class="tag done">T29 core ritual slice implemented</span> <span class="tag done">T24/T25/T26 UX polish implemented</span></p>
     </div>
 
-    <section id="status" class="warn">
-      <h2>0. Trạng thái hiện tại & cảnh báo đồng bộ</h2>
-      <ul>
-        <li>Phase 3/4 Integration: Kích hoạt hoàn toàn Spear gameplay (Warden Spear và Chronos Anchor Spear) song song cùng các vũ khí Mace.</li>
-        <li>Forge pipeline hiện hành: craft trực tiếp weapon final -> bàn chế tạo biến thành <code>LODESTONE</code> -> charge 3s -> nổ lần 1 -> forge 5 phút -> nổ lần 2 -> drop item.</li>
-        <li>Docs đã reset theo yêu cầu mới: active input = <strong>Sneak + Left Click</strong>, Chrono Core đổi thành End Core, bỏ Devourer/Phoenix/Aegis, gộp Gravity/Singularity.</li>
-        <li>Code đã đăng ký SpearProjectileService và SpearListener đầy đủ, tích hợp rèn các vũ khí giáo.</li>
-      </ul>
-      <p><strong>Liên kết docs:</strong> <a href="implementation_tickets.html">Implementation Tickets</a> · <a href="scratch_base_todo.html">Todo</a> · <a href="implementation_report.html">Report</a> · <a href="agent_phase3_prompt.md">Agent Prompt</a> · <a href="archive/README.md">Archive</a></p>
-    </section>
-
-
-    <section id="vision">
-      <h2>1. Tầm nhìn thiết kế</h2>
-      <p><strong>Mace Exclusive</strong> là plugin vũ khí độc quyền theo phong cách vanilla-plus. Mục tiêu không phải RPG hóa quá mức, mà tạo các vũ khí có cá tính mạnh, craft/ritual đáng nhớ, lời nguyền cân bằng, particle đẹp và code sạch.</p>
-      <h3>Nguyên tắc cốt lõi</h3>
-      <ul>
-        <li><strong>Vanilla-first:</strong> skill vẫn dựa trên Minecraft combat, potion, particles, sounds, attributes, cooldowns, events.</li>
-        <li><strong>Mỗi vũ khí có giá phải trả:</strong> sức mạnh càng “ảo” thì curse càng rõ, dễ hiểu và đúng theme.</li>
-        <li><strong>Không mất đồ/dupe:</strong> mọi hotbar shuffle, lock slot, forge session, singleton ownership phải có rollback/cleanup.</li>
-        <li><strong>OOP/SOLID:</strong> listener mỏng, service quản state, ability class giữ gameplay, effect profile giữ visual.</li>
-        <li><strong>Performance:</strong> particle có budget, task có TTL, không poll toàn server vô tội vạ.</li>
-      </ul>
-    </section>
-
-    <section id="scope">
-      <h2>2. Phase 3/4 Integration Scope</h2>
-      <div class="grid">
-        <div class="card ok"><h3>Trong scope</h3><ul><li>Power Mace</li><li>Void Mace</li><li>Chaos Mace</li><li>Vampiric Mace</li><li>Singularity Gravity Mace</li><li>Echoing Warden/Sonic Mace (Warden Spear)</li><li>Soulfire Pyre Mace</li><li>Warden Spear & Chronos Anchor Spear</li><li>Spear gameplay, projectile, and spear skills</li><li>End/Blood/Sculk/Soulfire/Ego/Ruined Cores; Chaos Core disabled historical only</li><li>Lodestone Forge</li><li>Particle/sound coverage cho mỗi Mace & Spear</li></ul></div>
-        <div class="card danger"><h3>Ngoài scope</h3><ul><li>Devourer Mace.</li><li>Phoenix Mace.</li><li>Aegis Mace.</li><li>Chrono Core ID cũ.</li><li>Dark Ego / egosmp namespace.</li></ul></div>
-      </div>
-      <h3>Trạng thái Spear</h3>
-      <p>Spear gameplay đã được kích hoạt hoàn toàn, register listener và service trong plugin main. Các config spear được dùng đầy đủ và hoạt động trong game.</p>
-    </section>
-
-
-    <section id="architecture">
-      <h2>3. Architecture Wiki</h2>
-      <table><thead><tr><th>Package</th><th>Vai trò</th><th>Rule</th></tr></thead><tbody>
-        <tr><td><code>item/</code></td><td>PDC keys, matcher, dynamic item registry, factory.</td><td>Không so lore/name để nhận diện item.</td></tr>
-        <tr><td><code>core/</code></td><td>CoreConfig, CoreRegistry, core craft, rituals, special material listeners.</td><td>Core identity bằng <code>core_id</code>.</td></tr>
-        <tr><td><code>recipe/</code></td><td>Register shaped recipes, exact custom ingredients, direct forge trigger.</td><td>Custom ingredients dùng ExactChoice/PDC.</td></tr>
-        <tr><td><code>forge/</code></td><td>Lodestone forge sessions, charge, hologram, explosions, drop final weapon.</td><td>Transaction-safe, rollback nếu commit fail.</td></tr>
-        <tr><td><code>ability/</code></td><td>Active/passive mace mechanics.</td><td>Mỗi ability class riêng, không nhét vào listener.</td></tr>
-        <tr><td><code>curse/</code></td><td>Curse state, attribute leases, water/inventory curses.</td><td>Không stack modifiers, cleanup on quit/death/drop.</td></tr>
-        <tr><td><code>effect/</code></td><td>Particle/sound/freeze profiles.</td><td>Particle budget + TTL cleanup.</td></tr>
-        <tr><td><code>mace/</code></td><td>Ownership/singleton repository.</td><td>Không resurrect legacy enum/factory.</td></tr>
+    <section id="doc-map" class="note">
+      <h2>0. Docs Map — 3 file dùng thế nào</h2>
+      <table><thead><tr><th>File</th><th>Vai trò</th><th>Không dùng để</th></tr></thead><tbody>
+        <tr><td><code>docs/plan.html</code></td><td>Thiết kế tổng quan, quyết định gameplay, rule đồng bộ.</td><td>Không ghi log triển khai dài.</td></tr>
+        <tr><td><code>docs/implementation_tickets.html</code></td><td>Ticket build-ready theo format Target/Goal/Files/Constraints/DoD/Risks/Tests.</td><td>Không nhồi toàn bộ lore/wiki.</td></tr>
+        <tr><td><code>docs/scratch_base_todo.html</code></td><td>Checklist ngắn theo milestone để biết việc nào done/pending.</td><td>Không thay thế ticket chi tiết.</td></tr>
       </tbody></table>
-      <h3>Dependency direction</h3>
-      <pre>Listener -> Service -> Registry/Repository
-Ability -> Effect/Curse/Cooldown helpers
-RecipeRegistry -> Item/Core Registry -> ForgeService
-Main Plugin -> constructs dependencies via constructor injection</pre>
     </section>
 
-    <section id="identity">
-      <h2>4. Item Identity & Registry</h2>
+    <section id="status">
+      <h2>1. Status hiện tại</h2>
       <ul>
-        <li>Weapon PDC: <code>mace_exclusive:item_id</code></li>
-        <li>Core PDC: <code>mace_exclusive:core_id</code></li>
-        <li>Owner PDC where needed: <code>mace_exclusive:owner</code></li>
-        <li>Không dùng legacy <code>MaceType</code>, <code>MaceFactory</code>, <code>ExclusiveItemId</code>.</li>
-        <li>Không namespace <code>egosmp</code>.</li>
+        <li><span class="tag done">Done</span> T21/T22/T23 P0 fixes: safe particles, grave/hopper guard, Sneak+LeftClick target detection.</li>
+        <li><span class="tag done">Done</span> Glitch Clock rule updated in code: hold Clock, quit after no damage for 10s, 20% success, no HP threshold.</li>
+        <li><span class="tag done">Done</span> Recipe configs corrected so existing special weapon recipes put the core in the center slot.</li>
+        <li><span class="tag done">Done</span> Added Ritual/Echo/Void/Reaper core YAML definitions and Ritual-name display convention.</li>
+        <li><span class="tag done">Done</span> <code>/macee give all</code> and <code>/macee give &lt;core_id&gt;</code> admin flow added.</li>
+        <li><span class="tag done">Done</span> WeaponClass foundation added with YAML field + PDC metadata; forge/enchant/listener cleanup build passes.</li>
+        <li><span class="tag done">Done</span> Vampiric source config now presents as Vampiric Spear while preserving legacy <code>vampiric_mace</code> ID compatibility.</li>
+        <li><span class="tag done">Done</span> T32 originally added Warden Blade + Void Edge; T42 superseded Warden Blade with The Soul Sever Spear. Void Edge remains implemented.</li>
+        <li><span class="tag done">Done</span> T29 requested core ritual slice: Blood Nether hunt, Sculk Ritual Core input, Reaper death ritual, Ruined Core recycle recipe, lang/docs sync; build passes.</li>
+        <li><span class="tag done">Done</span> T24/T25/T26 UX polish: Action Bar HUD, carry-limit countdown boom with offhand scan, and YAML-driven hold effects; build passes.</li>
+        <li><span class="tag done">Done</span> T34+ resource layout, lang locale rename, Saves folder migration, and LuckPerms-friendly permissions.</li>
+        <li><span class="tag planned">Planned</span> Ritual Altar and final 40% forge fail.</li>
       </ul>
-      <h3>Dynamic configs</h3>
-      <p><code>items/*.yml</code> và <code>cores/*.yml</code> là nguồn data runtime. Thêm item/core mới nên ưu tiên config trước, code chỉ cần ability class nếu có gameplay riêng.</p>
     </section>
 
-    <section id="forge">
-      <h2>5. Lodestone Forge Pipeline</h2>
-      <pre>Player lấy craft result
-  -> validate recipe/item_id/owner/session
-  -> atomic reserve item_id
-  -> transform Crafting Table thành LODESTONE
-  -> create ForgeSession + save store + hologram
-  -> consume ingredients
-  -> charge 3s + themed particles
-  -> explosion stage 1
-  -> countdown 5 phút
-  -> explosion stage 2
-  -> drop final weapon + register owner</pre>
-      <h3>Config skeleton</h3>
-      <pre>forge:
-  block: LODESTONE
-  duration-seconds: 300
-  preforge-charge-seconds: 3
-  preforge-explosion-power: 2.0
-  completion-explosion-power: 4.0
-  abort-explosion-power: 1.5
-  require-owner-online-to-progress: false
-  release-reservation-on-abort: false</pre>
-      <h3>Charge visual</h3>
+    <section id="rules" class="warn">
+      <h2>2. Hard gameplay rules</h2>
       <ul>
-        <li><strong>Default Mace:</strong> ring particle bán kính 2.5 → 0.4 bay vào tâm trong 3s, rồi <code>FLASH</code>/<code>EXPLOSION_EMITTER</code>.</li>
-        <li><strong>Themed override:</strong> Power vàng, Chaos tím portal, Blood đỏ, Void reverse portal, Gravity ash/black, Sonic cyan, Soulfire xanh linh hồn.</li>
+        <li>Active input = <strong>Sneak + Left Click</strong> only.</li>
+        <li>Mỗi vũ khí cổ truyền phải có đủ <strong>Active</strong>, <strong>Passive</strong>, <strong>Curse</strong>.</li>
+        <li><strong>Glowing</strong> là lời nguyền chung khi cầm mọi vũ khí cổ truyền; không ghi lặp lại thành curse riêng từng món.</li>
+        <li>Core phải nằm ở ô giữa 3x3 trong mọi recipe weapon/core.</li>
+        <li>Core sinh từ Ritual Core phải có chữ <strong>Ritual Core</strong> trong display name: Blood/Sculk/Echo/Void/Reaper Ritual Core.</li>
+        <li>Void Ritual Core fail qua End Portal = mất Ritual Core + Challenger's Eye vĩnh viễn, không trả Ruined Core.</li>
+        <li>Ritual Core không rơi từ Pillager/Evoker. Evoker-related items dùng cho sword/exclusive weapon recipes, không phải nguồn Ritual Core.</li>
       </ul>
-      <h3>Anti abuse</h3>
-      <ul>
-        <li>Hai player craft cùng tick: chỉ một reservation thắng.</li>
-        <li>Shift-click / number-key / double-click bị cancel nếu chưa hỗ trợ multi-craft chính xác.</li>
-        <li>Nếu session commit fail: rollback block, inventory, hologram, task, reservation.</li>
-        <li>Restart ở charge/countdown/completion không duplicate drop.</li>
-      </ul>
+    </section>
+
+    <section id="systems">
+      <h2>3. 6 Hệ Vũ Khí</h2>
+      <table><thead><tr><th>Hệ</th><th>English</th><th>Theme</th><th>Weapons</th></tr></thead><tbody>
+        <tr><td>Kình</td><td>Kinetic</td><td>Động lượng, bão lực, hất tung.</td><td>Power Mace</td></tr>
+        <tr><td>Vực</td><td>Abyssal</td><td>Hư vô, dịch chuyển, bóp méo thực tại.</td><td>Void Mace, Chaos Mace, Void Edge</td></tr>
+        <tr><td>Huyết</td><td>Hemocraft</td><td>Máu, hiến tế, ký sinh sinh lực.</td><td>Vampiric Spear</td></tr>
+        <tr><td>Âm</td><td>Sonic</td><td>Sculk, Warden, sóng âm sâu thẳm.</td><td>Warden Spear</td></tr>
+        <tr><td>Hồn</td><td>Soulbourn</td><td>Lửa hồn, linh hồn, lời nguyền.</td><td>Soulfire Mace, Cursed Sword</td></tr>
+        <tr><td>Trọng</td><td>Gravitational</td><td>Trọng lực, lỗ đen, neo thời gian.</td><td>Gravity Mace, Chronos Anchor Spear</td></tr>
+      </tbody></table>
     </section>
 
     <section id="cores">
-      <h2>6. Cores & Special Materials</h2>
+      <h2>4. Core Model</h2>
       <div class="grid">
-        <div class="card"><h3>Ego Core</h3><p><span class="tag">ego_core</span></p><p>Core bản ngã dùng cho một số weapon/control theme.</p><pre class="recipe">N R N
-R H R
-N R N</pre><p>N=Netherite Ingot, R=Wither Rose, H=Heavy Core. Cost gợi ý: 40 XP. Curse inventory: không nhặt XP orb, nhận thêm damage từ người yếu hơn max HP.</p></div>
-        <div class="card"><h3>Soulfire Core</h3><p><span class="tag">soulfire_core</span></p><pre class="recipe">L M L
-M H M
-L M L</pre><p>L=Soul Lantern, M=Magma Block, H=Heavy Core. Curse: tự cháy soul fire ngẫu nhiên, fire resistance giảm hiệu quả.</p></div>
-        <div class="card"><h3>Blood Core</h3><p><span class="tag">blood_core</span></p><p>Nghi thức hiến tế Nether: Cầm Netherite Sword trên tay chính click chuột phải vào Piglin/Piglin Brute/Player đứng gần khối Heavy Core (trong 6 block) được đặt trên thảm cỏ đỏ Crimson Nylium ở Nether. Instability: mỗi 10s trong inventory có 10% cơ hội gây 2 damage (1 tim) xuyên giáp.</p></div>
-        <div class="card"><h3>Sculk Core</h3><p><span class="tag">sculk_core</span></p><p>Warden chết gần Heavy Core (trong vòng 5 block) được đặt trên khối Sculk Catalyst. Instability: khi cầm main/offhand, mỗi 10s có 19% nhận Darkness/Blindness trong 29s.</p></div>
-        <div class="card"><h3>End Core</h3><p><span class="tag">end_core</span></p><p>Ném Heavy Core qua cổng End Portal hoạt động: 20% thành End Core, 80% thành Ruined Core. Instability: khi ở inventory, mỗi 60s có 10% teleport ngẫu nhiên tới vị trí an toàn lân cận.</p></div>
-        <div class="card"><h3>Chaos Core</h3><p><span class="tag">chaos_core</span></p><p>Disabled historical data only. Không có active item/core/recipe requirement trong Phase 3; Chaos Mace craft trực tiếp từ Void Mace + Blood Core + Wither Rose + 6 Obsidian Chaos.</p></div>
-        <div class="card"><h3>Ruined Core</h3><p><span class="tag">ruined_core</span></p><p>Fail craft/ritual. Không có recycle recipe active và không dùng làm weapon trực tiếp.</p></div>
-        <div class="card"><h3>Obsidian Chaos</h3><p><span class="tag">obsidian_chaos</span></p><p>Creeper nổ khi wielder cầm Obsidian: 5% success, consume 1 obsidian khi success, drop Obsidian Chaos tại death location và wielder phải chết. Visual: obsidian vỡ + portal smoke.</p></div>
-        <div class="card"><h3>Challenger's Eye</h3><p><span class="tag">challenger_eye</span></p><p>Chỉ drop khi fatal damager thực sự là Enderman và Totem proc path xảy ra; Totem bị từ chối để player thật sự chết, Eye nằm trong death drops/location. Visual: reverse portal quanh mắt.</p></div>
+        <div class="card"><h3>Heavy Core branch</h3><p>Ego Core, Soulfire Core, End Core. Không dùng chữ Ritual trong tên.</p></div>
+        <div class="card"><h3>Ritual Core branch</h3><p>Blood Ritual Core, Sculk Ritual Core, Echo Ritual Core, Void Ritual Core, Reaper Ritual Core.</p></div>
+        <div class="card"><h3>Ruined Core</h3><p>Nhận từ weapon forge fail 40%. Recycle về Ritual Core bằng 8 obsidian + Ruined Core ở giữa.</p></div>
       </div>
+      <table><thead><tr><th>Core</th><th>Origin</th><th>Use</th><th>Status</th></tr></thead><tbody>
+        <tr><td>Ritual Core</td><td>8 Obsidian + Netherite Ingot giữa</td><td>Base spear/sword cores</td><td><span class="tag done">YAML added</span></td></tr>
+        <tr><td>Echo Ritual Core</td><td>Glitch Clock + Ritual Core giữa</td><td>Chronos Anchor Spear</td><td><span class="tag done">YAML added</span></td></tr>
+        <tr><td>Void Ritual Core</td><td>Ritual Core + Challenger's Eye qua End Portal; fail mất cả hai</td><td>Void Edge / Chaos</td><td><span class="tag done">Ritual code added</span></td></tr>
+        <tr><td>Reaper Ritual Core</td><td>Ritual Core in hand + Nether Wither Skeleton death ritual, 20%</td><td>Soul Sever Spear</td><td><span class="tag done">Done</span></td></tr>
+        <tr><td>Blood/Sculk Ritual Core</td><td>Blood: Nether hostile hunt 5%; Sculk: Ritual Core on Sculk Catalyst + Warden death</td><td>Vampiric/Warden/Gravity/Chaos</td><td><span class="tag done">Done</span></td></tr>
+        <tr><td>Ruined Core recycle</td><td>8 Obsidian + Ruined Core center</td><td>Ritual Core recovery</td><td><span class="tag done">Done</span></td></tr>
+      </tbody></table>
     </section>
 
-    <section id="input">
-      <h2>7. Input chuẩn cho Active Ability</h2>
-      <ul>
-        <li>Active Mace = <strong>Sneak + Left Click</strong>.</li>
-        <li>Handle <code>LEFT_CLICK_AIR</code>, <code>LEFT_CLICK_BLOCK</code>, và sneak attack entity.</li>
-        <li>Right Click không cast active.</li>
-        <li>Nếu cast thành công trong entity hit: cancel damage thường.</li>
-        <li>Nếu cooldown/điều kiện fail: không cancel hit thường.</li>
-      </ul>
-    </section>
-
-    <section id="balance">
-      <h2>8. Balance Rules</h2>
-      <table><thead><tr><th>Loại</th><th>Mức gợi ý</th></tr></thead><tbody>
-        <tr><td>Single-target active damage</td><td>8-16 damage, hoặc self-cost/cooldown cao nếu true damage.</td></tr>
-        <tr><td>AoE damage</td><td>4-10 mỗi mục tiêu, cap tổng.</td></tr>
-        <tr><td>Hard CC/freeze</td><td>1-3s bình thường, 5s chỉ khi chance/cooldown cao.</td></tr>
-        <tr><td>Lifesteal</td><td>8-18% damage, cap per hit.</td></tr>
-        <tr><td>Major cooldown</td><td>5-10 phút cho resurrection/rage mạnh.</td></tr>
-        <tr><td>Curse</td><td>Phải gắn theme và có thể hiểu bằng lore ngắn.</td></tr>
+    <section id="recipes">
+      <h2>5. Recipe Corrections</h2>
+      <p>Source YAML recipes now put their core in center for existing special weapons.</p>
+      <table><thead><tr><th>Item</th><th>Correct center core</th><th>Shape</th></tr></thead><tbody>
+        <tr><td>Power Mace</td><td>Heavy Core</td><td><code> B / H / N </code></td></tr>
+        <tr><td>Void Mace</td><td>End Core</td><td><code>AWA / HEH / ACA</code></td></tr>
+        <tr><td>Chaos Mace</td><td>Void Ritual Core</td><td><code>OBO / HVH / OWO</code></td></tr>
+        <tr><td>Soulfire Mace</td><td>Soulfire Core</td><td><code>FBF / GCS / FNF</code></td></tr>
+        <tr><td>Vampiric</td><td>Blood Ritual Core</td><td><code>NSN / BHB / NWN</code></td></tr>
+        <tr><td>Chronos Anchor Spear</td><td>Echo Ritual Core</td><td><code>GBG / DED / GSG</code></td></tr>
+        <tr><td>Void Edge</td><td>Void Ritual Core</td><td><code> C / TVT / S </code> (planned sword item)</td></tr>
       </tbody></table>
     </section>
 
     <section id="weapons">
-      <h2>9. Mace Wiki — Phase 3 Roster</h2>
-
-      <section class="card" id="power_mace"><h3>9.1 Power Mace — Búa Quyền Năng</h3><p><span class="tag">ID: power_mace</span><span class="tag">Entry</span></p><p><strong>Recipe:</strong> 1 Heavy Core + 1 Breeze Rod + 1 Netherite Ingot.</p><pre class="recipe">- H -
-- B -
-- N -</pre><p><strong>Active — Power Strike:</strong> Sneak+LeftClick chỉ thành công khi thật sự đánh trúng entity. Hit hợp lệ gây impact damage theo config, cấp +5% movement speed trong 10s bằng modifier có key riêng để không stack vô hạn, rồi roll 10% tạo vụ nổ lực bán kính 10 block hất mob/entity lên cao; click block hoặc đánh hụt không kích hoạt.</p><p><strong>Passive:</strong> các đòn rơi cao vẫn tích Stored Momentum, tăng sát thương/knockback theo độ rơi trong giới hạn config; passive chạy trên hit thường, không cần active.</p><p><strong>Curse:</strong> nếu Sneak+LeftClick vào không khí hoặc block mà không trúng entity, người dùng bị Slowness 60s như cú vung búa kéo ngược cơ thể.</p><p><strong>Animation/Particles:</strong> khi hit, một vòng nứt vàng trắng mở từ chân target trong 6-10 tick; nếu proc 10%, các tia <code>CRIT</code>/<code>ELECTRIC_SPARK</code> bay từ mặt đất lên đầu mob, <code>EXPLOSION</code> chỉ là visual/sound không phá block, velocity đẩy theo vector xa tâm và Y mạnh; cleanup không tạo task dài.</p><p><strong>Lore chuẩn:</strong> 1) Giới thiệu búa quyền năng dồn lực vào cú đánh sạch. 2) Active: ngồi + đánh trúng entity để strike, 10% hất tung bán kính 10. 3) Passive: hit cho +5% speed 10s và rơi cao cộng Momentum. 4) Curse: đánh hụt/click block bị Slowness 60s.</p></section>
-
-      <section class="card" id="void_mace"><h3>9.2 Void Mace — Búa Vực Thẳm</h3><p><span class="tag">ID: void_mace</span><span class="tag">End Core</span></p><pre class="recipe">A E A
-H W H
-A C A</pre><p>E=End Core, A=Enchanted Golden Apple, W=Wither Rose, C=Challenger's Eye, H=Cursed Player Head.</p><p><strong>Active / Abyss Interaction:</strong> Void Mace không được cast từ right click. Khi đang ở Abyss State sau resurrection, các hit hợp lệ roll 50% gây Mind Detachment trong 5s: Darkness mạnh + freeze đứng yên qua FreezeService; không stack nếu target đang bị freeze.</p><p><strong>Passive — Devour Matter:</strong> mỗi melee hit roll 10% khóa đúng 2 hotbar slot của target trong 5s. Slot lock phải nhớ item gốc, không xóa/dupe, không cộng dồn nếu target đang bị lock.</p><p><strong>Emergency Passive — Resurrected from the Abyss:</strong> khi chịu sát thương chí mạng từ người (25% cơ hội) hoặc mob (5% cơ hội), cứu mạng wielder (hồi chiêu 10 phút), cấp 10 tim ảo và bật Abyss State 30s. Nếu xung quanh 10m có ai cầm Totem, tăng 50% cơ hội hồi sinh; nếu thành công hồi sinh, tất cả totem cầm trên tay của đối phương gần đó sẽ bị cưỡng ép kích nổ và tiêu hao.</p><p><strong>Curse:</strong> natural regen giảm 60%, healing nhận giảm 35%, food drain tăng 50%; nếu Void Mace ở inventory và player chạm nước thì Wither II 3s. Lời nguyền Vực Thẳm: Nếu mang búa trong người thì không thể giữ hoặc dùng Totem (tự động drop hết Totem ra đất và chặn hồi sinh bằng Totem).</p><p><strong>Animation/Particles:</strong> khi cầm, <code>REVERSE_PORTAL</code> bay từ ngoài vào đầu búa như lỗ hút; hotbar lock tạo khe tím mỏng trước mặt target rồi vỡ thành hạt <code>DRAGON_BREATH</code>; resurrection dùng totem particles tím xoáy từ chân lên đầu trong 20 tick kèm respawn-anchor âm trầm; Mind Detachment vẽ vòng tím tách khỏi đầu target rồi siết lại khi freeze hết.</p><p><strong>Lore chuẩn:</strong> 1) Búa vực thẳm ăn mòn vật chất và kéo chủ nhân khỏi ranh giới tử vong. 2) Active/Abyss: hit trong Abyss có thể tách tâm trí, gây Darkness + freeze. 3) Passive: 10% khóa 2 hotbar slot 5s và 5% resurrection có cooldown. 4) Curse: hồi phục yếu, đói nhanh, gặp nước bị Wither.</p></section>
-
-      <section class="card" id="chaos_mace"><h3>9.3 Chaos Mace — Búa Hỗn Loạn</h3><p><span class="tag">ID: chaos_mace</span><span class="tag">Late-game</span></p><pre class="recipe">O B O
-O W O
-O V O</pre><p>O=Obsidian Chaos, B=Blood Core, W=Wither Rose, V=Void Mace.</p><p><strong>Normal hit:</strong> hit thường có cơ hội theo config teleport target quanh vị trí cũ bán kính 2-4 block. Teleport phải tìm safe-location, không đưa vào lava/void/block kín; nếu không tìm được thì bỏ qua proc.</p><p><strong>Rage charge:</strong> cần 10 điểm nộ. Mob kill roll 20% +1; player kill luôn +1. Charge phải lưu theo UUID wielder, cleanup khi quit/death nếu implementation không persist.</p><p><strong>Active — Madness Release:</strong> Sneak+LeftClick khi đủ 10 nộ bật Rage State 2 phút, cooldown 5 phút, cấp 3 empowered hits. Mỗi empowered hit tiêu 1 stack, áp Chaos Effect 10s lên target và buff wielder “Kẻ Điên Loạn” 10s.</p><p><strong>Chaos Effect:</strong> hotbar shuffle mỗi 0.5s trong 10s, Slowness IV, Nausea, Wither. Shuffle phải hoán vị inventory hiện có trong hotbar, lưu snapshot/guard để không mất item; bản passive 1s chỉ shuffle một lần.</p><p><strong>Passive/Curse:</strong> khi đang cầm và bị damage, 10% wielder attacker dính Chaos 1s. Lần đầu cầm tự Chaos 10s; hết Rage mà không giết ai tự Chaos 30s; Chaos Mace ở inventory gặp nước gây Wither II 3s.</p><p><strong>Animation/Particles:</strong> hold aura dùng <code>PORTAL</code> và <code>REVERSE_PORTAL</code> đổi chiều mỗi nhịp; mỗi rage charge sinh rune tím từ xác mob bay về búa; active mở 3 fractal ring lệch góc quanh wielder, empowered hit nổ <code>DRAGON_BREATH</code> quanh đầu target, hotbar shuffle có shimmer tím chạy ngang 9 slot; sound dùng dragon growl/wither spawn nhỏ để không quá ồn.</p><p><strong>Lore chuẩn:</strong> 1) Búa hỗn loạn late-game được rèn trực tiếp từ Void Mace và vật liệu hỗn mang. 2) Active: đủ 10 nộ, ngồi + đánh để bật Madness 2 phút/3 hit. 3) Passive: kill tích nộ, hit/counter làm méo vị trí và hotbar địch. 4) Curse: lần đầu cầm, rage thất bại hoặc gặp nước đều phản phệ Chaos/Wither.</p></section>
-
-      <section class="card" id="vampiric_mace"><h3>9.4 Vampiric Mace — Búa Huyết Ma</h3><p><span class="tag">ID: vampiric_mace</span></p><pre class="recipe">N H N
-B S B
-N W N</pre><p>H=Blood Core, B=Netherite Ingot, W=Nether Wart, S=Cursed Player Head, N=Magma Block.</p><p><strong>Active — Blood Siphon:</strong> Sneak+LeftClick chỉ thành công khi target entity hợp lệ trong tầm nhìn/hit. Gây siphon damage theo config, hồi wielder tức thời, và nếu target là player thì giảm tạm 1 tim max HP bằng AttributeModifier key riêng trong 90s; wielder nhận max-health/heal benefit tương ứng (tối đa 4 HP tăng thêm), cooldown 75s.</p><p><strong>Passive:</strong> melee thường hồi 12% wielder final damage, cap 2 HP/hit; khi wielder dưới 30% HP, hit được tăng damage theo config.</p><p><strong>Curse:</strong> khi cầm/carry theo hệ CurseService, wielder bị -4 HP max health bằng lease không stack. Nếu Sneak+LeftClick hụt entity hoặc click block, wielder nhận 6 damage tạm thời; tuyệt đối không trừ max HP vĩnh viễn. Wielder chịu thêm +10% sát thương từ lửa, fall, và projectile.</p><p><strong>Cleanup/compat:</strong> mọi max-health drain phải dùng NamespacedKey riêng, TTL scheduler, cleanup on expiry/death/quit/drop/switch.</p><p><strong>Animation/Particles:</strong> passive spawn <code>DAMAGE_INDICATOR</code> giọt nhỏ tại vết đánh; active tạo 3 vòng máu đỏ co vào ngực target rồi kéo thành dây hạt đỏ sang wielder trong 12-20 tick; target bị drain có pulse đỏ quanh tim, wielder có pulse hồi máu đỏ sẫm; sound phantom bite/wither hurt pitch thấp.</p><p><strong>Lore chuẩn:</strong> 1) Búa huyết ma hút sinh lực qua vết thương nhưng gặm máu chủ. 2) Active: ngồi + đánh trúng để siphon máu và rút tạm 1 tim max HP của player target. 3) Passive: lifesteal theo damage, cap hồi mỗi hit. 4) Curse: cầm bị -4 HP max health, đánh hụt bị 6 damage.</p></section>
-
-      <section class="card" id="gravity_mace"><h3>9.5 Singularity Gravity Mace — Búa Trọng Lực Kỳ Dị</h3><p><span class="tag">ID: gravity_mace</span><span class="tag">Gravity + Singularity merged</span><span class="tag">2026-06-16 balance update</span></p><pre class="recipe">C O C
-S E S
-N R N</pre><p>E=End Core, S=Sculk Core, N=Netherite Ingot, R=Breeze Rod, C=Obsidian Chaos, O=Obsidian.</p><p><strong>Active — Singularity Well:</strong> Sneak+LeftClick tạo hố trọng lực tại block/entity nhìn tối đa 10 block. Trong 3s đầu, mọi LivingEntity bán kính 8 bị kéo về tâm và nhận Slowness III; khi collapse tạo vụ nổ visual/knockback nhẹ. Nếu hút được <strong>N</strong> entity hợp lệ (mob + player, trừ caster), caster nhận <strong>N tim vàng/absorption hearts</strong> (tức 2N absorption HP), có cap config để tránh vượt cân bằng. Ví dụ hút 5 entity = +5 tim vàng.</p><p><strong>Backfire:</strong> Nếu active không hút được entity nào, caster nhận đúng <strong>3 damage HP</strong> (1.5 tim, không phải 3 tim), bị Mining Fatigue/đào chậm theo config và skill bị break: cooldown bị ép lên <strong>5 phút</strong>.</p><p><strong>Overload:</strong> Nếu hút quá nhiều, mặc định <strong>trên 6 entity</strong>, caster nhận thêm Mining Fatigue/đào chậm theo config nhưng <strong>không mất máu</strong>.</p><p><strong>Passive:</strong> giảm fall damage 70% bằng damage cause FALL; melee hit kéo target nhẹ về phía caster để giữ nhịp combo (tầm kéo 2.5).</p><p><strong>Curse:</strong> khi cầm chịu Slowness I/áp lực nặng và hunger drain x2. Curse/backfire không được trừ máu ngoài case hút 0 entity đã mô tả.</p><p><strong>Animation/Particles:</strong> hold aura là <code>ASH</code> bay quỹ đạo thấp quanh chân và đầu búa; active spawn spiral <code>PORTAL</code>/<code>DRAGON_BREATH</code> từ rìa vào tâm theo bán kính giảm dần trong 60 tick; collapse có flash trắng tím, âm <code>BLOCK_RESPAWN_ANCHOR_DEPLETE</code>, rồi hạt bị hút tắt trong 5 tick. Task phải tự hủy sau collapse/owner offline/world unload.</p><p><strong>Lore chuẩn:</strong> 1) Búa trọng lực kỳ dị bẻ cong khối lượng quanh điểm nhìn. 2) Active: ngồi + đánh mở giếng 3s kéo mob/player, số mục tiêu hút được chuyển thành tim vàng. 3) Passive: giảm fall damage và kéo nhẹ target khi melee. 4) Curse/backfire: hút 0 mục tiêu mất 3 HP + đào chậm + cooldown 5 phút; hút trên 6 mục tiêu chỉ bị đào chậm.</p></section>
-
-      <section class="card" id="soulfire_mace"><h3>9.6 Soulfire Pyre Mace — Búa Hỏa Thiêu Hồn</h3><p><span class="tag">ID: soulfire_mace</span><span class="tag">2026-06-16 active aura + lava heal</span></p><pre class="recipe">F C F
-G B S
-F N F</pre><p>F=Soul Campfire, C=Soulfire Core, G=Ghast Tear, B=Breeze Rod, S=Zombie Head, N=Netherite Ingot.</p><p><strong>Active — Soulfire Aura:</strong> Sneak+LeftClick/hit activation bật trạng thái kỹ năng trong <strong>20s</strong>. Trong thời gian này tạo một vòng soul fire dưới đất bán kính <strong>10 block</strong> luôn đi theo người cầm búa. Bất cứ ai trong vòng (trừ caster) đều bị cháy/đốt theo config; caster đã có kháng lửa khi cầm búa nên không tự hại. Hết 20s thì tắt skill và bắt đầu/duy trì cooldown <strong>40s</strong>.</p><p><strong>Passive trong trạng thái skill — Lava Heal:</strong> Khi Soulfire Aura đang active, nếu caster đứng trong lava thì hồi máu theo tick/pulse config. Đây là passive có điều kiện theo trạng thái skill, không chạy ngoài thời gian active.</p><p><strong>Passive thường:</strong> khi cầm được miễn/giảm fire-lava damage; melee hit thường vẫn có thể đốt target bằng soul fire ngắn nếu config đang bật.</p><p><strong>Curse nước:</strong> chỉ cần <strong>mang búa trong inventory/offhand/main hand</strong> và đi xuống nước, lập tức nhận <strong>Poison II trong 3s</strong>. Scan phải bao gồm offhand; không yêu cầu đang cầm trên tay chính.</p><p><strong>Animation/Particles:</strong> hold effect là <code>SOUL_FIRE_FLAME</code> bám quanh đầu búa như lửa xanh nhỏ; active vẽ vòng soul flame bán kính 10 dưới chân caster mỗi pulse, có <code>SOUL</code> bay lên và campfire crackle nền rate-limited. Task phải dừng đúng sau 20s/offline/death và không leak.</p><p><strong>Lore chuẩn:</strong> 1) Búa hỏa thiêu hồn biến người cầm thành tâm vòng lửa xanh. 2) Active: ngồi + đánh bật vòng soul fire 10 block đi theo chủ 20s, cooldown 40s. 3) Passive trong skill: đứng trong lava sẽ hồi máu. 4) Curse: mang búa xuống nước bị Poison II 3s.</p></section>
-
-      <section class="card" id="sonic_spear"><h3>9.7 Warden Spear — Giáo Tiếng Vọng Warden</h3><p><span class="tag">ID: sonic_spear</span><span class="tag">2026-06-16 no self HP cost</span></p><pre class="recipe">G B G
-S C D
-G E G</pre><p>B=Netherite Spear, C=Sculk Core, E=Echo Shard x16, D=Diamond Block, S=Sculk Catalyst x16, G=Enchanted Golden Apple x4.</p><p><strong>Active — Sonic Boom:</strong> Sneak+LeftClick bắn beam theo hướng nhìn tối đa 12 block. Target đầu tiên trên ray nhận 14 true/config damage và knockback 2.0. <strong>Không còn trừ máu người dùng</strong>; xóa mọi HP cost/insufficient HP gate khỏi active này. Cooldown mặc định 35s.</p><p><strong>Passive:</strong> khi đứng trên/near Sculk nhận Speed I hoặc giảm nhiễu, đồng thời smash/falling hit cộng damage theo độ cao (+1.5 damage mỗi 4 block), cap +6 để giữ vanilla Mace feel.</p><p><strong>Curse:</strong> sau active dùng hiệu ứng <strong>Darkness</strong> của Warden thay cho Blindness, kèm Slowness II ngắn nếu config bật; khi cầm spear vẫn bị <strong>Glowing</strong>/lộ sáng định kỳ để kẻ địch dễ phát hiện.</p><p><strong>Kill proc:</strong> Khi người dùng Warden Spear giết player hoặc mob, có <strong>10%</strong> cơ hội spawn một cụm Sculk/Sculk Catalyst/Sculk Shrieker theme tại vị trí chết. Nếu spawn Warden từ cụm này/trigger liên quan, Warden đó không tấn công người dùng Warden Spear; ưu tiên tag/metadata owner UUID và cleanup an toàn.</p><p><strong>Animation/Particles:</strong> beam gồm các segment cách nhau 0.5 block, spawn <code>SONIC_BOOM</code>/<code>SCULK_SOUL</code> theo đường thẳng từ mắt wielder tới hit point trong 1-2 tick; trước khi bắn có vòng cyan nén vào đầu giáo, khi trúng target có ring cyan nén vào ngực rồi bật ra. Sound chính là Warden sonic boom, volume giới hạn để không spam.</p><p><strong>Lore chuẩn:</strong> 1) Giáo tiếng vọng Warden nén âm sâu thành đòn xuyên phá. 2) Active: ngồi + đánh bắn beam 12 block, 14 damage, không mất máu. 3) Passive: sculk hỗ trợ di chuyển và falling smash tăng damage; kill có 10% gieo cụm sculk/warden shrine. 4) Curse: phản âm gây Darkness/Slowness và làm chủ phát sáng.</p></section>
-
-      <section class="card" id="chronos_anchor_spear"><h3>9.8 Chronos Anchor Spear — Giáo Thời Gian Chronos</h3><p><span class="tag">ID: chronos_anchor_spear</span></p><pre class="recipe">G B G
-D S D
-G S G</pre><p>B=Netherite Spear, G=Đồng hồ Glitch x4, D=Diamond x16, S=Slime Ball x2 (mỗi ô).</p><p><strong>Active — Time Pin:</strong> Sneak+LeftClick bắn beam Time Pin đóng băng mục tiêu trong 2.25 giây (55s CD).</p><p><strong>Passive:</strong> none.</p><p><strong>Curse:</strong> ném trượt hoặc kích hoạt hụt tự đóng băng bản thân trong 1.25 giây. Không bị giảm máu tối đa.</p><p><strong>Animation/Particles:</strong> beam spawn <code>SNOWFLAKE</code>/<code>GLOW</code> theo đường thẳng từ mắt wielder tới hit point; khi trúng target có vòng băng xanh bao quanh trong 2.25s và tiếng <code>BLOCK_GLASS_BREAK</code>; wielder bị đóng băng có tiếng <code>BLOCK_POWDER_SNOW_BREAK</code> và phủ lớp tuyết.</p><p><strong>Lore chuẩn:</strong> 1) Giáo thời gian Chronos đóng băng chuyển động của mục tiêu. 2) Active: ngồi + đánh hướng nhìn bắn Time Pin đóng băng 2.25s. 3) Curse: ném trượt/active hụt tự đóng băng 1.25s. Không bị giảm máu tối đa.</p></section>
-
+      <h2>6. Weapon Design Notes</h2>
+      <div class="grid">
+        <div class="card"><h3>Void Edge</h3><p>No End Core. Recipe uses Void Ritual Core center + Challenger's Eye + Totem of Undying. Active Void Blink, Passive Void Phase, Curse no shield/-2 HP/void damage +50%.</p></div>
+        <div class="card"><h3>Chronos Anchor Spear</h3><p>Now depends on Echo Ritual Core. Passive Temporal Echo required.</p></div>
+        <div class="card"><h3>Vampiric Spear</h3><p>Source config now uses spear presentation and <code>weapon-class: SPEAR</code>; legacy <code>vampiric_mace</code> id is intentionally retained for compatibility.</p></div>
+        <div class="card"><h3>The Soul Sever Spear</h3><p>Supersedes Warden Blade. Passive-only anti-heal/totem reversal weapon with Soul Anchor curse.</p></div>
+      </div>
     </section>
 
-    <section id="particles">
-      <h2>10. Particle & Sound Profile Wiki</h2>
-      <table><thead><tr><th>Theme</th><th>Hold</th><th>Active</th><th>Backfire/Hit</th></tr></thead><tbody>
-        <tr><td>Power</td><td>Electric spark thưa quanh đầu búa.</td><td>RingBurst vàng trắng + crit cloud.</td><td>Smash miss: cloud nặng dưới chân.</td></tr>
-        <tr><td>Void</td><td>Reverse portal hút vào tâm.</td><td>Abyss resurrection totem tím + dragon breath.</td><td>Mind split: vòng tím tách khỏi đầu.</td></tr>
-        <tr><td>Chaos</td><td>Portal/reverse portal lật chiều.</td><td>Fractal rage ring 3 lớp.</td><td>Chaos: dragon breath + hotbar shimmer.</td></tr>
-        <tr><td>Blood</td><td>DAMAGE_INDICATOR drip.</td><td>Blood tether và 3 vòng máu.</td><td>Low HP proc: pulse đỏ.</td></tr>
-        <tr><td>Gravity</td><td>Ash orbit thấp.</td><td>Portal/dragon breath black hole spiral.</td><td>Collapse flash + anchor sound.</td></tr>
-        <tr><td>Sonic</td><td>Sculk soul cyan flicker.</td><td>Sonic beam segment 0.5 block.</td><td>Self blindness: cyan ring vỡ.</td></tr>
-        <tr><td>Soulfire</td><td>Soul flame quanh đầu búa.</td><td>Soulfire ring đi theo người dùng 20s.</td><td>Lava-heal pulse chỉ khi aura active.</td></tr>
-      </tbody></table>
-      <p>Implementation phải có particle budget, TTL cleanup và không spawn cho wielder quá xa.</p>
-    </section>
-
-    <section id="recipes">
-      <h2>11. Recipe Summary</h2>
-      <table><thead><tr><th>Item</th><th>Core/Gate</th><th>Ghi chú</th></tr></thead><tbody>
-        <tr><td>Power Mace</td><td>Heavy Core</td><td>Entry: Heavy Core + Breeze Rod + Netherite Ingot.</td></tr>
-        <tr><td>Void Mace</td><td>End Core</td><td>Enchanted Golden Apple x6 + Wither Rose + End Core + Challenger's Eye.</td></tr>
-        <tr><td>Chaos Core</td><td>Disabled</td><td>No active recipe/requirement in Phase 3.</td></tr>
-        <tr><td>Chaos Mace</td><td>Void Mace + Blood Core</td><td>Direct craft with 6 Obsidian Chaos + Wither Rose + Blood Core + Void Mace.</td></tr>
-        <tr><td>Vampiric Mace</td><td>Blood Core</td><td>Netherite Ingot x2 + Magma Block x64 (mỗi ô) + Nether Wart + Cursed Player Head + Blood Core.</td></tr>
-        <tr><td>Gravity Mace</td><td>End Core + Sculk Core</td><td>Merged Gravity/Singularity; expensive.</td></tr>
-        <tr><td>Soulfire Mace</td><td>Soulfire Core</td><td>Soulfire Core + Soul Campfire x4 + Ghast Tear + Breeze Rod + Zombie Head + Netherite Ingot. (Soulfire Core requires Magma Block x64 per slot).</td></tr>
-        <tr><td>Warden Spear (Sonic Spear)</td><td>Sculk Core</td><td>Echo/Warden theme. Recipe: GBG / SCD / GEG (Spear top-mid, Diamond Block, Sculk Catalyst x16, Echo Shard x16, Enchanted Golden Apple x4).</td></tr>
-        <tr><td>Chronos Anchor Spear</td><td>Glitch Clock</td><td>Time theme. Recipe: GBG / DSD / GSG (Spear top-mid, Glitch Clock x4, Diamond x16, Slime Ball x2).</td></tr>
+    <section id="tickets">
+      <h2>7. Ticket Roadmap</h2>
+      <p>Detailed implementation is in <a href="implementation_tickets.html">implementation_tickets.html</a>. Short checklist is in <a href="scratch_base_todo.html">scratch_base_todo.html</a>.</p>
+      <table><thead><tr><th>Ticket</th><th>Status</th><th>Notes</th></tr></thead><tbody>
+        <tr><td>T21 Particle safety</td><td><span class="tag done">Done</span></td><td>SafeParticleSpawner added.</td></tr>
+        <tr><td>T22 Grave/hopper guard</td><td><span class="tag done">Done</span></td><td>Grave compat + hopper/dropper guard.</td></tr>
+        <tr><td>T23 Skill target detection</td><td><span class="tag done">Done</span></td><td>Block click ray-traces target.</td></tr>
+        <tr><td>Recipe/Core cleanup</td><td><span class="tag done">Done</span></td><td>YAML/code/docs updated; build passes.</td></tr>
+        <tr><td>T27 Give all</td><td><span class="tag done">Done</span></td><td>Items + cores + overflow handling.</td></tr>
+        <tr><td>T30 Vampiric Spear</td><td><span class="tag done">Compat slice done</span></td><td>Spear presentation/class; legacy id retained.</td></tr>
+        <tr><td>T31 WeaponClass</td><td><span class="tag done">Foundation done</span></td><td>YAML/PDC/class-aware checks added.</td></tr>
+        <tr><td>T32/T42</td><td><span class="tag done">Done</span></td><td>Void Edge remains; Warden Blade was superseded by Soul Sever Spear in T42. Clean build has no generated warden_blade resource.</td></tr>
+        <tr><td>T29</td><td><span class="tag done">Requested slice done</span></td><td>Old Blood sacrifice replaced with Nether hostile kill ritual, Sculk input switched to Ritual Core, Reaper death ritual added, Ruined Core recycle recipe added, lang/docs synced, build passes. Echo altar craft/loot integration remain broader follow-ups.</td></tr>
+        <tr><td>T24/T25/T26</td><td><span class="tag done">Done</span></td><td>AbilityHudService ready/cooldown Action Bar, CarryViolationService 3s no-block-damage punishment flow, and per-weapon effects.hold particle/sound profiles completed; build passes.</td></tr>
+        <tr><td>T28/T33-T36</td><td><span class="tag planned">Planned</span></td><td>Ritual Altar, menu UX, restructure, balance, docs polish.</td></tr>
+        <tr><td>T34+</td><td><span class="tag done">Done</span></td><td>Resource folder restructure, lang folder rename to vi_VN/en_US, Saves folder for runtime data/logs, LuckPerms-compatible permission nodes; build passes.</td></tr>
+        <tr><td>T44</td><td><span class="tag done">Done</span></td><td>Discord webhook per-item enabled/color settings moved into weapon configs with discord.yml fallback; build passes.</td></tr>
       </tbody></table>
     </section>
 
-
-    <section id="qa">
-      <h2>12. QA/Test Matrix</h2>
-      <table><thead><tr><th>Nhóm</th><th>Test bắt buộc</th></tr></thead><tbody>
-        <tr><td>Build</td><td><code>gradle build</code> timeout 120s pass.</td></tr>
-        <tr><td>Docs sync</td><td>Grep no active <code>chrono_core|dark_ego|egosmp|devourer_mace|phoenix_mace|aegis_mace</code>.</td></tr>
-        <tr><td>Input</td><td>Right Click không cast; Sneak+LeftClick cast air/block/entity; entity cast không double damage.</td></tr>
-        <tr><td>Forge</td><td>Same tick craft, 1 tick delayed craft, shift-click, restart charge/countdown/completion, break Lodestone.</td></tr>
-        <tr><td>Chaos</td><td>Kill charge mob/player, rage 2 phút, 3 empowered hits, shuffle 0.5s, no-kill backfire, no item loss.</td></tr>
-        <tr><td>Void</td><td>Hotbar lock no stack, fatal resurrection 5%, cooldown 10 phút, Totem conflict, Mind Detachment cleanup.</td></tr>
-        <tr><td>Particles</td><td>Every wielder has hold/active/hit/backfire visual, no task leak with 5 wielder casting.</td></tr>
+    <section id="t34-plus-plan" class="warn">
+      <h2>10. T34+ Batch Plan — Resource Layout / Saves / Permissions</h2>
+      <p><span class="tag done">Done</span> Batch đã được triển khai và build pass.</p>
+      <table><thead><tr><th>Slice</th><th>Goal</th><th>Primary files</th><th>Definition of Done</th></tr></thead><tbody>
+        <tr><td>T34A Resource layout</td><td>Tách source resources thành <code>weapons/</code>, <code>cores/</code>, <code>items/</code>, <code>lang/</code>; giữ backward compatibility với layout cũ.</td><td><code>src/main/resources/**</code>, <code>ResourceBootstrap</code>, <code>ConfigManager</code>, <code>ItemRegistry</code>, <code>CoreRegistry</code></td><td>Clean install copy đúng layout mới; upgrade install vẫn load layout cũ và cảnh báo legacy.</td></tr>
+        <tr><td>T34B Language rename</td><td>Đổi lang files sang <code>lang/en_US.yml</code> và <code>lang/vi_VN.yml</code>; config language chấp nhận alias <code>en</code>/<code>vi</code> nhưng normalize sang locale mới.</td><td><code>config.yml</code>, <code>ConfigManager</code>, <code>ResourceBootstrap</code>, <code>lang/*.yml</code></td><td><code>settings.language: vi_VN</code> load tiếng Việt; <code>vi</code> vẫn hoạt động và log migration note.</td></tr>
+        <tr><td>T34C Saves folder</td><td>Chuyển runtime data/log player usage khỏi root data folder vào <code>Saves/</code>.</td><td><code>MaceRepository</code>, <code>ForgeSessionStore</code>, <code>RitualAltarStore</code>, optional usage log service</td><td><code>Saves/mace-data.yml</code>, <code>Saves/forge-sessions.yml</code>, <code>Saves/ritual_altars.yml</code>; migrate/copy old files if present.</td></tr>
+        <tr><td>T37 Permissions</td><td>Fix quyền để LuckPerms quản lý được: node rõ ràng, không hardcode chỉ <code>mace.admin</code>.</td><td><code>plugin.yml</code>, <code>MaceCommand</code>, menu/admin buttons</td><td>LuckPerms có thể cấp riêng: <code>maceexclusive.command.info</code>, <code>maceexclusive.command.give</code>, <code>maceexclusive.command.reload</code>, <code>maceexclusive.command.reset</code>, wildcard admin; tab-complete tôn trọng quyền.</td></tr>
       </tbody></table>
+      <p class="muted">Build gate: sau khi code toàn bộ batch, chạy <code>cmd /c "gradle build --no-daemon"</code> timeout 120000ms; fix tối đa 2 vòng. Chỉ sau build pass mới sync <code>wiki.html</code>/<code>wiki_dev.html</code>.</p>
     </section>
 
-    <section id="agent">
-      <h2>13. Agent Operating Rules</h2>
-      <ul>
-        <li>Read <code>AGENTS.md</code> before code changes.</li>
-        <li>Read root docs first; archive is historical.</li>
-        <li>Build/test commands must set timeout 120000ms.</li>
-        <li>No commits unless explicitly requested.</li>
-        <li>Architect delegates to backend/reviewer; backend codes; reviewer does not edit.</li>
-        <li>Every implementation report must include wielder changed, build result, grep checks, remaining risks.</li>
-      </ul>
+    <section id="t32-plan" class="note">
+      <h2>9. T32 Implementation Plan — Warden Blade + Void Edge</h2>
+      <p><span class="tag done">Done</span> Production-code sequence completed after approval.</p>
+      <ol>
+        <li>Add bundled item configs <code>items/warden_blade.yml</code> and <code>items/void_edge.yml</code>, both <code>NETHERITE_SWORD</code>, <code>weapon-class: SWORD</code>, singleton, allowlist Mending/Unbreaking, special crafting enabled, with center-slot cores (<code>reaper_core</code> and <code>void_core</code>).</li>
+        <li>Add <code>WardenBladeAbility</code> implementing Active + Passive + Listener: 180°/3-block Sonic Cleave using safe particles, Sculk damage multiplier, Darkness active curse, Slowness hold curse through lightweight listener/tick-style checks.</li>
+        <li>Add <code>VoidEdgeAbility</code> implementing Active + Passive + Listener: safe 8-block blink/backstab flag, 15% damage phase dodge, stationary invisibility cleanup, max-health hold curse via namespaced attribute modifier, shield-use block, and +50% void damage taken while holding.</li>
+        <li>Register both abilities/listeners in <code>AbilityService.registerDefaults()</code> and add requested miss curses in <code>applyMissCurse()</code>.</li>
+        <li>Add both YAML files to <code>ResourceBootstrap.ITEM_RESOURCES</code>, run <code>cmd /c "gradle build --no-daemon"</code> with 120000ms timeout, fix up to two attempts, then sync <code>wiki_dev.html</code>, <code>wiki.html</code>, tickets/todo/report status after green build.</li>
+      </ol>
+      <p class="muted">Note: <code>docs/agent_phase3_prompt.md</code> is referenced by AGENTS.md but is missing in this workspace; this was noted during T32 pre-read.</p>
     </section>
 
-    <section id="roadmap">
-      <h2>14. Roadmap</h2>
-      <h3>Phase 3A — Sync & Cleanup</h3><ul><li>Disable spear gameplay.</li><li>Remove old tokens/resources.</li><li>Build pass.</li></ul>
-      <h3>Phase 3B — Config/Lore/Recipe</h3><ul><li>7 wielder configs match this plan.</li><li>Exact custom recipes for cores/materials.</li></ul>
-      <h3>Phase 3C — Gameplay Mechanics</h3><ul><li>Chaos/Void deep mechanics.</li><li>Other wielder balance validation.</li></ul>
-      <h3>Phase 3D — Particle & QA</h3><ul><li>Full particle/sound profile coverage.</li><li>Forge wielder tests and hotbar safety tests.</li></ul>
-      <h3>Phase 4 — Spear</h3><ul><li>Only after Phase 3 Mace passes.</li><li>Re-enable spear gameplay intentionally with new docs.</li></ul>
+    <section id="core-crafting-rework-plan" class="warn">
+      <h2>11. Pending Plan — Core/Crafting/Lore/Weapon Rework</h2>
+      <p><span class="tag done">Done</span> Batch T38-T43 đã triển khai và <code>gradle clean build</code> pass. Vile Ledger dùng first-slice safe condition: Evoker death + nearby Ravager thay vì full max-raid boss API.</p>
+      <table><thead><tr><th>Slice</th><th>Decision / Requirement</th><th>Anti-dupe / balance notes</th></tr></thead><tbody>
+        <tr><td>Naming/lore cleanup</td><td>Mọi core chế từ <code>ritual_core</code> phải dùng tên <code>&lt;type&gt; Ritual Core</code>. Lore item/core/weapon ngắn: line 1 lore, line 2 cách lấy/craft, line 3 curse nếu có. Dùng ký hiệu/ngắt dòng, không viết dài.</td><td>Chỉ sửa source resources, không sửa <code>build/resources/main</code>. Clean build để generated resources không còn duplicate legacy.</td></tr>
+        <tr><td>Ritual Crafting Table</td><td>Đổi tên/design thành <strong>Ritual Crafting Table / Bàn Chế Tạo Hiến Tế</strong>. Sneak/right-click Crafting Table bằng Ritual Core: smoke 3-4s, sét đánh, rồi biến thành Ritual Crafting Table. Thêm YAML/config cho item/visual/effect/cooldown.</td><td>Transform atomic: chỉ consume Ritual Core khi transform thành công; cancel/break/disconnect không dupe core/table.</td></tr>
+        <tr><td>Ritual crafting timing/cooldown</td><td>Mọi core/weapon craft qua Ritual Crafting Table đều mất thời gian. Ritual Core: bàn thường = 8 Obsidian + Netherite Ingot; Ritual table = any mob head + 8 Obsidian, craft 10s. Sau craft core/weapon xong, table cooldown mặc định 1 giờ thay vì fail chance.</td><td>GUI khóa result/ingredients trong lúc craft; close/reload trả hoặc lưu trạng thái an toàn; chặn shift-click/number/offhand dupe.</td></tr>
+        <tr><td>Sculk Ritual Core rework</td><td>Thêm item mới rơi khi Warden chết tỉ lệ 10%. Công thức Sculk Ritual Core: 4 item mới quanh Ritual Core + 1 Echo Shard + block triệu hồi Warden (chốt Sculk Shrieker/Catalyst khi code). Curse: cầm trên tay 20% mỗi 20s bị Darkness, Action Bar notice.</td><td>Item mới dùng PDC, CMD unique, short lore. Curse tick thấp, action bar rate-limited.</td></tr>
+        <tr><td>Avarice Ritual Core</td><td>Đổi Ego Core thành <strong>Avarice Ritual Core</strong>. Item mới <strong>Plundered Heart / Trái Tim Cướp Bóc</strong> (emerald icon) rơi 25% khi giết Evoker bằng rìu. Mang item gần làng kích hoạt raid, item biến mất, player Weakness + Nausea 5 phút + thông báo. Recipe: Plundered Heart + Ritual Core + 8 Emerald Blocks → Avarice Ritual Core.</td><td>Village trigger one-shot consume item; chống spam raid bằng cooldown/consume-before-effect.</td></tr>
+        <tr><td>Avarice skill set</td><td>Passive Tax Evade: mỗi 30s, critical hit có 10% cướp 1 item random từ target inventory/hotbar; ưu tiên khoáng sản/arrows/food; với mob cướp item đang cầm. Active Bounty Hunt: tích đủ rage sau ≥5 món cướp, Shift+hit, CD 2 phút; summon 3-5 Pillager/Vindicator bóng ma đuổi target 2 phút có timer. Curse: mỗi 30s cầm kiếm tiêu Emerald/Gold Ingot; hết thì hút máu chuẩn và chặn hồi tự nhiên.</td><td>Không cướp custom singleton/ancient weapon/core trừ khi whitelist; không dupe item khi target chết/logout; summoned mobs cleanup.</td></tr>
+        <tr><td>Gravity Mace recipe</td><td>Sửa <code>gravity_mace.yml</code>: recipe cần 1 Heavy Core gốc + 1 Sculk Ritual Core.</td><td>Center-slot rule vẫn rõ; Sculk Ritual Core ở center, Heavy Core ở slot phụ.</td></tr>
+        <tr><td>Generated duplicate fix</td><td>Không được có cả <code>build/resources/main/items/warden_blade.yml</code> và <code>build/resources/main/weapons/warden_blade.yml</code> sau clean build. Source legacy item path phải xóa/di chuyển đúng.</td><td>Run clean build hoặc xóa stale generated resources trước verify.</td></tr>
+        <tr><td>The Soul Sever Spear</td><td>Thay Warden Blade concept bằng <strong>The Soul Sever Spear / Giáo Tách Hồn</strong>. Passive-only: hit 20% apply Soul Sever 10s; target healing/food/totem reverses into damage/hunger, soul particles under target, chat notice attacker. Totem target bị trigger nổ/reversal. Curse Soul Anchor: holder cannot jump; marked target hitting holder has 20% chance 50% damage heals target; marked target taking damage has 20% chance holder heals 50%.</td><td>No active skill vì quá mạnh. Remove no-jump on unequip; totem logic không double-fire/dupe.</td></tr>
+        <tr><td>Soul Sever recipe/drop item</td><td>New item <strong>Vile Ledger of the Raid Captain</strong>: rare drop from special Evoker boss riding Ravager during max-level Raid final wave. Soul Sever Spear recipe: Vile Ledger + Reaper Ritual Core + Sculk Block x64 + Soul Sand x64 in two slots.</td><td>Nếu boss encounter quá lớn, first slice tạo safe drop hook và mark boss as follow-up. Không cho normal Evoker farm dupe.</td></tr>
+      </tbody></table>
+      <p class="muted">Build verification: <code>cmd /c "gradle clean build --no-daemon"</code> successful. No generated <code>warden_blade.yml</code> remains after clean build.</p>
     </section>
 
-    <section id="phase3-updates">
-      <h2>15. Phase 3 Updates & Hotfixes</h2>
-      <h3>15.1 Kiếm Cổ Nguyền (Cursed Sword) & Trạng Thái Nguyền Rủa</h3>
+    <section id="risks" class="danger">
+      <h2>8. Risks / Tests</h2>
       <ul>
-        <li><strong>Vũ khí Cursed Sword (PDC: <code>item_id: cursed_sword</code>):</strong> Rèn từ Ruined Core + Netherite Ingot + Stick.</li>
-        <li><strong>Gameplay:</strong> Khi cận chiến đánh người chơi khác, có <strong>50% cơ hội</strong> truyền trạng thái nguyền rủa (Curse State) cho nạn nhân. Ngược lại (<strong>50% cơ hội</strong>), bản thân wielder sẽ nhận lời nguyền. Kiếm gãy lập tức sau 1 hit (durability = 1).</li>
-        <li><strong>Trạng thái nguyền rủa (Cursed State):</strong> Khi bị nguyền rủa, nếu người chơi bị giết sẽ có <strong>20% cơ hội</strong> rơi ra đầu người chơi (<code>PLAYER_HEAD</code>). Khi rơi đầu thành công, trạng thái nguyền rủa sẽ biến mất ngay lập tức.</li>
-      </ul>
-      <h3>15.2 Hệ thống Định Vị Cổ Vật (Mace Tracker BossBar)</h3>
-      <ul>
-        <li><strong>Cơ chế:</strong> Khi một vũ khí Mace độc quyền (Singleton) được rèn thành công, một thanh <strong>BossBar đếm ngược 5 phút</strong> sẽ xuất hiện cho toàn server để theo dõi vị trí của mace.</li>
-        <li><strong>Cập nhật vị trí:</strong> BossBar sẽ liên tục hiển thị tọa độ X, Y, Z và World của người chơi đang cầm mace (hoặc tọa độ của vật phẩm thực thể rơi trên đất).</li>
-      </ul>
-      <h3>15.3 Discord Webhook & Explosion Upgrades</h3>
-      <ul>
-        <li><strong>Discord Webhook:</strong> Gửi thông báo chi tiết, định dạng embed premium đẹp mắt về Discord khi có người chơi chế tạo thành công hoặc nhặt được các vũ khí Mace cổ vật.</li>
-        <li><strong>Bảo vệ Thùng Đồ (Strict Drop Explode):</strong> Nếu người chơi cố tình cất giấu mace vào hòm đồ, shulker box, dispenser... hoặc drop ra đất (chủ động hay bị động), một vụ nổ <strong>lực nổ 2.0F</strong> sẽ kích hoạt (phá khối, gây damage nhưng bảo vệ vật phẩm mace không bị phá hủy).</li>
-        <li><strong>Lò rèn hoàn tất (Lodestone Forge Upgrade):</strong> Khi đếm ngược nung búa hoàn tất, một tia sét đánh xuống trước, sau đó kích hoạt vụ nổ <strong>lực nổ 6.0F</strong> mạnh mẽ phá hủy khối xung quanh và tạo lửa cháy dữ dội.</li>
-      </ul>
-      <h3>15.4 Sát thương phản phệ khi chế tạo (Crafting Backfire Damage)</h3>
-      <ul>
-        <li><strong>Cơ chế:</strong> Khi người chơi chế tạo lõi ma thuật (Core) tại bàn chế tạo hoặc kích hoạt lò rèn Lodestone để chế tạo Mace, họ sẽ chịu sát thương ngẫu nhiên từ <strong>5 đến 9 tim</strong> (10.0D - 18.0D HP) do năng lượng ma pháp bùng phát.</li>
+        <li>Build must pass after resource and RitualService changes.</li>
+        <li>Manual server test: Glitch Clock quit condition, End Core ritual, Void Ritual Core ritual, Chronos recipe load.</li>
+        <li>Wiki contains planned mechanics; only already implemented behavior should be treated as released.</li>
       </ul>
     </section>
   </main>

@@ -1,6 +1,6 @@
 settings:
   # Language: en or vi
-  language: en
+  language: en_US
   # Can the mace be dropped by the player?
   allow-drop: true
   # Tracking mode: Strict Mode
@@ -12,6 +12,8 @@ settings:
   strict-mode-drop: false
   # If true: Prevents hoppers and droppers from moving registered maces.
   prevent-hopper-pickup: true
+  # If true: Allows grave/custom containers to store and release exclusive weapons without container-guard loops.
+  grave-compat: true
   # Enables extra diagnostic logs.
   verbose: false
 
@@ -49,6 +51,15 @@ tracking:
   reveal-on-ground-pickup: true
   duration-seconds: 300
 
+ability-hud:
+  enabled: true
+  interval-ticks: 10
+
+carry-limit:
+  enabled: true
+  countdown-seconds: 3
+  explosion-power: 2.0
+
 crafting:
   remove-vanilla-mace-recipe: true
   prevent-shift-click: true
@@ -63,6 +74,26 @@ forge:
   duration-seconds: 300
   completion-explosion-power: 4.0
   abort-explosion-power: 1.5
+
+ritual-altar:
+  transform-cost: 1
+  transform-seconds: 4
+  ritual-core-table-craft-seconds: 10
+  table-cooldown-seconds: 3600
+  weapon-fail-chance: 0.0
+  effects:
+    smoke:
+      enabled: true
+      particle: SMOKE
+    sound:
+      enabled: true
+      name: BLOCK_ENCHANTMENT_TABLE_USE
+    lightning: true
+  fail-explosion-power: 1.5
+  craft-damage-min: 10
+  craft-damage-max: 18
+  craft-freeze-seconds: 5
+  break-explosion-power: 1.5
 
 timed-forge:
   enabled: true

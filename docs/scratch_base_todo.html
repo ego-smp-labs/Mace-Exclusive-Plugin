@@ -1,86 +1,82 @@
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>Scratch Todo — Phase 3 Mace First</title><style>body{font-family:Inter,Arial,sans-serif;background:#0b0f19;color:#e5e7eb;padding:32px;line-height:1.6}main{max-width:900px;margin:auto}section{background:#111827;border:1px solid #273244;border-radius:14px;padding:22px;margin:18px 0}h1,h2{color:#fff}.todo{display:flex;gap:10px;margin:8px 0}.box{width:18px;height:18px;border:2px solid #64748b;border-radius:5px;flex:0 0 auto;margin-top:3px}.done .box{background:#10b981;border-color:#10b981}.done span{text-decoration:line-through;color:#94a3b8}code{background:#0b1220;padding:2px 5px;border-radius:5px}.warn{border-left:4px solid #f59e0b}</style></head><body><main>
-<h1>Scratch & Todo — Phase 3 Mace First</h1>
-<p>Source of truth: <code>docs/plan.html</code>. Không triển khai Spear gameplay cho tới khi các Mace pass.</p>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Mace Exclusive — Todo</title>
+  <style>
+    :root{--bg:#0b0f19;--panel:#111827;--line:#273244;--text:#e5e7eb;--muted:#94a3b8;--green:#10b981;--gold:#f59e0b;--red:#ef4444;--cyan:#06b6d4;--purple:#a855f7}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;line-height:1.6;padding:32px}main{max-width:980px;margin:auto}section{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;margin:18px 0}h1,h2{color:#fff}.todo{display:flex;gap:10px;margin:8px 0}.box{width:18px;height:18px;border:2px solid #64748b;border-radius:5px;flex:0 0 auto;margin-top:3px}.done .box{background:var(--green);border-color:var(--green)}.done span{text-decoration:line-through;color:var(--muted)}.progress .box{background:var(--cyan);border-color:var(--cyan)}.p0{border-left:4px solid var(--red)}.p1{border-left:4px solid var(--gold)}.p2{border-left:4px solid var(--cyan)}.p3{border-left:4px solid var(--purple)}code{background:#0b1220;padding:2px 5px;border-radius:5px}.tag{display:inline-block;border:1px solid #475569;border-radius:999px;padding:2px 8px;margin:2px;font-size:.78rem}.muted{color:var(--muted)}a{color:#93c5fd}
+  </style>
+</head>
+<body><main>
+  <h1>Scratch Todo — Phase 4 Cleanup</h1>
+  <p>Docs đồng bộ: <a href="plan.html">plan.html</a> = thiết kế, <a href="implementation_tickets.html">implementation_tickets.html</a> = ticket chi tiết, file này = checklist ngắn.</p>
 
-<section class="warn"><h2>Architect Control Rules</h2>
-<div class="todo"><div class="box"></div><span>Backend agents phải đọc docs trước khi code.</span></div>
-<div class="todo"><div class="box"></div><span>Build/test command bắt buộc timeout 120s; tối đa 3 build/lượt.</span></div>
-<div class="todo"><div class="box"></div><span>Reviewer agent phải review race/dupe/rollback trước khi báo done.</span></div>
-</section>
+  <section class="p0"><h2>Milestone A — Stabilize current build</h2>
+    <div class="todo done"><div class="box"></div><span><strong>T21</strong> Particle crash fixed via SafeParticleSpawner.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T22</strong> Grave/hopper/dropper compatibility fixed.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T23</strong> Skill activation ray-traces target for left-click block/air.</span></div>
+    <div class="todo done"><div class="box"></div><span>Glitch Clock rule fixed: Clock + quit + no damage 10s, 20%, no HP threshold.</span></div>
+    <div class="todo done"><div class="box"></div><span>Existing YAML recipes corrected so core is center slot.</span></div>
+    <div class="todo done"><div class="box"></div><span>Run build and fix compile/resource errors.</span></div>
+  </section>
 
-<section><h2>Milestone 0 — Scope Cleanup</h2>
-<div class="todo"><div class="box"></div><span>Disable spear gameplay registration trong plugin main.</span></div>
-<div class="todo"><div class="box"></div><span>Remove/disable Devourer, Phoenix, Aegis resources/registry active.</span></div>
-<div class="todo"><div class="box"></div><span>Rename/remove all <code>chrono_core</code> references -> <code>end_core</code>.</span></div>
-<div class="todo"><div class="box"></div><span>Grep legacy: <code>MaceType|MaceFactory|ExclusiveItemId|egosmp|dark_ego</code> no matches.</span></div>
-</section>
+  <section class="p1"><h2>Milestone B — Core/Ritual foundation</h2>
+    <div class="todo done"><div class="box"></div><span>Added Ritual/Echo/Void/Reaper core YAML files.</span></div>
+    <div class="todo done"><div class="box"></div><span>Renamed Blood/Sculk display names to Blood/Sculk Ritual Core.</span></div>
+    <div class="todo done"><div class="box"></div><span>Void Ritual Core portal ritual consumes Ritual Core + Challenger's Eye; fail loses both.</span></div>
+    <div class="todo"><div class="box"></div><span><strong>T28</strong> Implement full Ritual Altar UI/persistence/atomic forge flow.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T29</strong> Requested core ritual slice complete: Blood/Sculk/Reaper rituals and Ruined Core recycle recipe. Echo altar craft/loot integration remain follow-up.</span></div>
+  </section>
 
-<section><h2>Milestone 1 — Core & Special Materials</h2>
-<div class="todo"><div class="box"></div><span>End Core ritual replaces Chrono Core.</span></div>
-<div class="todo"><div class="box"></div><span>No active Chaos Core recipe/requirement; Chaos Mace direct recipe uses exact void_mace + blood_core + wither_rose + 6 obsidian_chaos.</span></div>
-<div class="todo"><div class="box"></div><span>Ruined Core recycle recipe remains disabled until explicitly approved.</span></div>
-<div class="todo"><div class="box"></div><span>Obsidian Chaos drop: Creeper explosion + held Obsidian + 5% + consume 1 obsidian on success + holder death.</span></div>
-<div class="todo"><div class="box"></div><span>Challenger's Eye: actual fatal Enderman damager + Totem proc path; death drops include Eye.</span></div>
-</section>
+  <section class="p1"><h2>Milestone C — Weapon systems</h2>
+    <div class="todo done"><div class="box"></div><span>Defined 6 Hệ: Kình, Vực, Huyết, Âm, Hồn, Trọng.</span></div>
+    <div class="todo done"><div class="box"></div><span>Updated wiki design: Void Edge no End Core, adds passive; Chronos uses Echo Ritual Core.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T30</strong> Convert Vampiric source config to Spear while preserving legacy <code>vampiric_mace</code> id compatibility.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T31</strong> Add WeaponClass abstraction, YAML field, and PDC metadata foundation.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T32/T42</strong> Void Edge implemented; Warden Blade superseded by Soul Sever Spear.</span></div>
+  </section>
 
-<section><h2>Milestone 2 — Mace Config/Lore</h2>
-<div class="todo"><div class="box"></div><span>Power recipe: Heavy Core + Breeze Rod + Netherite Ingot.</span></div>
-<div class="todo"><div class="box"></div><span>Void recipe: End Core + 6 Enchanted Golden Apple + Wither Rose + Challenger's Eye.</span></div>
-<div class="todo"><div class="box"></div><span>Vampiric recipe: Blood Core + Nether Wart + Nether materials + Skeleton Skull, no Nether Star.</span></div>
-<div class="todo"><div class="box"></div><span>Gravity is merged Singularity Gravity Mace with harder recipe.</span></div>
-<div class="todo"><div class="box"></div><span>Every mace lore summarizes active/passive/curse/cooldown.</span></div>
-</section>
+  <section class="p2"><h2>Milestone D — UX / resources / polish</h2>
+    <div class="todo done"><div class="box"></div><span><strong>T24</strong> Action Bar HUD ready/cooldown display.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T25</strong> Carry-limit 3s countdown boom.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T26</strong> Data-driven hold effects per weapon.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T27</strong> <code>/macee give all</code> and core-id give support.</span></div>
+    <div class="todo"><div class="box"></div><span><strong>T33</strong> Info menu UX.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T34</strong> Resource folder restructure.</span></div>
+    <div class="todo"><div class="box"></div><span><strong>T35</strong> Balance pass.</span></div>
+  </section>
 
-<section><h2>Milestone 3 — Ability Input & Mechanics</h2>
-<div class="todo"><div class="box"></div><span>All active abilities trigger only by Sneak + Left Click.</span></div>
-<div class="todo"><div class="box"></div><span>Right click no longer activates abilities.</span></div>
-<div class="todo"><div class="box"></div><span>Chaos Mace full rage/chaos/backfire/water curse implemented.</span></div>
-<div class="todo"><div class="box"></div><span>Void Mace devour passive + abyss resurrection + mind detachment implemented.</span></div>
-<div class="todo"><div class="box"></div><span>Power/Vampiric/Gravity/Sonic/Soulfire balanced and cooldown-capped.</span></div>
-</section>
+  <section class="p0"><h2>Milestone F — Quick wins (data fixes)</h2>
+    <div class="todo"><div class="box"></div><span><strong>Q1</strong> Fix CMD collisions: Void Mace 2003 vs Chronos 2003; Challenger's Eye 4002 vs Cursed Player Head 4002; Chaos Core 3006 vs Ruined Core 3006.</span></div>
+    <div class="todo"><div class="box"></div><span><strong>Q2</strong> Decide Chronos activation: keep SpearProjectileService throw or migrate to AbilityService Sneak+LeftClick; update rule doc.</span></div>
+    <div class="todo"><div class="box"></div><span><strong>Q3</strong> Remove or hard-disable deprecated chaos_core.yml (Chaos Mace crafts directly).</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>Q4</strong> Created wiki_dev.html dev spec reference (item id/CMD/PDC/recipe/status tables).</span></div>
+  </section>
 
-<section><h2>Milestone 4 — Particle & Sound Coverage</h2>
-<div class="todo"><div class="box"></div><span>Power visual: yellow-white sparks, RingBurst shockwave.</span></div>
-<div class="todo"><div class="box"></div><span>Chaos visual: portal/reverse portal, rage fractal, hotbar chaos aura.</span></div>
-<div class="todo"><div class="box"></div><span>Void visual: reverse portal suction, abyss totem purple, mind split ring.</span></div>
-<div class="todo"><div class="box"></div><span>Vampiric visual: blood tether, damage indicator drip, wither sound.</span></div>
-<div class="todo"><div class="box"></div><span>Gravity visual: ash/portal spiral black hole collapse.</span></div>
-<div class="todo"><div class="box"></div><span>Sonic visual: sonic beam cyan/sculk soul.</span></div>
-<div class="todo"><div class="box"></div><span>Soulfire visual: soul flame ring and soul rise.</span></div>
-</section>
+  <section class="p3"><h2>Milestone E — Docs rules</h2>
+    <div class="todo done"><div class="box"></div><span><strong>T36</strong> Reorganized docs into Plan/Tickets/Todo with cross-links.</span></div>
+    <div class="todo done"><div class="box"></div><span>Removed obsolete out-of-scope list from active docs.</span></div>
+    <div class="todo done"><div class="box"></div><span>After build passes, update final report status.</span></div>
+  </section>
 
-<section><h2>Milestone 5 — Forge & Tests</h2>
-<div class="todo"><div class="box"></div><span>Lodestone forge race regression still passes after config/registry changes.</span></div>
-<div class="todo"><div class="box"></div><span>Test same-tick craft, 1 tick delayed craft, shift-click, restart charge/countdown/completion, break Lodestone.</span></div>
-<div class="todo"><div class="box"></div><span>Test Chaos state TTL/cooldown/hotbar restore/no item loss.</span></div>
-<div class="todo"><div class="box"></div><span>Test Void fatal resurrection cooldown and no Totem conflict.</span></div>
-<div class="todo"><div class="box"></div><span><code>gradle build</code> pass with timeout 120s.</span></div>
-</section>
-<section class="warn"><h2>Milestone 6 — 2026-06-14 Rescue Scope & UX Fixes</h2>
-<div class="todo done"><div class="box"></div><span>Update root <code>AGENTS.md</code> rule: user-requested docs updates go into active docs first, not full chat paste.</span></div>
-<div class="todo done"><div class="box"></div><span>Record that <code>docs/agent_phase3_prompt.md</code> is currently missing.</span></div>
-<div class="todo done"><div class="box"></div><span>Sync active docs/wiki to current scope: Mace active = Sneak + Left Click; Spear remains active unless user explicitly disables it.</span></div>
-<div class="todo done"><div class="box"></div><span>Add Action Bar success feedback for every custom skill activation.</span></div>
-<div class="todo done"><div class="box"></div><span>Move cooldown feedback to rate-limited Action Bar and only show when player attempts to activate a skill on cooldown.</span></div>
-<div class="todo done"><div class="box"></div><span>Verify mace active success cancels normal damage; cooldown/fail does not cancel vanilla hit.</span></div>
-<div class="todo done"><div class="box"></div><span>Verify Spear vanilla behavior and custom skill behavior run together without projectile dupe/item loss.</span></div>
-<div class="todo done"><div class="box"></div><span>Implement holding-glow refresh from source config for main hand and offhand custom weapons.</span></div>
-<div class="todo done"><div class="box"></div><span>Keep ground-drop pickup reveal/tracking config-driven.</span></div>
-<div class="todo done"><div class="box"></div><span>Implement per-weapon enchant policy with repair allowed; default mace allowlist Mending + Unbreaking, spear additionally Sharpness.</span></div>
-<div class="todo done"><div class="box"></div><span>Move remaining user-facing Java text into <code>src/main/resources/lang_en.yml</code> and <code>lang_vi.yml</code>.</span></div>
-<div class="todo done"><div class="box"></div><span>Run <code>gradle build</code> with timeout 120s before reporting implementation complete.</span></div>
-</section>
-<section class="warn"><h2>Milestone 7 — 2026-06-16 Gravity/Soulfire/Warden Spear Rebalance</h2>
-<div class="todo"><div class="box"></div><span>Singularity Gravity Mace: track pulled mob/player count during active and grant matching absorption hearts on collapse.</span></div>
-<div class="todo"><div class="box"></div><span>Singularity Gravity Mace: if zero entities are pulled, deal exactly 3 HP damage, apply Mining Fatigue, and force cooldown to 5 minutes.</span></div>
-<div class="todo"><div class="box"></div><span>Singularity Gravity Mace: if more than 6 entities are pulled, apply Mining Fatigue only, with no extra self-damage.</span></div>
-<div class="todo"><div class="box"></div><span>Soulfire Pyre Mace: replace old fixed 5s storm/HP cost with 20s radius-10 follow aura, 40s cooldown.</span></div>
-<div class="todo"><div class="box"></div><span>Soulfire Pyre Mace: while active, standing in lava heals the caster; outside active state lava does not heal.</span></div>
-<div class="todo"><div class="box"></div><span>Soulfire Pyre Mace: carrying the mace in inventory/main/offhand and entering water applies Poison II for 3s.</span></div>
-<div class="todo"><div class="box"></div><span>Warden Spear: remove active HP cost and insufficient-HP gate.</span></div>
-<div class="todo"><div class="box"></div><span>Warden Spear: replace Blindness curse with Warden Darkness effect, keep holding glow enabled.</span></div>
-<div class="todo"><div class="box"></div><span>Warden Spear: on player/mob kill, 10% chance to create sculk/warden-shrine feature; associated Warden must not target spear owner.</span></div>
-<div class="todo"><div class="box"></div><span>Update root <code>wiki.html</code> public gameplay docs after code lands.</span></div>
-<div class="todo"><div class="box"></div><span>Run <code>gradle build</code> with timeout 120s before marking this milestone done.</span></div>
-</section>
+  <section class="p3"><h2>Milestone G — Resource / Saves / Permissions batch</h2>
+    <div class="todo done"><div class="box"></div><span><strong>T34A</strong> Move source resources into <code>weapons/</code>, <code>cores/</code>, <code>items/</code>, <code>lang/</code>; keep legacy loaders.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T34B</strong> Rename language resources to <code>lang/en_US.yml</code> and <code>lang/vi_VN.yml</code>; support aliases <code>en</code>/<code>vi</code>.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T34C</strong> Move runtime data and player usage logs to <code>Saves/</code>; migrate legacy root files safely.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T37</strong> Add LuckPerms-friendly permission nodes and command/tab checks.</span></div>
+  </section>
+
+  <section class="p1"><h2>Milestone H — Core/Crafting/Weapon rework plan</h2>
+    <div class="todo done"><div class="box"></div><span><strong>T38</strong> Ritual-derived core naming + short 3-line lore cleanup.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T39</strong> Ritual Crafting Table item/config/effects, timed crafting, 1h table cooldown, anti-dupe GUI.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T40</strong> Sculk material/Warden 10% drop, Sculk Ritual Core recipe/curse, Avarice Ritual Core + Plundered Heart chain.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T41</strong> Avarice Tax Evade/Bounty Hunt/greed curse mechanics.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T42</strong> Replace Warden Blade with The Soul Sever Spear passive-only anti-heal/totem reversal weapon.</span></div>
+    <div class="todo done"><div class="box"></div><span><strong>T43</strong> Vile Ledger raid material/drop hook for Soul Sever recipe.</span></div>
+  </section>
+
+  <section class="p2"><h2>Milestone I — Integrations</h2>
+    <div class="todo done"><div class="box"></div><span><strong>T44</strong> Per-item Discord webhook enabled/color settings with global discord.yml fallback.</span></div>
+  </section>
 </main></body></html>

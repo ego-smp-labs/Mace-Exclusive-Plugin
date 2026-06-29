@@ -1,0 +1,48 @@
+﻿enabled: true
+singleton: true
+name: "&a&lAvarice Blade"
+material: NETHERITE_SWORD
+weapon-class: SWORD
+custom-model-data: 5005
+discord:
+  enabled: true
+  color: 5763719
+enchant-policy:
+  mode: allowlist
+  allowed:
+    - MENDING
+    - UNBREAKING
+lore:
+  - "&7A blade that audits blood and pockets."
+  - "&eSkill: &fTax Evade; Sneak+hit Bounty Hunt."
+  - "&cCurse: &fConsumes Emerald or Gold."
+recipe:
+  enabled: true
+  special-crafting-enabled: true
+  glow-after-craft: false
+  shape:
+    - "EVE"
+    - "CAC"
+    - " S "
+  ingredients:
+    E: EMERALD_BLOCK:8
+    V: vile_ledger
+    C: GOLD_BLOCK:8
+    A: avarice_ritual_core
+    S: NETHERITE_SWORD
+cooldowns:
+  bounty_hunt: 120
+effects:
+  passive:
+    steal_chance: 0.10
+    steal_cooldown_seconds: 30
+  active:
+    min_rage: 5
+    minions_min: 3
+    minions_max: 5
+    duration_seconds: 120
+  curses:
+    tribute_interval_seconds: 30
+    starvation_damage: 4.0
+messages:
+  skill-activated: "&6[Avarice] &fBounty Hunt unleashed."

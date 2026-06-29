@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import vn.nirussv.maceexclusive.config.ConfigManager;
 import vn.nirussv.maceexclusive.config.ItemConfig;
 import vn.nirussv.maceexclusive.item.ItemMatcher;
+import vn.nirussv.maceexclusive.item.WeaponClass;
 
 import java.util.HashSet;
 import java.util.Locale;
@@ -106,7 +107,7 @@ public final class EnchantPolicyListener implements Listener {
         allowed.add("durability");
         ItemConfig itemConfig = configManager.getItemConfig(itemId);
         String materialName = itemConfig == null || itemConfig.material() == null ? "" : itemConfig.material().name();
-        if ((itemId != null && itemId.endsWith("_spear")) || materialName.contains("SPEAR") || materialName.equals("TRIDENT")) {
+        if (configManager.getWeaponClass(itemId) == WeaponClass.SPEAR || materialName.contains("SPEAR") || materialName.equals("TRIDENT")) {
             allowed.add("sharpness");
             allowed.add("damage_all");
         }

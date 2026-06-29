@@ -3,6 +3,9 @@ singleton: true
 name: "&d&lABYSSAL VOID MACE"
 material: MACE
 custom-model-data: 2003
+discord:
+  enabled: true
+  color: 3447003
 enchant-policy:
   mode: allowlist
   allowed:
@@ -26,8 +29,8 @@ recipe:
     audience: player
     text: "&aYou forged %name%!"
   shape:
-    - "AEA"
-    - "HWH"
+    - "AWA"
+    - "HEH"
     - "ACA"
   ingredients:
     E: end_core
@@ -38,6 +41,18 @@ recipe:
 cooldowns:
   resurrection: 600
 effects:
+  hold:
+    enabled: true
+    particle: PORTAL
+    count: 8
+    offset-x: 0.35
+    offset-y: 0.25
+    offset-z: 0.35
+    extra: 0.03
+    sound: BLOCK_RESPAWN_ANCHOR_AMBIENT
+    sound-volume: 0.12
+    sound-pitch: 0.8
+    interval-ticks: 20
   devour:
     chance: 0.10
     duration: 5

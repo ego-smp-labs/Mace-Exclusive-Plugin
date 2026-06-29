@@ -1,170 +1,368 @@
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>Mace Exclusive — Phase 3 Implementation Tickets</title><style>body{font-family:Inter,Arial,sans-serif;background:#0b0f19;color:#e5e7eb;line-height:1.6;padding:32px}main{max-width:1000px;margin:auto}section{background:#111827;border:1px solid #273244;border-radius:14px;padding:22px;margin:18px 0}h1,h2{color:#fff}code{background:#0b1220;padding:2px 5px;border-radius:5px}ul{margin-top:6px}.meta{color:#94a3b8}</style></head><body><main>
-<h1>Implementation Tickets — Phase 3 Mace-First</h1>
-<p class="meta">Agent phải đọc <code>docs/plan.html</code> trước. Không làm spear gameplay trong phase này. Build/test luôn có timeout 120s.</p>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Mace Exclusive — Implementation Tickets</title>
+  <style>
+    :root{--bg:#0b0f19;--panel:#111827;--panel2:#0f172a;--line:#273244;--text:#e5e7eb;--muted:#94a3b8;--gold:#f59e0b;--red:#ef4444;--green:#10b981;--cyan:#06b6d4;--purple:#a855f7}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;line-height:1.65}.layout{display:grid;grid-template-columns:280px 1fr;min-height:100vh}.nav{position:sticky;top:0;height:100vh;overflow:auto;background:#0f172a;border-right:1px solid var(--line);padding:22px}.nav h1{font-size:1.05rem;margin:0 0 14px}.nav a{display:block;text-decoration:none;color:#cbd5e1;padding:6px 8px;border-radius:8px;font-size:.85rem}.nav a:hover{background:#1e293b;color:#fff}.content{max-width:1120px;padding:32px 42px}section{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;margin:22px 0}h1,h2,h3{color:#fff;line-height:1.25}h2{border-bottom:1px solid var(--line);padding-bottom:8px;margin-top:0}code{font-family:Consolas,monospace;background:#0b1220;padding:2px 5px;border-radius:5px}pre{font-family:Consolas,monospace;background:#0b1220;border:1px solid var(--line);border-radius:6px;padding:12px;overflow:auto;white-space:pre-wrap}.tag{display:inline-block;border:1px solid #475569;border-radius:999px;padding:2px 8px;margin:2px;font-size:.78rem}.done{border-color:var(--green);color:#bbf7d0}.planned{border-color:var(--gold);color:#fde68a}.progress{border-color:var(--cyan);color:#a5f3fc}.p0{border-left:4px solid var(--red)}.p1{border-left:4px solid var(--gold)}.p2{border-left:4px solid var(--cyan)}.p3{border-left:4px solid var(--purple)}.muted{color:var(--muted)}a{color:#93c5fd}
+  </style>
+</head>
+<body><div class="layout">
+  <aside class="nav">
+    <h1>⚒ Tickets</h1>
+    <a href="#map">0. Docs Map</a>
+    <a href="#done">1. Done / In Progress</a>
+    <a href="#t24">T24 HUD</a>
+    <a href="#t25">T25 Carry Boom</a>
+    <a href="#t26">T26 Effects</a>
+    <a href="#t27">T27 Give All</a>
+    <a href="#t28">T28 Ritual Altar</a>
+    <a href="#t29">T29 Core Redesign</a>
+    <a href="#t30">T30 Vampiric Spear</a>
+    <a href="#t31">T31 WeaponClass</a>
+    <a href="#t32">T32 Warden/Void Swords</a>
+    <a href="#t33">T33 Info Menu</a>
+    <a href="#t34">T34 Resources</a>
+    <a href="#t35">T35 Balance</a>
+    <a href="#t36">T36 Docs</a>
+  </aside>
+  <main class="content">
+    <div style="background:linear-gradient(135deg,rgba(168,85,247,.16),rgba(6,182,212,.08));border:1px solid var(--line);border-radius:18px;padding:26px;margin-bottom:22px">
+      <h1>Implementation Tickets — Phase 4</h1>
+      <p>Plan: <a href="plan.html">plan.html</a> · Todo: <a href="scratch_base_todo.html">scratch_base_todo.html</a> · Released docs: <a href="../wiki.html">wiki.html</a></p>
+      <p class="muted">Ticket format: Target / Goal / Files / Constraints / Definition of Done / Risks / Tests to add.</p>
+    </div>
 
-<section><h2>Ticket 1 — Docs/Code Sync & Scope Gate</h2>
-<p><strong>Goal:</strong> Đồng bộ codebase với plan mace-only.</p>
-<p><strong>Files:</strong> <code>MaceExclusivePlugin.java</code>, <code>src/main/resources/items/*.yml</code>, <code>src/main/resources/cores/*.yml</code>, <code>AbilityService.java</code>.</p>
-<p><strong>Constraints:</strong></p><ul><li>Disable hoặc không register spear gameplay/listener/service.</li><li>Bỏ active resources cho <code>devourer_mace</code>, <code>phoenix_mace</code>, <code>aegis_mace</code>.</li><li>Không còn <code>chrono_core</code>; đổi sang <code>end_core</code>.</li><li>Không còn <code>dark_ego</code>, <code>egosmp</code>, legacy classes.</li></ul>
-<p><strong>Definition of Done:</strong> grep các token legacy/removed trả no match trong code/resource active.</p>
-<p><strong>Tests to add:</strong> startup registry test: chỉ mace Phase 3 được enable; spear gameplay disabled.</p>
-</section>
+    <section id="map"><h2>0. Rules</h2><ul>
+      <li>Build command: <code>cmd /c "gradle build --no-daemon"</code>, timeout 120000ms.</li>
+      <li>Core must be center slot in every special weapon/core recipe.</li>
+      <li>All ancient weapons need Active + Passive + Curse.</li>
+      <li>Glowing is universal curse, not per-weapon copy.</li>
+      <li>Ritual-derived cores use display name: Blood/Sculk/Echo/Void/Reaper Ritual Core.</li>
+    </ul></section>
 
-<section><h2>Ticket 2 — Active Input Standard: Sneak + Left Click</h2>
-<p><strong>Goal:</strong> Mọi active mace dùng ngồi + nút đánh.</p>
-<p><strong>Files:</strong> <code>AbilityService.java</code>, <code>listener/MaceListener.java</code>, ability classes.</p>
-<p><strong>Constraints:</strong></p><ul><li>Handle <code>LEFT_CLICK_AIR</code>, <code>LEFT_CLICK_BLOCK</code>, và sneak attack entity.</li><li>Right click không active.</li><li>Nếu active cast thành công khi đánh entity, cancel damage thường để tránh double-hit.</li><li>Nếu chưa đủ điều kiện/cooldown, không cancel hit thường.</li></ul>
-<p><strong>Definition of Done:</strong> Power/Chaos/Void/Vampiric/Gravity/Sonic/Soulfire đều active bằng Sneak+LeftClick.</p>
-<p><strong>Tests:</strong> input matrix air/block/entity, sneak/not sneak, cooldown/not cooldown.</p>
-</section>
+    <section id="done" class="p0"><h2>1. Done / In Progress</h2>
+      <p><span class="tag done">Done</span> T21 particle crash fix, T22 grave/hopper guard, T23 skill activation fix.</p>
+      <p><span class="tag done">Done</span> Config/doc cleanup: center-core recipes, new core YAML, Glitch Clock code, Void Ritual Core anti-dupe ritual.</p>
+      <p><span class="tag done">Done</span> T32 Void Edge implementation remains; Warden Blade was superseded by T42 Soul Sever Spear.</p>
+      <p><span class="tag done">Done</span> T29 requested core ritual slice: Blood/Sculk/Reaper rituals, Ruined Core recycle recipe, language keys, docs sync, build verification.</p>
+      <p><span class="tag done">Done</span> T34/T37 batch: resources split into weapons/items/cores/lang, locale aliases supported, runtime saves moved under Saves/, explicit command permission nodes added, build verification completed.</p>
+    </section>
 
-<section><h2>Ticket 3 — Core & Special Material Recipes</h2>
-<p><strong>Goal:</strong> End Core, disabled Chaos Core, Obsidian Chaos, Challenger's Eye đúng plan.</p>
-<p><strong>Files:</strong> <code>core/*</code>, <code>listener/SpecialItemListener.java</code>, <code>RecipeRegistry.java</code>, <code>cores/*.yml</code>, <code>items/obsidian_chaos.yml</code>, <code>items/challenger_eye.yml</code>.</p>
-<p><strong>Constraints:</strong></p><ul><li>End Portal ritual trả <code>end_core</code> 20% và <code>ruined_core</code> 80%, không <code>chrono_core</code>.</li><li>No active Chaos Core item/core/recipe requirement; Chaos Mace crafts directly from exact custom items: 1 void_mace + 1 blood_core + 1 wither_rose + 6 obsidian_chaos.</li><li>Ruined Core recycle recipe disabled.</li><li>Obsidian Chaos: Creeper explosion + held obsidian + 5% drop + consume 1 obsidian on success + holder death.</li><li>Challenger's Eye: actual fatal Enderman damager and Totem proc path; player truly dies and Eye is in death drops.</li></ul>
-<p><strong>Tests:</strong> ExactChoice PDC recipe; creeper 5% mocked RNG; Enderman Totem source tracking.</p>
-</section>
+    <section id="t24" class="p2"><h3>T24 — Action Bar HUD <span class="tag done">Done</span></h3><pre>[Target]
+ability/CooldownService.java, new ability/AbilityHudService.java, MaceExclusivePlugin.java
+[Goal]
+When holding an exclusive weapon, show ready/cooldown skill status on Action Bar.
+[Files]
+CooldownService, AbilityHudService, config.yml, lang files, item YAML hud metadata.
+[Constraints]
+Tick every 10 ticks, rate-limit, do not spam over important skill feedback.
+[Definition of Done]
+Done: AbilityHudService scans online players every configured 10 ticks, checks main hand then offhand via PDC, and shows ready/cooldown Action Bar using CooldownService read state.
+[Risks]
+Action Bar conflicts with other plugins.
+[Tests to add]
+Ready, cooldown, switch item, quit.</pre></section>
 
-<section><h2>Ticket 4 — Item Configs, Lore, and Recipes for Maces</h2>
-<p><strong>Goal:</strong> Config/lore của 7 mace Phase 3 rõ skill/curse/cooldown.</p>
-<p><strong>Files:</strong> <code>items/power_mace.yml</code>, <code>void_mace.yml</code>, <code>chaos_mace.yml</code>, <code>vampiric_mace.yml</code>, <code>gravity_mace.yml</code>, <code>sonic_mace.yml</code>, <code>soulfire_mace.yml</code>.</p>
-<p><strong>Constraints:</strong></p><ul><li>Power recipe = heavy_core + breeze_rod + netherite_ingot.</li><li>Void recipe = end_core + 6 enchanted golden apple + wither_rose + challenger_eye.</li><li>Vampiric recipe dùng Blood Core + Nether Wart + Skeleton Skull thường, không Nether Star.</li><li>Gravity là bản gộp Gravity/Singularity, recipe khó hơn.</li><li>Lore mỗi weapon ghi vắn tắt active/passive/curse/cooldown.</li></ul>
-<p><strong>Definition of Done:</strong> `/macee give <id>` lore dễ hiểu và đúng plan; recipes match PDC custom ingredients.</p>
-</section>
+    <section id="t25" class="p2"><h3>T25 — Carry Limit Countdown Boom <span class="tag done">Done</span></h3><pre>[Target]
+carry/CarryViolationService.java, ContainerGuardListener.java
+[Goal]
+Allow pickup, start 3s warning, explode/kill if player keeps 2+ exclusive weapons.
+[Files]
+New service, listener registration, config.yml, lang files.
+[Constraints]
+Check main inventory + offhand. No block damage. Cancel if player drops extra weapon.
+[Definition of Done]
+Done: CarryViolationService scans inventory contents plus offhand, warns for configured 3 seconds, cancels if legal again, then creates no-block-damage explosion and lethal punishment.
+[Risks]
+Explosion abuse; set breakBlocks false.
+[Tests to add]
+Pickup 2, drop before end, quit/death during countdown.</pre></section>
 
-<section><h2>Ticket 5 — Chaos Mace Mechanics</h2>
-<p><strong>Goal:</strong> Implement Chaos Mace đúng yêu cầu user.</p>
-<p><strong>Files:</strong> <code>ChaosMaceAbility.java</code>, <code>ChaosEffectService.java</code> nếu tách, <code>CurseService.java</code>.</p>
-<p><strong>Constraints:</strong></p><ul><li>Kill charge: mob 20% +1, player 100% +1, đủ 10 nộ.</li><li>Rage State 2 phút, CD 5 phút, 3 empowered hits.</li><li>Empowered hit: target Chaos 10s, caster Lunatic 10s.</li><li>Chaos Effect: shuffle hotbar mỗi 0.5s, Slowness IV, Nausea, Wither.</li><li>Passive counter: khi cầm bị hit, 10% attacker Chaos 1s, chỉ shuffle 1 lần.</li><li>Curse: lần đầu cầm tự Chaos 10s; hết rage không kill ai tự Chaos 30s; trong inventory gặp nước Wither II 3s.</li></ul>
-<p><strong>Tests:</strong> rage TTL, 3 hits consumption, no-kill backfire, shuffle restore/no item loss, first-hold once only.</p>
-</section>
+    <section id="t26" class="p2"><h3>T26 — Data-driven Hold Effects <span class="tag done">Done</span></h3><pre>[Target]
+effect/ParticleProfile.java, EffectMaceListener.java, ItemConfig.java
+[Goal]
+Move hold particle/sound profiles to YAML.
+[Files]
+Effect service/listener, item configs.
+[Constraints]
+Use SafeParticleSpawner. Particle budget max 10 per weapon pulse.
+[Definition of Done]
+Done: Every active weapon YAML has effects.hold profile; CurseService holding pulse uses SafeParticleSpawner with count capped to 10 and preserves fallback hardcoded effects when no profile exists.
+[Risks]
+Particle API variants in Paper/Leaf.
+[Tests to add]
+Hold each weapon, reload config, no console errors.</pre></section>
 
-<section><h2>Ticket 6 — Void Mace Mechanics</h2>
-<p><strong>Goal:</strong> Implement Void Mace passive hotbar lock + abyss resurrection.</p>
-<p><strong>Files:</strong> <code>VoidMaceAbility.java</code>, <code>FreezeService.java</code>, <code>CurseService.java</code>.</p>
-<p><strong>Constraints:</strong></p><ul><li>Hit passive 10% khóa 2 hotbar slots 5s; không cộng dồn.</li><li>Fatal damage 5% hồi sinh như Totem, +10 máu vàng, trạng thái 30s, CD 10 phút.</li><li>Trong Abyss State, hit có 50% gây Mind Detachment 5s: Darkness + freeze.</li><li>Curse: natural regen -60%, healing -35%, food drain +50%, sau Abyss hết Weakness II 20s + Totem suppression 15s; inventory gặp nước Wither II 3s.</li></ul>
-<p><strong>Tests:</strong> fatal chance/cooldown, hotbar lock restore, no stack, freeze cleanup, death/quit cleanup.</p>
-</section>
+    <section id="t27" class="p2"><h3>T27 — /macee give all <span class="tag done">Done</span></h3><pre>[Target]
+command/MaceCommand.java
+[Goal]
+Admin command gives all registered items and cores.
+[Files]
+Command, tab completion, lang files.
+[Constraints]
+Loop ItemRegistry + CoreRegistry. Drop overflow at player feet. Optional --force logs singleton bypass.
+[Definition of Done]
+Done: /macee give all loops ItemRegistry + enabled CoreRegistry entries, skips registered singleton items, drops overflow at player feet, supports core-id give, reloads CoreRegistry, and tab-completes all/core IDs.
+[Risks]
+Singleton duplication with force.
+[Tests to add]
+Give all, full inventory, tab complete.</pre></section>
 
-<section><h2>Ticket 7 — Other Mace Abilities & Balance</h2>
-<p><strong>Goal:</strong> Power, Vampiric, Gravity, Sonic, Soulfire đạt plan và cân bằng.</p>
-<p><strong>Files:</strong> respective ability classes.</p>
-<p><strong>Constraints:</strong></p><ul><li>Gravity/Singularity gộp: Singularity Well kéo 3s rồi collapse, cap 15 HP, CD 60s.</li><li>Vampiric Blood Siphon CD 75s, lifesteal cap 2 HP/hit.</li><li>Sonic cost 4 HP, true damage 14, self Blindness/Slowness.</li><li>Soulfire AoE 5s, cost HP, hunger curse.</li><li>Power entry weapon không overtuned.</li></ul>
-<p><strong>Tests:</strong> cooldowns, caps, self-cost không tự kết liễu nếu plan yêu cầu, AoE TTL cleanup.</p>
-</section>
+    <section id="t28" class="p1"><h3>T28 — Ritual Altar <span class="tag planned">Planned</span></h3><pre>[Target]
+new ritual/ package, RecipeRegistry.java, ForgeService integration
+[Goal]
+Crafting Table + Ritual Core + Sneak Right Click -> Ritual Altar. Custom 3x3 UI, atomic craft/forge, book recipes.
+[Files]
+RitualAltarService, RitualAltarListener, RitualAltarMenu, config.yml, lang files, MaceExclusivePlugin.
+[Constraints]
+Core center slot. Break altar -> explosion + normal Crafting Table drop. Forge complete returns Lodestone to Ritual Altar. Lodestone Forge mechanics otherwise unchanged.
+[Definition of Done]
+Transform/open/craft/fail/break/restart all work.
+[Risks]
+Block state persistence and protection plugins.
+[Tests to add]
+Transform, open, craft success/fail, break, restart, book viewer.</pre></section>
 
-<section><h2>Ticket 8 — Particle/Sound Profile Coverage</h2>
-<p><strong>Goal:</strong> Không còn chỉ 2 món có visual; mọi mace có visual cầm/active/hit/backfire.</p>
-<p><strong>Files:</strong> <code>effect/*</code>, ability classes, item yml effect profile fields.</p>
-<p><strong>Constraints:</strong></p><ul><li>Particle budget config-driven.</li><li>Không spawn cho player quá xa.</li><li>Profile theo theme: Power, Chaos, Blood, Void, Gravity, Sculk, Soulfire.</li><li>Không để logic particle lớn nằm trong listener.</li></ul>
-<p><strong>Tests:</strong> particle count budget, TTL cleanup, 5 players cast cùng lúc không tạo task leak.</p>
-</section>
+    <section id="t29" class="p1"><h3>T29 — Core System Redesign <span class="tag done">Requested slice done</span></h3><pre>[Target]
+cores/*.yml, core/RitualService.java, ritual/core listeners
+[Goal]
+Complete Ritual Core branch for spear/sword cores.
+[Files]
+Core YAML, RitualService, future loot/event listeners.
+[Constraints]
+Done in requested slice: core YAML added, Ritual display naming, Void Ritual Core anti-dupe portal flow, Blood Nether hostile hunt 5%, Sculk Ritual Core input on Sculk Catalyst, Reaper Nether Wither Skeleton death ritual 20%, Ruined Core recycle shaped recipe. Still pending broader follow-up: Echo ritual craft through altar and loot table integration.
+[Definition of Done]
+Requested slice build passes; manual server tests recommended for Blood/Sculk/Reaper acquisition matrix.
+[Risks]
+Migration from old Heavy Core-origin cores.
+[Tests to add]
+Ritual/Echo/Void/Reaper/Blood/Sculk acquisition matrix.</pre></section>
 
-<section><h2>Ticket 9 — Forge/Race Regression Tests</h2>
-<p><strong>Goal:</strong> Giữ Lodestone Forge ổn định sau khi đổi recipe/registry.</p>
-<p><strong>Files:</strong> <code>ForgeService.java</code>, <code>RecipeRegistry.java</code>, test harness.</p>
-<p><strong>Constraints:</strong></p><ul><li>Không consume nguyên liệu nếu reserve/session fail.</li><li>Atomic reservation theo item_id.</li><li>Shift-click/number-key/double-click không dupe.</li><li>Restart charge/countdown/completion không duplicate drop.</li></ul>
-<p><strong>Tests:</strong> same tick craft, 1 tick delayed craft, block break abort, crash window documented.</p>
-</section>
-<section><h2>Ticket 10 — Rescue Scope Docs Sync: Mace + Spear Active</h2>
-<p><strong>Goal:</strong> Đồng bộ docs/code với scope hiện tại: mace active dùng <code>Sneak + Left Click</code>, spear vẫn active và không bị disable.</p>
-<p><strong>Files:</strong> <code>docs/plan.html</code>, <code>docs/implementation_tickets.html</code>, <code>docs/scratch_base_todo.html</code>, <code>docs/implementation_report.html</code>, <code>wiki.html</code>, <code>AGENTS.md</code>.</p>
-<p><strong>Constraints:</strong></p><ul><li>Không paste full plan vào chat khi user yêu cầu update docs; ghi thẳng vào active docs.</li><li>Không sửa generated resources dưới <code>build/resources/main</code>.</li><li>Ghi nhận <code>docs/agent_phase3_prompt.md</code> đang thiếu nếu chưa khôi phục.</li></ul>
-<p><strong>Definition of Done:</strong> Docs không còn hướng dẫn disable spear trái với code/wiki hiện tại; root rules ghi rõ scope override mới.</p>
-<p><strong>Risks:</strong> Docs cũ "mace-only" có thể làm agent sau vô tình tắt spear.</p>
-<p><strong>Tests to add:</strong> Docs review + grep các câu "disable spear" trong active docs.</p>
-</section>
+    <section id="t30" class="p1"><h3>T30 — Vampiric Mace → Vampiric Spear <span class="tag done">Compat slice done</span></h3><pre>[Target]
+vampiric_mace.yml, VampiricMaceAbility.java
+[Goal]
+Convert implementation to spear: item id/material/class and lunge thrust behavior.
+[Files]
+Rename YAML/class, command aliases, migration scan, wiki/docs.
+[Constraints]
+Use NETHERITE_SPEAR if available; keep old ID migration.
+[Definition of Done]
+Done now: source config presents as Vampiric Spear, uses NETHERITE_SPEAR text material, and declares weapon-class SPEAR while preserving legacy vampiric_mace PDC id. Follow-up: optional class rename/new lunge thrust ability.
+[Risks]
+Existing player items with old PDC.
+[Tests to add]
+Old item migration, lunge hit/miss, curse cleanup.</pre></section>
 
-<section><h2>Ticket 11 — Action Bar Skill Feedback & Cooldown Throttle</h2>
-<p><strong>Goal:</strong> Khi custom skill kích hoạt thành công thì hiện Action Bar; khi cooldown thì chỉ hiện thời gian nếu người chơi thật sự cố kích hoạt skill, có rate-limit.</p>
-<p><strong>Files:</strong> <code>AbilityService.java</code>, <code>CooldownService.java</code>, ability classes, <code>src/main/resources/lang_en.yml</code>, <code>src/main/resources/lang_vi.yml</code>.</p>
-<p><strong>Constraints:</strong></p><ul><li>Dùng <code>player.sendActionBar(Component)</code>, không spam chat.</li><li>Cooldown feedback chỉ chạy sau khi đúng input active và ability có thể activate ngoại trừ cooldown.</li><li>Throttle mỗi player/ability khoảng 800-1000ms.</li><li>Success feedback lấy từ item config hoặc lang key; không hardcode Java user text.</li><li>Nếu cooldown/fail khi đánh entity thì không cancel vanilla hit.</li></ul>
-<p><strong>Definition of Done:</strong> Active skill thành công có Action Bar; cooldown attempt có Action Bar thời gian còn lại, không spam liên tục.</p>
-<p><strong>Risks:</strong> Sai thứ tự <code>canActivate</code>/cooldown sẽ báo cooldown khi người chơi không thực sự cast được.</p>
-<p><strong>Tests to add:</strong> Manual matrix sneak/not sneak, left/right click, air/block/entity, ready/cooldown.</p>
-</section>
+    <section id="t31" class="p1"><h3>T31 — WeaponClass Abstraction <span class="tag done">Foundation done</span></h3><pre>[Target]
+item/WeaponClass.java, ItemConfig.java, AbilityService.java
+[Goal]
+Dispatch behavior by MACE/SPEAR/SWORD class.
+[Files]
+New enum, config parsing, ability dispatch, item YAML field.
+[Constraints]
+Vanilla behavior must coexist: mace smash, spear throw, sword slash.
+[Definition of Done]
+Done now: WeaponClass enum, YAML parsing/default inference, weapon_class PDC write, class-aware menu/curse/container checks, forge visual/listener cleanup, and enchant policy cleanup. Carry-limit policy intentionally remains pure/id-based for unit tests and Bukkit-free logic. Follow-up: ability dispatch decisions where needed.
+[Risks]
+Regression in active trigger handling.
+[Tests to add]
+Class matrix for active and vanilla action.</pre></section>
 
-<section><h2>Ticket 12 — Vanilla/Custom Mace Conflict Guard</h2>
-<p><strong>Goal:</strong> Custom mace active không lẫn với vanilla mace hit/effect; Action Bar xác nhận lúc custom skill chạy.</p>
-<p><strong>Files:</strong> <code>AbilityService.java</code>, <code>AbilityListener.java</code>, <code>EffectMaceListener.java</code>, mace ability classes.</p>
-<p><strong>Constraints:</strong></p><ul><li>Active Mace chỉ <code>Sneak + Left Click</code>.</li><li>Entity hit + active success: cancel normal damage để tránh double-hit.</li><li>Entity hit + cooldown/fail: không cancel damage, vanilla hit vẫn chạy.</li><li>Passive mace behavior vẫn chạy trên hit thường khi không active.</li></ul>
-<p><strong>Definition of Done:</strong> Player phân biệt được vanilla/passive hit với custom active qua Action Bar; không double damage khi active success.</p>
-<p><strong>Risks:</strong> <code>EffectMaceListener</code> có generic ground slam có thể trùng visual/damage nếu bật config.</p>
-<p><strong>Tests to add:</strong> Manual Power Mace high-fall hit, sneak entity hit, non-sneak entity hit.</p>
-</section>
+    <section id="t32" class="p1"><h3>T32 — Warden Blade + Void Edge <span class="tag done">Done, Warden superseded</span></h3><pre>[Target]
+items/warden_blade.yml, items/void_edge.yml, new abilities
+[Goal]
+Implement ultimate swords.
+[Files]
+YAML, WardenBladeAbility, VoidEdgeAbility, commands, menu, lang.
+[Constraints]
+Warden Blade uses Reaper Ritual Core. Void Edge uses Void Ritual Core + Totem, no End Core. Both need Active + Passive + Curse.
+[Definition of Done]
+Done originally: Warden Blade and Void Edge were added. Current state after T42: Warden Blade is removed/superseded by Soul Sever Spear; Void Edge remains implemented and build passes.
+[Risks]
+Safe blink and cone hit detection.
+[Tests to add]
+Manual follow-up: Backstab blink destination, void curse cleanup on unequip, sonic cone, darkness/slowness, shield block, void damage multiplier.</pre></section>
 
-<section><h2>Ticket 13 — Spear Vanilla + Custom Skill Coexistence</h2>
-<p><strong>Goal:</strong> Spear right-click/throw/thrust vanilla vẫn chạy, custom spear skill chạy song song nếu item PDC là spear custom.</p>
-<p><strong>Files:</strong> <code>SpearListener.java</code>, <code>SpearProjectileService.java</code>, spear item YAML.</p>
-<p><strong>Constraints:</strong></p><ul><li>Không cancel <code>ProjectileLaunchEvent</code> nếu không bắt buộc.</li><li>Không làm mất/dupe spear khi custom tracking projectile.</li><li>Cooldown custom spear nếu có chỉ skip custom effect, không chặn vanilla action.</li><li>Success/cooldown feedback dùng Action Bar.</li></ul>
-<p><strong>Definition of Done:</strong> Spear vẫn đâm/lướt/throw theo vanilla; custom freeze/pin/effect vẫn chạy; quit/full-inventory không mất/dupe item.</p>
-<p><strong>Risks:</strong> Code hiện dùng <code>PickupStatus.DISALLOWED</code> và trả clone về inventory; cần test dupe/mất item kỹ.</p>
-<p><strong>Tests to add:</strong> Throw hit entity, hit block, miss timeout, quit while projectile active, inventory full return.</p>
-</section>
+    <section id="t33" class="p2"><h3>T33 — Info Menu UX <span class="tag planned">Planned</span></h3><pre>[Target]
+command/MaceInfoMenu.java
+[Goal]
+Tabs, pagination, core/material/weapon categories, admin give button.
+[Files]
+Menu class, lang, command.
+[Constraints]
+No hardcoded user text; cancel all inventory clicks.
+[Definition of Done]
+Readable GUI for all recipes and categories.
+[Risks]
+Inventory navigation state bugs.
+[Tests to add]
+Open/click/category/back/admin give.</pre></section>
 
-<section><h2>Ticket 14 — Holding Glow & Ground Pickup Reveal</h2>
-<p><strong>Goal:</strong> Cầm custom weapon là tự phát sáng/refresh theo config; nhặt weapon từ đất vẫn lộ vị trí theo config cũ.</p>
-<p><strong>Files:</strong> <code>EffectMaceListener.java</code> hoặc service mới, <code>MaceTrackerService.java</code>, <code>PerformanceConfig.java</code>, <code>config.yml</code>, lang files.</p>
-<p><strong>Constraints:</strong></p><ul><li>Scan main hand + offhand.</li><li>Không chỉ glow lúc craft lần đầu.</li><li>Không remove bừa <code>GLOWING</code> do plugin khác cấp; ưu tiên refresh ngắn/lease riêng.</li><li>Pickup from ground gọi reveal/tracking một lần và config-driven.</li></ul>
-<p><strong>Definition of Done:</strong> Main/offhand custom weapon refreshes glow; drop stops refresh; ground pickup triggers configured reveal.</p>
-<p><strong>Risks:</strong> Potion effect ownership không có native source tracking.</p>
-<p><strong>Tests to add:</strong> Manual main/offhand switch, drop/pickup, config off/on.</p>
-</section>
+    <section id="t34" class="p3"><h3>T34 — Resource / Data Folder Restructure <span class="tag done">Done</span></h3><pre>[Target]
+src/main/resources, ResourceBootstrap, ConfigManager, ItemRegistry, CoreRegistry, persistence stores
+[Goal]
+Split config layout into weapons/, cores/, items/, lang/ and move runtime data/logs into Saves/.
+[Files]
+ResourceBootstrap, ConfigManager, ItemRegistry, CoreRegistry, MaceRepository, ForgeSessionStore, RitualAltarStore, config.yml, lang files, resource YAML files.
+[Constraints]
+Backward compatible loader: new layout preferred, legacy layout still loads with warning. Do not delete user files automatically. Clean install and upgrade install must both work.
+[Definition of Done]
+Done: Bundled resources are organized as weapons/*.yml for weapon configs, cores/*.yml for cores, items/*.yml for materials/utility items, lang/en_US.yml and lang/vi_VN.yml for locale files. Legacy items/*.yml and root lang_en/lang_vi still load with warnings. Runtime state files save under Saves/: mace-data.yml, forge-sessions.yml, ritual_altars.yml, and player-usage.yml path is prepared. Build passes.
+[Risks]
+Old data folders on live servers; duplicate ids between legacy/new layout; plugin reload ordering.
+[Tests to add]
+Clean install resource copy, upgrade install with legacy items/cores/lang files, reload after migration, config language vi/en aliases.</pre></section>
 
-<section><h2>Ticket 15 — Per-Weapon Enchant Policy with Repair Allowed</h2>
-<p><strong>Goal:</strong> Data-driven enchant allow/deny per weapon. Repair vẫn được phép, thêm enchant bị cấm phải bị chặn.</p>
-<p><strong>Files:</strong> <code>ItemConfig.java</code>, listener mới <code>EnchantPolicyListener.java</code>, <code>MaceExclusivePlugin.java</code>, <code>src/main/resources/items/*.yml</code>, lang files.</p>
-<p><strong>Constraints:</strong></p><ul><li>Default mace allowlist: <code>MENDING</code>, <code>UNBREAKING</code>.</li><li>Spear allowlist: thêm <code>SHARPNESS</code>.</li><li>Support config <code>mode: allowlist</code> hoặc <code>mode: deny-all</code>.</li><li>Chặn enchanting table/anvil combine disallowed; anvil repair không thêm enchant thì cho phép.</li><li>Nhận diện custom item bằng PDC, không lore/name.</li></ul>
-<p><strong>Definition of Done:</strong> Mace bị chặn Sharpness/Fire Aspect/etc.; Spear được Sharpness nếu allow; repair vẫn hoạt động.</p>
-<p><strong>Risks:</strong> Enchantment registry/API 1.21 thay đổi; tránh hardcode deprecated nếu có lookup tốt hơn.</p>
-<p><strong>Tests to add:</strong> Manual enchanting table, anvil repair, allowed Mending book, disallowed Sharpness book for mace, allowed Sharpness for spear.</p>
-</section>
+    <section id="t37" class="p3"><h3>T37 — LuckPerms-compatible Permissions <span class="tag done">Done</span></h3><pre>[Target]
+plugin.yml, command/MaceCommand.java, admin menu actions
+[Goal]
+Make permissions manageable by LuckPerms with explicit command nodes instead of one coarse mace.admin gate.
+[Files]
+plugin.yml, MaceCommand.java, lang files, wiki_dev.html
+[Constraints]
+Use Bukkit permission API only (LuckPerms hooks not required). Keep backward compatibility: mace.admin should inherit or be accepted as wildcard/admin fallback.
+[Definition of Done]
+Done: Permission nodes exist and work: maceexclusive.command.info, maceexclusive.command.give, maceexclusive.command.reload, maceexclusive.command.reset, maceexclusive.admin. Legacy mace.admin is still accepted/admin-inheriting. Tab completion hides commands without permission. Console remains allowed for reload/reset/info and give keeps existing player-only behavior.
+[Risks]
+Breaking existing server setups that use mace.admin only.
+[Tests to add]
+OP, non-OP without permission, LuckPerms-granted give/reload/reset/info, tab completion matrix.</pre></section>
 
-<section><h2>Ticket 16 — I18n Cleanup for User-Facing Java Text</h2>
-<p><strong>Goal:</strong> Đưa UI/chat/actionbar/title/bossbar/inventory text hardcoded trong Java vào source lang files.</p>
-<p><strong>Files:</strong> <code>MaceCommand.java</code>, <code>MaceInfoMenu.java</code>, <code>MaceTrackerService.java</code>, <code>SpearProjectileService.java</code>, ability/listener classes, <code>lang_en.yml</code>, <code>lang_vi.yml</code>.</p>
-<p><strong>Constraints:</strong></p><ul><li>Không sửa <code>build/resources/main/lang_*.yml</code>.</li><li>Console logs có thể giữ tiếng Anh kỹ thuật; user-facing text phải lang/config.</li><li>Giữ placeholder chuẩn <code>%player%</code>, <code>%name%</code>, <code>%id%</code>, <code>%seconds%</code>.</li></ul>
-<p><strong>Definition of Done:</strong> Grep không còn hardcoded user-facing <code>sendMessage("...")</code>, GUI title, bossbar title trong Java.</p>
-<p><strong>Risks:</strong> Một số item-specific lore/message nên ở item YAML, không nhất thiết gom vào lang.</p>
-<p><strong>Tests to add:</strong> Manual language <code>en</code>/<code>vi</code> for command, GUI, tracker, actionbar.</p>
-</section>
-<section><h2>Ticket 17 — Singularity Gravity Mace Absorption Scaling & Backfire</h2>
-<p><strong>[Target]</strong> <code>gravity_mace</code> active ability and item config.</p>
-<p><strong>[Goal]</strong> Đổi Singularity Well từ damage-scaling sang reward-scaling: số mob/player hút được càng nhiều thì số tim vàng nhận càng nhiều.</p>
-<p><strong>[Files]</strong> <code>GravityMaceAbility.java</code>, <code>items/gravity_mace.yml</code>, <code>lang_en.yml</code>, <code>lang_vi.yml</code>, optional helper in <code>CooldownService.java</code> nếu cần set cooldown override 5 phút.</p>
-<p><strong>[Constraints]</strong></p><ul><li>Trong 3s pull, phải track unique LivingEntity hợp lệ bị hút/pulled pulse; tính cả mob và player, loại caster.</li><li>Collapse không còn gây damage theo số entity; thay bằng absorption: <code>pulledCount</code> tim vàng = <code>pulledCount * 2.0</code> absorption HP, có cap config.</li><li>Nếu <code>pulledCount == 0</code>: caster nhận đúng 3.0 damage HP (1.5 tim), Mining Fatigue theo config, và cooldown của skill thành 300s.</li><li>Nếu <code>pulledCount &gt; 6</code>: caster nhận Mining Fatigue theo config nhưng không mất máu.</li><li>Không phá block; không scan nặng mỗi tick; giữ interval hiện tại hoặc config-driven.</li></ul>
-<p><strong>[Definition of Done]</strong> Hút 5 entity cho +5 tim vàng; hút 0 entity gây 3 HP damage + đào chậm + 5 phút cooldown; hút 7+ entity chỉ thêm đào chậm, không tự mất máu.</p>
-<p><strong>[Risks]</strong> Nếu chỉ đếm entity ở collapse có thể bỏ sót entity đã bị hút rồi đi ra ngoài; nên track UUID trong lúc pull. Absorption overwrite có thể đè tim vàng plugin khác; dùng max(currentAbsorption, reward) hoặc config rõ.</p>
-<p><strong>[Tests to add]</strong> Manual/server test 0, 1, 5, 7 targets; verify cooldown remaining; verify absorption hearts; verify player target counted; verify offline/death task cleanup.</p>
-</section>
+    <section id="t35" class="p3"><h3>T35 — Balance Pass <span class="tag planned">Planned</span></h3><pre>[Target]
+items/*.yml, cores/*.yml, plan/wiki
+[Goal]
+Tune costs/curse/CD after systems are stable.
+[Files]
+YAML + docs.
+[Constraints]
+No End Core on Void Edge. Core center slot remains mandatory.
+[Definition of Done]
+Balance table matches recipes and wiki.
+[Risks]
+Existing server economy impact.
+[Tests to add]
+Craft each recipe and verify ingredient consumption.</pre></section>
 
-<section><h2>Ticket 18 — Soulfire Pyre Mace 20s Follow Aura, Lava Heal, Water Poison</h2>
-<p><strong>[Target]</strong> <code>soulfire_mace</code> active/passive/curse behavior.</p>
-<p><strong>[Goal]</strong> Biến active thành vòng lửa xanh bán kính 10 đi theo caster 20s; Lava Heal chỉ bật khi đang trong trạng thái skill; mang búa xuống nước bị Poison II 3s.</p>
-<p><strong>[Files]</strong> <code>SoulfirePyreMaceAbility.java</code>, <code>CurseService.java</code>, <code>items/soulfire_mace.yml</code>, lang files.</p>
-<p><strong>[Constraints]</strong></p><ul><li>Active vẫn theo scope hiện tại: Sneak + Left Click; activation success dùng Action Bar.</li><li>Không trừ HP cost nữa trừ khi user/config explicitly giữ; yêu cầu mới không nhắc self-cost nên remove gate <code>insufficient-hp</code> khỏi logic active.</li><li>Trong 20s, mỗi pulse lấy <code>player.getLocation()</code> làm center để vòng đi theo caster, không dùng center cố định lúc cast.</li><li>Radius mặc định 10 block; duration 20s; cooldown 40s.</li><li>Entity trong vòng bị cháy/soul burn; caster không bị hại bởi fire/lava vì passive kháng lửa hiện có.</li><li>Lava Heal chỉ khi active state còn TTL và caster đang trong lava; hồi máu có cap max health và pulse rate config.</li><li>Water curse nằm ở <code>CurseService</code>: scan inventory contents + offhand; nếu có <code>soulfire_mace</code> và chạm nước, apply Poison II 60 ticks.</li></ul>
-<p><strong>[Definition of Done]</strong> Vòng soul fire đi theo người cầm búa 20s, đốt entity trong radius 10; đứng trong lava trong trạng thái active hồi máu; xuống nước khi chỉ mang búa trong inventory cũng bị Poison II 3s.</p>
-<p><strong>[Risks]</strong> Task 20s dễ leak nếu player quit/death/world null; water curse interval quá chậm có thể không “lập tức” như yêu cầu — cần interval thấp hoặc event/tick path phù hợp.</p>
-<p><strong>[Tests to add]</strong> Manual active follow movement, quit/death during active, lava heal only active/not inactive, water poison for main/offhand/backpack, cooldown 40s.</p>
-</section>
+    <section id="t38" class="p1"><h3>T38 — Core Naming + Short Lore Cleanup <span class="tag done">Done</span></h3><pre>[Target]
+weapons/*.yml, cores/*.yml, items/*.yml, wiki_dev.html
+[Goal]
+Normalize ritual-derived core names and shorten item/weapon/core lore.
+[Files]
+Resource YAML only, wiki_dev after build.
+[Constraints]
+All cores derived from ritual_core use display name "&lt;Type&gt; Ritual Core". Lore max 3 short lines: flavor, obtain/craft, curse if any. No edits to build/resources/main.
+[Definition of Done]
+Done: active YAML names/lore were shortened for edited/new resources; clean build has no stale warden_blade generated resource.
+[Risks]
+Breaking docs/examples that reference old Ego Core or Sculk Core names.
+[Tests to add]
+Manual item give/menu inspect for all cores/weapons/materials.</pre></section>
 
-<section><h2>Ticket 19 — Warden Spear No HP Cost, Darkness Curse, Sculk Kill Proc</h2>
-<p><strong>[Target]</strong> Warden Spear item id <code>sonic_mace</code> and spear/warden integration.</p>
-<p><strong>[Goal]</strong> Active Sonic Boom không mất máu; curse dùng Darkness đúng theme Warden; kill có 10% tạo cụm sculk/warden-shrine và Warden liên quan không đánh chủ spear.</p>
-<p><strong>[Files]</strong> <code>SonicWardenMaceAbility.java</code>, optional new <code>WardenSpearSculkService.java</code>, <code>EffectMaceListener.java</code> or <code>CurseService.java</code> for holding glow if current config insufficient, <code>items/sonic_mace.yml</code>, lang files.</p>
-<p><strong>[Constraints]</strong></p><ul><li>Remove HP cost check and player health deduction from active.</li><li>Replace Blindness with <code>PotionEffectType.DARKNESS</code> where API supports it; fallback only if server API lacks Darkness.</li><li>Keep Slowness configurable if already part of curse.</li><li>Holding Warden Spear still applies Glowing via existing holding glow refresh/config; do not disable it.</li><li>On kill by Warden Spear holder, roll 10%; place only safe sculk blocks around death location without griefing protected/unsafe blocks where possible.</li><li>If a Warden is spawned/associated by this proc, tag it with owner UUID metadata/PDC where possible and intercept target events so it will not target that owner.</li><li>Do not break vanilla spear projectile behavior; custom spear projectile should coexist.</li></ul>
-<p><strong>[Definition of Done]</strong> Warden Spear active fires at any positive HP without self-damage; post-active curse is Darkness not Blindness; holder glows; 10% kill proc can create sculk/shrieker/catalyst feature; owner is ignored by spawned/associated Warden.</p>
-<p><strong>[Risks]</strong> Spawning Warden directly may be too strong; if using Sculk Shrieker/catalyst, “Warden đó không tấn công” needs reliable owner tagging on later spawn events.</p>
-<p><strong>[Tests to add]</strong> Manual active at low HP, potion effect type check, glowing while held, 100 mocked/forced kills for proc, Warden target owner vs other players, projectile no-dupe regression.</p>
-</section>
+    <section id="t39" class="p1"><h3>T39 — Ritual Crafting Table Safety Rework <span class="tag done">Done</span></h3><pre>[Target]
+ritual/ package, config.yml, lang files, ritual table item/config
+[Goal]
+Turn Crafting Table + Ritual Core into Ritual Crafting Table with 3-4s smoke ritual, lightning, config-driven effects, timed crafts, and 1h table cooldown after successful core/weapon craft.
+[Files]
+RitualAltarService/Listener/Menu/Store, ConfigManager, config.yml, lang files, wiki_dev.html.
+[Constraints]
+Anti-dupe first: transform/craft consume atomically; GUI locks ingredients while crafting; close/reload/death/disconnect cannot duplicate inputs/result. Ritual Core table recipe = any mob head + 8 obsidian, 10s.
+[Definition of Done]
+Done: delayed smoke/lightning transform, locked timed crafting, safe ingredient return on close, and table cooldown implemented. Cooldown is runtime/in-memory first slice.
+[Risks]
+Inventory GUI dupe via shift/number/offhand clicks; server reload mid-craft.
+[Tests to add]
+Click-spam, shift-click, number key, offhand swap, close, death, disconnect, reload during craft, cooldown expiry.</pre></section>
 
-<section><h2>Ticket 20 — Docs/Report Sync After Gameplay Implementation</h2>
-<p><strong>[Target]</strong> Project tracking docs and root wiki.</p>
-<p><strong>[Goal]</strong> Sau khi builder triển khai Tickets 17-19, cập nhật report thành trạng thái implementation complete kèm build/test kết quả.</p>
-<p><strong>[Files]</strong> <code>docs/implementation_report.html</code>, <code>docs/scratch_base_todo.html</code>, <code>docs/plan.html</code>, root <code>wiki.html</code> nếu gameplay docs public bị ảnh hưởng.</p>
-<p><strong>[Constraints]</strong></p><ul><li>Không paste full plan vào chat; ghi active docs trước.</li><li>Không sửa generated <code>build/resources/main</code>.</li><li>Build command phải timeout 120000ms: <code>if (Test-Path -LiteralPath ".\\gradlew.bat") { .\\gradlew.bat build } else { gradle build }</code>.</li></ul>
-<p><strong>[Definition of Done]</strong> Report ghi rõ files changed, behavior changed, build result, remaining manual QA; todo milestone tương ứng marked done only after build pass.</p>
-<p><strong>[Risks]</strong> Báo done trước khi build/manual QA sẽ che lỗi runtime Bukkit API.</p>
-<p><strong>[Tests to add]</strong> Docs grep for old wrong claims: Gravity damage-scaling, Soulfire 5s fixed storm/HP cost, Warden Spear HP cost/Blindness.</p>
-</section>
-</main></body></html>
+    <section id="t40" class="p1"><h3>T40 — Sculk + Avarice Core Rework <span class="tag done">Done</span></h3><pre>[Target]
+core/RitualService.java, new material YAML, cores/*.yml, recipes
+[Goal]
+Replace direct Sculk Core ritual with Warden-drop material recipe; replace Ego Core with Avarice Ritual Core and Plundered Heart chain.
+[Files]
+RitualService, RecipeRegistry/RitualTable recipes, cores/sculk_core.yml, cores/ego_core.yml or avarice_core.yml, items/*.yml, lang files.
+[Constraints]
+Warden drops new Sculk material at 10%. Sculk Ritual Core recipe uses 4 material + Ritual Core + Echo Shard + Warden summon block. Sculk hand curse: 20% every 20s Darkness + Action Bar. Plundered Heart drops 25% when Evoker killed by axe; near village triggers raid, consumes item, Weakness+Nausea 5m.
+[Definition of Done]
+Done: Warden Resonance Shard, Plundered Heart, Avarice Ritual Core resources and hooks added; old direct Sculk transform disabled/migrated; CMD collisions fixed.
+[Risks]
+Raid trigger spam; accidental consuming multiple Plundered Hearts; old Ego Core compatibility.
+[Tests to add]
+Warden drop odds, Sculk recipe, hand curse, Evoker axe drop, village raid trigger single-consume.</pre></section>
+
+    <section id="t41" class="p1"><h3>T41 — Avarice Weapon Mechanics <span class="tag done">Done</span></h3><pre>[Target]
+new/updated Avarice weapon YAML and ability class
+[Goal]
+Implement Tax Evade passive, Bounty Hunt active, and greed curse.
+[Files]
+AbilityService, new Avarice ability/listener, weapon YAML, config/lang.
+[Constraints]
+Tax Evade: only every 30s, critical hit 10%, steals exactly one eligible item; never steals custom singleton/ancient weapon/core. Active requires >=5 stolen rage, Shift+hit, 2m cooldown, summons 3-5 temporary Pillager/Vindicator ghosts tracking target for 2m with timer. Curse every 30s consumes Emerald or Gold Ingot; if none, true damage + disable natural regen.
+[Definition of Done]
+Done: Avarice ability/listener/resource added with Tax Evade, Bounty Hunt minions, and greed tribute curse. Manual PvP validation still recommended.
+[Risks]
+Inventory theft grief balance, mob AI cleanup, stealing protected custom items.
+[Tests to add]
+PvP steal matrix, mob held item steal, target death/logout, full attacker inventory, custom item blacklist, summon cleanup.</pre></section>
+
+    <section id="t42" class="p1"><h3>T42 — Soul Sever Spear Replacement <span class="tag done">Done</span></h3><pre>[Target]
+Replace Warden Blade item/design with The Soul Sever Spear
+[Goal]
+Turn Warden Blade slot into passive-only Soul Sever Spear with anti-heal/totem reversal and Soul Anchor curse.
+[Files]
+Remove/rename warden_blade YAML/code path, add soul_sever_spear YAML/ability, ResourceBootstrap, AbilityService, lang/wiki_dev.
+[Constraints]
+Passive-only. Hit has 20% chance to mark target 10s. Mark reverses healing/food/totem into damage/hunger and soul particles; attacker gets chat notice. Holder cannot jump while holding; remove effect on unequip. Shared pain proc 20%.
+[Definition of Done]
+Done: warden_blade resource removed from source/generation; Soul Sever Spear resource/ability registered; clean build passes with no generated warden_blade.
+[Risks]
+Potion/food/totem event ordering; permanent no-jump bug; too strong in PvP.
+[Tests to add]
+Heal reversal, golden apple, potion, natural regen, totem, hunger, jump restore, damage sharing.</pre></section>
+
+    <section id="t43" class="p1"><h3>T43 — Raid Ledger Material <span class="tag done">Done (first slice)</span></h3><pre>[Target]
+New material Vile Ledger of the Raid Captain and raid encounter/drop hook
+[Goal]
+Add rare material for Soul Sever Spear from max-level raid final wave Evoker boss.
+[Files]
+new item YAML, SpecialItemListener or new RaidListener, ResourceBootstrap, lang/wiki_dev.
+[Constraints]
+If full special boss is too risky, first slice may implement safe final-wave Evoker/Ravager drop hook and mark custom boss AI follow-up. Drop should not be farmable from normal Evokers.
+[Definition of Done]
+Done first slice: Vile Ledger material added; drop hook uses Evoker death + nearby Ravager fallback. Full max-level final-wave boss remains future refinement.
+[Risks]
+Paper raid wave API limitations; compatibility with raid farms.
+[Tests to add]
+Raid level/wave condition, normal Evoker no drop, boss death once, restart during raid.</pre></section>
+
+    <section id="t44" class="p2"><h3>T44 — Per-item Discord Webhook Settings <span class="tag done">Done</span></h3><pre>[Target]
+DiscordWebhookService, ConfigManager, weapon/item/core YAML configs
+[Goal]
+Move Discord ownership notification toggles/colors into each item config while keeping discord.yml as global/default fallback.
+[Files]
+ConfigManager.java, DiscordWebhookService.java, MaceManager.java, resource YAML files, wiki_dev/docs.
+[Constraints]
+No blocking I/O on main thread. Global discord.yml enabled/url still controls webhook transport. Per-item config can disable notification or override color. Legacy discord.yml colors remain fallback.
+[Definition of Done]
+Done: weapon configs define discord.enabled/color; ConfigManager reads per-item discord settings before discord.yml fallback; DiscordWebhookService respects per-item enabled; MaceManager sends webhook for configured acquisitions beyond singleton-only path. Build passes.
+[Risks]
+Spam from non-singleton utility items; keep default disabled/true semantics explicit.
+[Tests to add]
+Craft/give/pickup singleton weapon, non-singleton cursed sword, material/core notification toggle false/true.</pre></section>
+
+    <section id="t36" class="p3"><h3>T36 — Docs Restructure <span class="tag done">Done in this pass</span></h3><pre>[Target]
+docs/plan.html, docs/implementation_tickets.html, docs/scratch_base_todo.html
+[Goal]
+Make the three docs point to each other and use one readable structure.
+[Files]
+The three docs plus AGENTS.md rules.
+[Constraints]
+No obsolete out-of-scope list. plan=design, tickets=implementation, todo=checklist.
+[Definition of Done]
+Cross-links exist and docs are shorter/consistent.
+[Risks]
+Wiki may still describe planned behavior; keep status wording clear.
+[Tests to add]
+Open each doc and verify links/sections.</pre></section>
+  </main>
+</div></body></html>

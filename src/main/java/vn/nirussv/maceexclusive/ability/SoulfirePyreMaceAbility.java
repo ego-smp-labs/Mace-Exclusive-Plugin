@@ -19,6 +19,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
+import vn.nirussv.maceexclusive.effect.SafeParticleSpawner;
 
 import java.util.UUID;
 import java.util.HashMap;
@@ -95,9 +96,9 @@ public final class SoulfirePyreMaceAbility implements ActiveAbility, PassiveAbil
                     double x = Math.cos(angle) * radius;
                     double z = Math.sin(angle) * radius;
                     Location particleLoc = center.clone().add(x, 0.25D, z);
-                    particleLoc.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, particleLoc, 1, 0.1, 0.1, 0.1, 0.0);
+                    SafeParticleSpawner.spawn(particleLoc.getWorld(), Particle.SOUL_FIRE_FLAME, particleLoc, 1, 0.1, 0.1, 0.1, 0.0);
                     if (i % 6 == 0) {
-                        center.getWorld().spawnParticle(Particle.SOUL, center.clone().add(x / 2.0, 0.5D, z / 2.0), 1, 0.0, 0.0, 0.0, 0.01);
+                        SafeParticleSpawner.spawn(center.getWorld(), Particle.SOUL, center.clone().add(x / 2.0, 0.5D, z / 2.0), 1, 0.0, 0.0, 0.0, 0.01);
                     }
                 }
                 center.getWorld().playSound(center, Sound.BLOCK_CAMPFIRE_CRACKLE, 0.6f, 0.5f);
@@ -108,7 +109,7 @@ public final class SoulfirePyreMaceAbility implements ActiveAbility, PassiveAbil
                         living.damage(dmg, player);
                         living.setFireTicks(Math.max(living.getFireTicks(), 80));
                         living.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 60, 0, false, false, false));
-                        living.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, living.getLocation().add(0.0, 1.0, 0.0), 5);
+                        SafeParticleSpawner.spawn(living.getWorld(), Particle.SOUL_FIRE_FLAME, living.getLocation().add(0.0, 1.0, 0.0), 5);
                     }
                 }
 
@@ -117,7 +118,7 @@ public final class SoulfirePyreMaceAbility implements ActiveAbility, PassiveAbil
                         ? 20.0D
                         : player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).getValue();
                     player.setHealth(Math.min(maxHealth, player.getHealth() + lavaHeal));
-                    player.getWorld().spawnParticle(Particle.HEART, player.getLocation().add(0.0, 1.2D, 0.0), 2, 0.25, 0.2, 0.25, 0.0);
+                    SafeParticleSpawner.spawn(player.getWorld(), Particle.HEART, player.getLocation().add(0.0, 1.2D, 0.0), 2, 0.25, 0.2, 0.25, 0.0);
                 }
 
                 secondsElapsed++;
@@ -180,7 +181,7 @@ public final class SoulfirePyreMaceAbility implements ActiveAbility, PassiveAbil
                     continue;
                 }
                 state.target.damage(2.0D, state.attacker);
-                state.target.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, state.target.getLocation().add(0.0, 1.0, 0.0), 5, 0.3, 0.5, 0.3, 0.01);
+                SafeParticleSpawner.spawn(state.target.getWorld(), Particle.SOUL_FIRE_FLAME, state.target.getLocation().add(0.0, 1.0, 0.0), 5, 0.3, 0.5, 0.3, 0.01);
                 state.remainingTicks--;
             }
             if (soulBurns.isEmpty() && soulBurnTask != null) {

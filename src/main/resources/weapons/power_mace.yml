@@ -3,6 +3,9 @@ singleton: true
 name: "&b&lMACE OF POWER"
 material: MACE
 custom-model-data: 2001
+discord:
+  enabled: true
+  color: 15844367
 enchant-policy:
   mode: allowlist
   allowed:
@@ -26,8 +29,8 @@ recipe:
     audience: player
     text: "&aYou forged %name%!"
   shape:
-    - " H "
     - " B "
+    - " H "
     - " N "
   ingredients:
     H: HEAVY_CORE
@@ -39,6 +42,18 @@ curse:
   hold:
     speed_penalty: 0.1
 effects:
+  hold:
+    enabled: true
+    particle: CRIT
+    count: 6
+    offset-x: 0.3
+    offset-y: 0.2
+    offset-z: 0.3
+    extra: 0.02
+    sound: BLOCK_AMETHYST_BLOCK_CHIME
+    sound-volume: 0.15
+    sound-pitch: 1.2
+    interval-ticks: 20
   hit:
     damage: 4.0
     cooldown-seconds: 8

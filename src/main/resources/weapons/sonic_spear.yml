@@ -1,8 +1,11 @@
-enabled: true
+﻿enabled: true
 singleton: true
 name: "&9&lWARDEN SPEAR"
 material: NETHERITE_SPEAR
 custom-model-data: 10005
+discord:
+  enabled: true
+  color: 1752220
 enchant-policy:
   mode: allowlist
   allowed:
@@ -31,7 +34,7 @@ recipe:
     - "SCD"
     - "GEG"
   ingredients:
-    C: sculk_core
+    C: sculk_ritual_core
     B: NETHERITE_SPEAR
     E: ECHO_SHARD:16
     D: DIAMOND_BLOCK
@@ -40,6 +43,18 @@ recipe:
 cooldowns:
   sonic_boom: 35
 effects:
+  hold:
+    enabled: true
+    particle: SCULK_SOUL
+    count: 6
+    offset-x: 0.3
+    offset-y: 0.25
+    offset-z: 0.3
+    extra: 0.02
+    sound: ENTITY_WARDEN_HEARTBEAT
+    sound-volume: 0.12
+    sound-pitch: 1.0
+    interval-ticks: 20
   passive:
     damage_per_4_blocks: 1.5
     max_bonus_damage: 6.0

@@ -1,8 +1,11 @@
-enabled: true
+﻿enabled: true
 singleton: true
 name: "&5&lMACE OF CHAOS &k|&r &5&lGLITCH"
 material: MACE
 custom-model-data: 2002
+discord:
+  enabled: true
+  color: 10181046
 enchant-policy:
   mode: allowlist
   allowed:
@@ -27,17 +30,29 @@ recipe:
     text: "&aYou forged %name%!"
   shape:
     - "OBO"
-    - "HWH"
-    - "OVO"
+    - "HVH"
+    - "OWO"
   ingredients:
     O: obsidian_chaos
-    B: blood_core
-    V: void_core
+    B: blood_ritual_core
+    V: void_ritual_core
     W: WITHER_ROSE
     H: cursed_player_head
 cooldowns:
   rage: 300
 effects:
+  hold:
+    enabled: true
+    particle: WITCH
+    count: 7
+    offset-x: 0.35
+    offset-y: 0.25
+    offset-z: 0.35
+    extra: 0.02
+    sound: ENTITY_ENDERMAN_AMBIENT
+    sound-volume: 0.12
+    sound-pitch: 0.6
+    interval-ticks: 20
   teleport:
     range: 5.0
   rage:

@@ -14,6 +14,7 @@ import org.bukkit.Particle;
 import org.bukkit.Material;
 import vn.nirussv.maceexclusive.MaceExclusivePlugin;
 import vn.nirussv.maceexclusive.config.ConfigManager;
+import vn.nirussv.maceexclusive.effect.SafeParticleSpawner;
 import vn.nirussv.maceexclusive.task.InventoryShuffleTask;
 import vn.nirussv.maceexclusive.util.Scheduler;
 
@@ -279,9 +280,9 @@ public final class ChaosMaceAbility implements ActiveAbility, PassiveAbility {
             Material below = candidate.clone().add(0, -1, 0).getBlock().getType();
             
             if (feet.isAir() && head.isAir() && below.isSolid() && below != Material.LAVA && below != Material.FIRE) {
-                world.spawnParticle(Particle.REVERSE_PORTAL, origin.clone().add(0, 1, 0), 16, 0.2, 0.3, 0.2, 0.05);
+                SafeParticleSpawner.spawn(world, Particle.END_ROD, origin.clone().add(0, 1, 0), 16, 0.2, 0.3, 0.2, 0.05);
                 target.teleport(candidate.setDirection(origin.getDirection()));
-                world.spawnParticle(Particle.PORTAL, target.getLocation().add(0, 1, 0), 16, 0.2, 0.3, 0.2, 0.05);
+                SafeParticleSpawner.spawn(world, Particle.END_ROD, target.getLocation().add(0, 1, 0), 16, 0.2, 0.3, 0.2, 0.05);
                 world.playSound(target.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.8f, 1.0f);
                 return;
             }

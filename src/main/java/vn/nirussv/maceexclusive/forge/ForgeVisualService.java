@@ -5,15 +5,14 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.Bukkit;
+import vn.nirussv.maceexclusive.effect.SafeParticleSpawner;
+import vn.nirussv.maceexclusive.item.WeaponClass;
 
 public final class ForgeVisualService {
 
-    private long lastParticleWarningMillis;
-
     public void playCharge(Block block, String itemId, long elapsedTicks, long totalTicks) {
         if (block == null || block.getWorld() == null) return;
-        if (itemId != null && itemId.contains("spear")) {
+        if (WeaponClass.infer(itemId, null) == WeaponClass.SPEAR) {
             playSpearCharge(block, elapsedTicks);
             return;
         }
@@ -64,13 +63,7 @@ public final class ForgeVisualService {
     }
 
     private void safeSpawn(World world, Particle particle, Location location, int count, double offsetX, double offsetY, double offsetZ, double extra) {
-        try {
-            world.spawnParticle(particle, location, count, offsetX, offsetY, offsetZ, extra);
-        } catch (IllegalArgumentException exception) {
-            warnParticle(world, particle, exception);
-        } catch (RuntimeException exception) {
-            warnParticle(world, particle, exception);
-        }
+        SafeParticleSpawner.spawn(world, particle, location, count, offsetX, offsetY, offsetZ, extra);
     }
 
     private void safePlaySound(World world, Location location, Sound sound, float volume, float pitch) {
@@ -80,11 +73,4 @@ public final class ForgeVisualService {
         }
     }
 
-    private void warnParticle(World world, Particle particle, RuntimeException exception) {
-        long now = System.currentTimeMillis();
-        if (now - lastParticleWarningMillis >= 30_000L) {
-            lastParticleWarningMillis = now;
-            Bukkit.getLogger().warning("[Mace-Exclusive] Skipping unsupported forge particle " + particle + ": " + exception.getMessage());
-        }
-    }
 }

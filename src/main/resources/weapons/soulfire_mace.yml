@@ -3,6 +3,9 @@ singleton: true
 name: "&b&lSOULFIRE PYRE MACE"
 material: MACE
 custom-model-data: 10011
+discord:
+  enabled: true
+  color: 2062527
 enchant-policy:
   mode: allowlist
   allowed:
@@ -26,8 +29,8 @@ recipe:
     audience: player
     text: "&aYou forged %name%!"
   shape:
-    - "FCF"
-    - "GBS"
+    - "FBF"
+    - "GCS"
     - "FNF"
   ingredients:
     C: soulfire_core
@@ -39,6 +42,18 @@ recipe:
 cooldowns:
   fire_storm: 40
 effects:
+  hold:
+    enabled: true
+    particle: SOUL_FIRE_FLAME
+    count: 6
+    offset-x: 0.3
+    offset-y: 0.25
+    offset-z: 0.3
+    extra: 0.02
+    sound: BLOCK_SOUL_SAND_STEP
+    sound-volume: 0.15
+    sound-pitch: 0.9
+    interval-ticks: 20
   active:
     radius: 10.0
     duration: 20

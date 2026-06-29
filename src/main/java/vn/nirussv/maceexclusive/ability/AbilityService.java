@@ -57,11 +57,7 @@ public final class AbilityService {
         ItemStack weapon = event.getItem();
         Optional<String> weaponId = itemMatcher.match(weapon);
         if (weaponId.isEmpty()) return;
-        LivingEntity target = action == Action.LEFT_CLICK_AIR ? findLookTarget(player, 8.0D) : null;
-        if (target == null) {
-            applyMissCurse(player, weaponId.get());
-            return;
-        }
+        LivingEntity target = findLookTarget(player, 8.0D);
         AbilityContext context = new AbilityContext(player, player.getLocation(), weapon, weaponId.get(), target, null);
         for (ActiveAbility ability : activeAbilities.getOrDefault(weaponId.get(), List.of())) {
             if (!ability.canActivate(context)) continue;
@@ -71,6 +67,7 @@ public final class AbilityService {
             event.setCancelled(true);
             return;
         }
+        if (target == null) applyMissCurse(player, weaponId.get());
     }
 
     private void applyMissCurse(Player player, String weaponId) {
@@ -80,6 +77,10 @@ public final class AbilityService {
         }
         if ("vampiric_mace".equals(weaponId)) {
             player.damage(6.0D);
+            return;
+        }
+        if ("void_edge".equals(weaponId)) {
+            player.damage(4.0D);
         }
     }
 
@@ -181,6 +182,23 @@ public final class AbilityService {
         registerActive(soulfireMaceAbility);
         registerPassive(soulfireMaceAbility);
         plugin.getServer().getPluginManager().registerEvents(soulfireMaceAbility, plugin);
+
+        // Avarice Blade
+        AvariceSwordAbility avariceSwordAbility = new AvariceSwordAbility(plugin, configManager, itemMatcher, cooldownService);
+        registerActive(avariceSwordAbility);
+        registerPassive(avariceSwordAbility);
+        plugin.getServer().getPluginManager().registerEvents(avariceSwordAbility, plugin);
+
+        // Soul Sever Spear (passive-only)
+        SoulSeverSpearAbility soulSeverSpearAbility = new SoulSeverSpearAbility(plugin, configManager, itemMatcher);
+        registerPassive(soulSeverSpearAbility);
+        plugin.getServer().getPluginManager().registerEvents(soulSeverSpearAbility, plugin);
+
+        // Void Edge
+        VoidEdgeAbility voidEdgeAbility = new VoidEdgeAbility(plugin, configManager, cooldownService);
+        registerActive(voidEdgeAbility);
+        registerPassive(voidEdgeAbility);
+        plugin.getServer().getPluginManager().registerEvents(voidEdgeAbility, plugin);
     }
 
     private void notifyActivation(Player player, String weaponId, String abilityId) {

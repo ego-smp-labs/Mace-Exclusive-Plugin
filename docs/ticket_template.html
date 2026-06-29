@@ -1,0 +1,55 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>Ticket Template</title><style>body{font-family:Inter,Arial,sans-serif;background:#0b0f19;color:#e5e7eb;padding:32px;line-height:1.6}main{max-width:800px;margin:auto}section{background:#111827;border:1px solid #273244;border-radius:14px;padding:22px;margin:18px 0}h1,h2,h3{color:#fff}code{background:#0b1220;padding:2px 5px;border-radius:5px}.tag{display:inline-block;border:1px solid #475569;border-radius:999px;padding:2px 8px;margin:2px;font-size:.78rem}</style></head><body><main>
+<h1>Ticket Template</h1>
+<p>Sao chép template này vào <code>docs/implementation_tickets.html</code> khi thêm ticket mới.</p>
+<pre><code>&lt;section id="tNN" class="pX"&gt;
+&lt;h3&gt;Ticket NN — PX: &lt;Title ngắn&gt;&lt;/h3&gt;
+&lt;p&gt;&lt;span class="tag"&gt;PX Bug/Feature/Docs&lt;/span&gt; &lt;span class="tag"&gt;Idea/Planned/In Progress/Done&lt;/span&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;[Target]&lt;/strong&gt; &lt;file/class/feature chính&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;[Goal]&lt;/strong&gt; &lt;mục tiêu 1-2 câu&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;[Files]&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;path/to/File.java&lt;/code&gt; — &lt;vai trò&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;path/to/config.yml&lt;/code&gt; — &lt;vai trò&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;[Constraints]&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;rule cụ thể, đo lường được&gt;&lt;/li&gt;
+&lt;li&gt;&lt;rule cụ thể&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;[Definition of Done]&lt;/strong&gt; &lt;tiêu chí accept rõ ràng&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;[Risks]&lt;/strong&gt; &lt;rủi ro kỹ thuật/compatibility&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;[Tests to add]&lt;/strong&gt; &lt;test cases cụ thể&gt;&lt;/p&gt;
+&lt;/section&gt;</code></pre>
+
+<h2>Priority Tags</h2>
+<ul>
+<li><span class="tag" style="border-color:#ef4444">P0</span> — Fix bug khẩn cấp (crash, mất đồ, không hoạt động).</li>
+<li><span class="tag" style="border-color:#f59e0b">P1</span> — Feature core (thay đổi hành vi chính, kiến trúc mới).</li>
+<li><span class="tag" style="border-color:#06b6d4">P2</span> — Feature mở rộng (thêm vũ khí, UI).</li>
+<li><span class="tag" style="border-color:#a855f7">P3</span> — Polish (balance, docs, cleanup).</li>
+</ul>
+
+<h2>Status Tags</h2>
+<ul>
+<li><span class="tag">Idea</span> — Ý tưởng, chưa lên kế hoạch chi tiết.</li>
+<li><span class="tag">Planned</span> — Đã có ticket chi tiết, sẵn sàng cho backend.</li>
+<li><span class="tag">In Progress</span> — Backend đang làm.</li>
+<li><span class="tag">Done</span> — Hoàn thành, build pass, đã report.</li>
+</ul>
+
+<h2>Quy tắc</h2>
+<ul>
+<li>1 ticket = 1 PR/commit. Không gộp nhiều ticket.</li>
+<li>Build pass (timeout 120s) trước khi báo Done.</li>
+<li>Core luôn ở chính giữa (slot 4) trong mọi recipe.</li>
+<li>UTF-8. Adventure API. PDC identity.</li>
+<li>Check offhand slot trong mọi inventory validation.</li>
+<li>Không paste full plan vào chat. Ghi docs trước.</li>
+</ul>
+</main></body></html>

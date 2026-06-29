@@ -1,0 +1,9 @@
+enabled: true
+name: "&aReaper Ritual Core"
+material: HEAVY_CORE
+custom-model-data: 3010
+lore:
+  - "&7A ritual core claimed by death, resonating with withered souls."
+  - "&cInstability: &fAttracts hostile attention when carried."
+recipe:
+  enabled: false

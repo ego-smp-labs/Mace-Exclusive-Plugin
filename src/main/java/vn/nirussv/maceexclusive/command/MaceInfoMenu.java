@@ -102,7 +102,7 @@ public final class MaceInfoMenu implements Listener {
     }
 
     private boolean isWeaponLike(String id) {
-        return id.endsWith("_mace") || id.endsWith("_spear") || id.equals("cursed_sword");
+        return configManager.isWeaponItem(id);
     }
 
     private ItemStack menuIcon(String id) {

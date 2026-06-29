@@ -1,101 +1,60 @@
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>Implementation Report — Current Architecture Snapshot</title><style>body{font-family:Inter,Arial,sans-serif;background:#0b0f19;color:#e5e7eb;line-height:1.6;padding:32px}main{max-width:950px;margin:auto}section{background:#111827;border:1px solid #273244;border-radius:14px;padding:22px;margin:18px 0}h1,h2{color:#fff}code{background:#0b1220;padding:2px 5px;border-radius:5px}.warn{border-left:4px solid #f59e0b}.ok{border-left:4px solid #10b981}</style></head><body><main>
-<h1>Implementation Report — Current Snapshot & Phase 3 Reset</h1>
-<section class="ok"><h2>Đã có trong codebase</h2><ul>
-<li>Dynamic item/core registry bằng String ID và PDC chuẩn <code>mace_exclusive:item_id</code>/<code>core_id</code>.</li>
-<li>Direct craft -> Lodestone Forge pipeline: charge 3s, forge 5 phút, nổ lần 1/lần 2, reservation theo item_id.</li>
-<li>Một số ability class đã tồn tại: Power, Chaos, Void, Vampiric, Gravity, Sonic, Soulfire.</li>
-<li>Special materials/core files đã xuất hiện: End Core, disabled historical Chaos Core, Obsidian Chaos, Challenger's Eye.</li>
-<li>Build gần nhất trước Phase 3 docs reset đã pass.</li>
-<li>Post-review cleanup removed active Chronos/Spear hold-curse logic from <code>CurseService</code>; remaining spear projectile classes/resources are disabled/unregistered Phase 4 historical code only.</li>
-</ul></section>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Mace Exclusive — Implementation Report</title>
+  <style>
+    :root{--bg:#0b0f19;--panel:#111827;--line:#273244;--text:#e5e7eb;--muted:#94a3b8;--green:#10b981;--gold:#f59e0b;--red:#ef4444;--cyan:#06b6d4}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;line-height:1.6;padding:32px}main{max-width:1050px;margin:auto}section{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;margin:18px 0}h1,h2{color:#fff}.tag{display:inline-block;border:1px solid #475569;border-radius:999px;padding:2px 8px;margin:2px;font-size:.78rem}.done{border-color:var(--green);color:#bbf7d0}.warn{border-left:4px solid var(--gold)}.risk{border-left:4px solid var(--red)}.ok{border-left:4px solid var(--green)}code{background:#0b1220;padding:2px 5px;border-radius:5px}table{width:100%;border-collapse:collapse;margin:12px 0}td,th{border:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}th{background:#172033}.muted{color:var(--muted)}
+  </style>
+</head>
+<body><main>
+  <h1>Mace Exclusive — Implementation Report</h1>
+  <p class="muted">Final sync after T38-T43 continuation. Active plan: <a href="plan.html">plan.html</a>, tickets: <a href="implementation_tickets.html">implementation_tickets.html</a>, todo: <a href="scratch_base_todo.html">scratch_base_todo.html</a>.</p>
 
-<section class="warn"><h2>Audit gaps cần xử lý trước khi gọi done</h2><ul>
-<li>Docs cũ còn mâu thuẫn nên đã được reset thành Phase 3 Mace-First.</li>
-<li>Spear gameplay vẫn có dấu hiệu tồn tại trong code/plugin registration; Phase 3 yêu cầu disable để tập trung mace.</li>
-<li>Cần xác minh mọi reference <code>chrono_core</code> đã đổi thành <code>end_core</code>.</li>
-<li>Particle/sound chưa được chuẩn hóa thành profile đầy đủ cho mọi mace; một số class có visual riêng nhưng chưa đồng đều.</li>
-<li>Chưa có automated tests đủ mạnh cho forge race, chaos hotbar shuffle/no item loss, void resurrection.</li>
-</ul></section>
+  <section class="ok"><h2>Completed in T38-T43</h2>
+    <table><thead><tr><th>Ticket</th><th>Status</th><th>Summary</th></tr></thead><tbody>
+      <tr><td>T38</td><td><span class="tag done">Done</span></td><td>Ritual-derived core naming and short lore cleanup applied to edited/new resources. Clean build has no stale generated Warden Blade resource.</td></tr>
+      <tr><td>T39</td><td><span class="tag done">Done</span></td><td>Ritual Crafting Table delayed transform, smoke/lightning effects, timed craft locking, safe returns, and table cooldown implemented.</td></tr>
+      <tr><td>T40</td><td><span class="tag done">Done</span></td><td>Warden Resonance Shard, Plundered Heart, Avarice Ritual Core, Sculk rework hooks and curses added.</td></tr>
+      <tr><td>T41</td><td><span class="tag done">Done</span></td><td>Avarice Blade ability/listener/resource added with Tax Evade, Bounty Hunt minions, and greed tribute curse.</td></tr>
+      <tr><td>T42</td><td><span class="tag done">Done</span></td><td>Warden Blade superseded by The Soul Sever Spear. WardenBladeAbility source removed; clean build no longer generates warden_blade.yml.</td></tr>
+      <tr><td>T43</td><td><span class="tag done">Done first slice</span></td><td>Vile Ledger material/drop hook added. Current condition: rare Evoker death with nearby Ravager fallback.</td></tr>
+    </tbody></table>
+  </section>
 
-<section><h2>Phase 3 source of truth</h2><ul>
-<li><code>docs/plan.html</code>: gameplay design, recipes, skill/curse/particle details.</li>
-<li><code>docs/implementation_tickets.html</code>: tickets implementation-ready cho backend agents.</li>
-<li><code>docs/scratch_base_todo.html</code>: checklist trạng thái.</li>
-<li><code>docs/agent_phase3_prompt.md</code>: prompt giao việc cho opencode-cli backend/reviewer.</li>
-</ul></section>
-<section class="ok"><h2>2026-05-28 Backend pass — user correction tickets</h2><ul>
-<li>Input: <code>AbilityService</code> keeps active abilities on Sneak + Left Click only. <code>LEFT_CLICK_BLOCK</code> no longer ray-traces entity-target abilities as a false success; <code>LEFT_CLICK_AIR</code> may target by look ray; entity attacks activate only on actual hit and cancel normal damage only after success.</li>
-<li>Power Mace: miss/block Sneak+LeftClick applies 60s Slowness; entity active grants non-stacking +5% speed for 10s and retains 10% radius-10 upward blast path.</li>
-<li>Vampiric Mace: miss/block Sneak+LeftClick deals 6 temporary damage; active damages target, heals caster, applies tracked temporary max-health lease to caster/victim, and cleans leases on expiry, death, quit, and restore.</li>
-<li>Special materials: Obsidian Chaos success now kills the holder after preserving consume/drop behavior; Challenger's Eye is only added to death drops after actual Enderman fatal damage plus Totem resurrection event path.</li>
-<li>Docs synced: Chaos Core documented as disabled historical only; Chaos Mace direct-crafts from previous Chaos Core ingredients; Ruined Core recycle recipe remains disabled; End Core chance documented as 20% success / 80% Ruined.</li>
-<li>Master wiki expanded after review: every Phase 3 Mace now has detailed developer-facing trigger/chance/duration/radius/cooldown/cleanup notes plus particle animation paths; placeholder lore text was removed.</li>
-<li>Verification: active src/resources grep for <code>MaceType|MaceFactory|ExclusiveItemId|egosmp|dark_ego|chrono_core|devourer_mace|phoenix_mace|aegis_mace</code> returned no files. Build command <code>if (Test-Path -LiteralPath ".\\gradlew.bat") { .\\gradlew.bat build } else { gradle build }</code> passed in 2s with timeout 120000ms.</li>
-<li>Manual-test TODO: no MockBukkit/test harness exists; verify in server: Power/Vampiric miss curses, left-click block does not activate target abilities, Right Click does not cast, Obsidian Chaos death despite Totem/armor, Challenger Eye only on Enderman+Totem death path, timed Vampiric modifiers clean after repeated casts, and disabled spear resources cannot be acquired by normal recipe/forge flow.</li>
-</ul></section>
-<section class="ok"><h2>2026-05-28 Backend hotfix pass — 1.0.1/1.0.2 runtime issues</h2><ul>
-<li>Forge visuals now avoid data-sensitive <code>FLASH</code>, safely catch/rate-limit risky particle failures, and use lower particle/sound counts during charge/completion.</li>
-<li>First-install resource creation now has deterministic explicit fallbacks for root config/lang, <code>items/*.yml</code>, and <code>cores/*.yml</code>, with a boot summary and missing bundled-resource warnings.</li>
-<li>Acquisition messages now pass <code>%name%</code> to craft/pickup/title/warning paths and split crafted/pickup/received semantics. Pickup registration is idempotent and uses <code>EntityPickupItemEvent</code>; inventory clicks no longer replay ownership UI.</li>
-<li>TPS hot spots reduced: Gravity Well scans every 5 ticks and damages once on collapse, Sonic Boom uses one ray trace instead of per-segment scans, Soulfire melee burn uses one shared refreshable task, and environment curse interval is explicit in config.</li>
-<li>Verification: grep for <code>RIGHT_CLICK|PlayerPickupItemEvent|Particle.FLASH|%namey|Xnamey</code> in active source/resources returned no files. Build passed with the required 120000ms timeout. Jar resource listing confirmed config/lang plus all bundled item/core YAMLs.</li>
-<li>Manual QA TODO: delete plugin data folder and start server; verify all files/folders are created, forge charge/complete produces no particle exception, forge complete plus pickup emits one acquisition warning/title/broadcast, clicking owned mace does not replay UI, and use Spark/timings around Gravity/Sonic/Soulfire under load.</li>
-</ul></section>
-<section class="ok"><h2>2026-06-11 Backend pass — 1.0.3 gameplay updates</h2><ul>
-<li>Cursed Player Head Drop: Changed to only drop (20% chance) when killed by another player (PvP only) via <code>PlayerDeathEvent</code>.</li>
-<li>Ego Core: Blocked experience pickup via <code>PlayerExpChangeEvent</code>, and added Y-altitude damage backfire (1-2 hearts of damage when hitting a target at equal/higher altitude, showing Action Bar alerts and playing a tink sound).</li>
-<li>Soulfire Core: Every 30s, 10% chance to set the player on fire for 5s, playing a pling sound and displaying an Action Bar message.</li>
-<li>Sculk Core: Changed darkness instability check to in-inventory wide instead of only when held.</li>
-<li>Core Placement Block: Added <code>BlockPlaceEvent</code> listener in <code>SpecialItemListener</code> to prevent placing custom cores (Ruined, Ego, Soulfire, Sculk, End, Blood) on the ground.</li>
-<li>Core Crafting Timer: Set freeze stationary period to exactly 5 seconds (100 ticks).</li>
-<li>Multi-Weapon Carry Restriction: Expanded the single-slot carry limit to prevent carrying more than one exclusive weapon (Maces, Spears/Tridents, or Cursed Swords) in the same inventory. Checked on pickup, inventory click, drag, and forge start.</li>
-<li>Foot Particles: Added a high-frequency task running at <code>holding-effect-tick-rate</code> to display matching particle effects under the feet of players carrying any custom mace or core in their inventory.</li>
-<li>Terminology &amp; Docs: Updated <code>wiki.html</code> to replace "wielder" with "người dùng" or "người sở hữu", and synchronized all gameplay rules/instability descriptions.</li>
-<li>Verification: Gradle build completed successfully.</li>
-</ul></section>
-<section class="ok"><h2>2026-06-11 Backend pass — 1.0.3 to 1.0.4 updates</h2><ul>
-<li>Bảo vệ Khối Core rơi: Cập nhật <code>onEntityDamage</code> để ngăn chặn lửa/lava/nổ phá hủy các custom Cores rơi trên mặt đất, tương tự như vũ khí đặc biệt.</li>
-<li>Ngăn chặn Lách Túi đồ qua Offhand: Cập nhật <code>hasExclusiveWeapon</code> và <code>countExclusiveWeapons</code> ở các Listener để kiểm tra cả ô tay phụ (Offhand).</li>
-<li>Xử lý Sự kiện click Swap Offhand: Chặn người chơi click phím <code>F</code> (hoặc ClickType.SWAP_OFFHAND) từ rương hoặc container để chuyển vũ khí đặc biệt vào ô tay phụ khi đã có vũ khí đặc biệt khác trong người.</li>
-<li>Sửa lỗi Lách Totem của Búa Void: Cập nhật task thả Totem tự động và kiểm tra hồi sinh để phát hiện cả Totem và Búa Void đang nằm ở ô tay phụ (Offhand).</li>
-<li>Sửa lỗi Lách Hiệu ứng Lõi: Cập nhật quét hòm đồ bao gồm cả tay phụ để các hình phạt của lõi (Ego, Soulfire, Sculk) kích hoạt đầy đủ.</li>
-<li>Bump Version: Nâng phiên bản plugin từ 1.0.3 lên 1.0.4.</li>
-</ul></section>
-<section class="ok"><h2>2026-06-11 Backend pass — 1.0.4 to 1.0.5 updates</h2><ul>
-<li>Công thức rèn Kiếm Cổ Nguyền (Cursed Sword): Đơn giản hóa nguyên liệu chế tạo từ Wither Skeleton Skull sang Đầu bất kì (như Player Head, Zombie/Skeleton head) và từ Potion mặc định sang Thuốc độc bất kì (Poison Potion - bất kể loại/thời gian/sức mạnh).</li>
-<li>Kiểm tra chuẩn hóa Crafting: Triển khai quét và ngăn chặn chế tạo trong <code>PrepareItemCraftEvent</code> của <code>RecipeRegistry</code> để đảm bảo chỉ cho phép Potion có kiểu là Poison (regular, strong, long) khi chế tạo Kiếm Cổ Nguyền.</li>
-<li>Cập nhật tài liệu: Đồng bộ hóa công thức trực quan trong <code>wiki.html</code>.</li>
-<li>Bump Version: Nâng phiên bản plugin lên 1.0.5.</li>
-</ul></section>
-<section class="ok"><h2>2026-06-11 Backend pass — 1.0.5 to 1.0.6 updates</h2><ul>
-<li>Công thức Búa Hỗn Loạn (Chaos Mace): Yêu cầu thêm 2 Đầu người chơi vấy bẩn (Cursed Player Head) ở hai cạnh bên của hàng giữa (Shape: OBO / HWH / OVO).</li>
-<li>Công thức Búa Trọng Lực Kỳ Dị (Gravity Mace): Thay đổi 2 khối Netherite Block thành 2 thỏi Netherite Ingot.</li>
-<li>Độc quyền của Giáo (Warden Spear): Thay đổi vật liệu cơ bản của Warden Spear sang <code>NETHERITE_SPEAR</code> và nguyên liệu trung tâm trong công thức từ Breeze Rod sang <code>NETHERITE_SPEAR</code>.</li>
-<li>Tài liệu Wiki (`wiki.html`): Cập nhật đầy đủ các công thức mới cho Chaos Mace, Gravity Mace, Warden Spear, ghi rõ thuộc tính <code>| singleton: true</code> của các mace độc quyền, và bổ sung thông tin chi tiết về Giáo Thời Gian Chronos (Chronos Anchor Spear).</li>
-<li>Ứng dụng Next.js Wiki (`hoiihesmp-web/`): Khởi tạo một trang web Wiki Next.js + Tailwind CSS xịn xò mang phong cách Minecraft huyền ảo, tích hợp bộ đọc mã màu Minecraft tương tác và bộ lọc tìm kiếm tức thì, được thêm vào <code>.gitignore</code> để không bị commit.</li>
-<li>Bump Version: Nâng phiên bản plugin lên 1.0.6.</li>
-</ul></section>
-<section class="warn"><h2>2026-06-14 Architect update — rescue scope before implementation</h2><ul>
-<li>Project tracking updated per user request before code changes. Active docs now treat Spear gameplay as currently active instead of Phase-4-disabled historical code.</li>
-<li>Scope override: Mace active input remains <code>Sneak + Left Click</code>; Spear vanilla behavior and custom skill behavior must run together where possible.</li>
-<li>Required gameplay fixes queued: Action Bar success feedback for custom skills, rate-limited Action Bar cooldown feedback only on real activation attempts, holding-glow refresh from source config, ground-pickup reveal/tracking preservation, per-weapon enchant allow/deny policy with repair allowed, and i18n cleanup from Java hardcoded UI text into source lang files.</li>
-<li>Documentation workflow rule added to root <code>AGENTS.md</code>: when user asks to update plan/docs, write active docs first and only summarize changed paths in chat; never edit generated <code>build/resources/main</code> resources directly.</li>
-<li>Known docs issue: <code>docs/agent_phase3_prompt.md</code> is referenced by older docs but is currently missing.</li>
-</ul></section>
-<section class="ok"><h2>2026-06-14 Backend pass — UX, i18n & enchant policy fixes</h2><ul>
-<li>Action Bar Cooldown: <code>CooldownService</code> giờ gửi thông báo cooldown dưới dạng Action Bar thay vì spam chat, và có rate-limit 900ms (chỉ thông báo khi thực sự cố gắng spam).</li>
-<li>Skill Feedback: Khi người chơi kích hoạt kỹ năng đặc biệt thành công, một thông báo Action Bar (mặc định lấy từ <code>skill-activated</code> trong config của item đó) sẽ hiện ra thay vì im lặng. Nếu kích hoạt thành công trúng thực thể, đòn đánh vanilla sẽ bị cancel để tránh double-damage. Spear skill và mũi phóng Spear mặc định hoạt động chung.</li>
-<li>Holding Glow: Bật mặc định. Effect <code>GLOWING</code> tự động refresh và kéo dài 5 phút (<code>glowing-duration: 300</code>). Config tracking/reveal (nhặt lên bị sáng do BossBar và Tracker) đã tách rời khỏi `GLOWING` và hoạt động theo config <code>tracking.reveal-on-ground-pickup</code>.</li>
-<li>Enchant Policy: Hệ thống cấm/cho phép enchant trên mỗi vũ khí qua Anvil hoặc Enchanting Table. Mặc định `power_mace`, `void_mace`, `vampiric_mace`, `chaos_mace`, `gravity_mace`, `soulfire_mace` chỉ cho phép `mending`, `unbreaking`. Các vũ khí giáo (`_spear`, `NETHERITE_SPEAR`) được thêm `sharpness`, `damage_all`. Anvil repair vẫn hợp lệ miễn không thêm enchant cấm.</li>
-<li>Translation Cleanup: Loại bỏ text tiếng Anh hardcode trong các menu (`MaceInfoMenu`, `MaceTrackerService`, `MaceCommand`) và di chuyển sang `lang_en.yml` cùng `lang_vi.yml`. </li>
-<li>Build pass hoàn tất.</li>
-</ul></section>
-<section class="warn"><h2>2026-06-16 Architect update — Gravity/Soulfire/Warden Spear rebalance queued</h2><ul>
-<li>User requested immediate gameplay changes; active docs were updated first per project rule. This section is a planning/report handoff, not an implementation-complete claim.</li>
-<li><strong>Singularity Gravity Mace:</strong> plan now requires absorption hearts equal to pulled mob/player count; 5 pulled targets = +5 golden hearts. Pulling 0 targets causes exactly 3 HP damage, Mining Fatigue, and a 5-minute broken-skill cooldown. Pulling more than 6 targets applies Mining Fatigue only, no self-damage.</li>
-<li><strong>Soulfire Pyre Mace:</strong> plan now requires active 20s radius-10 soul fire aura following the caster, 40s cooldown, lava healing only while active, and Poison II for 3s when carrying the mace in water.</li>
-<li><strong>Warden Spear:</strong> plan now removes active HP cost, replaces Blindness with Warden Darkness, keeps holding glow, and adds a 10% kill proc to create a sculk/warden-shrine feature where associated Warden must not target the spear owner.</li>
-<li>Implementation tickets added: Tickets 17-20 in <code>docs/implementation_tickets.html</code>. Todo milestone added: Milestone 7 in <code>docs/scratch_base_todo.html</code>.</li>
-<li>Required builder verification remains: update source Java/YAML/lang, sync root <code>wiki.html</code>, run Gradle build with 120000ms timeout, then convert this section into a backend pass report.</li>
-</ul></section>
+  <section class="ok"><h2>Build verification</h2>
+    <p><code>cmd /c "gradle clean build --no-daemon"</code> completed successfully after fixing the Paper API compile issue in <code>SpecialItemListener</code>.</p>
+    <ul>
+      <li>Compile error fixed: removed incompatible <code>World#getRaid(Location)</code> call.</li>
+      <li>CMD collisions fixed: <code>avarice_core</code> = 3012, <code>avarice_sword</code> = 5005.</li>
+      <li>Generated resource check: no <code>build/resources/main/**/warden_blade.yml</code> after clean build.</li>
+    </ul>
+  </section>
+
+  <section class="ok"><h2>T44 Discord webhook config</h2>
+    <ul>
+      <li>Added per-item <code>discord.enabled</code> and <code>discord.color</code> support in weapon YAML configs.</li>
+      <li><code>ConfigManager</code> now reads per-item Discord settings first, then falls back to <code>discord.yml</code> colors/defaults.</li>
+      <li><code>DiscordWebhookService</code> respects per-item notification toggles.</li>
+      <li><code>MaceManager</code> sends webhook notifications for configured acquisitions beyond the old singleton-only path, including Cursed Sword when enabled.</li>
+      <li>Verification: <code>cmd /c "gradle build --no-daemon"</code> successful.</li>
+    </ul>
+  </section>
+
+  <section class="warn"><h2>Known deviations / follow-ups</h2>
+    <ul>
+      <li><strong>Vile Ledger:</strong> full max-level final-wave raid boss is not implemented yet. First slice uses Evoker death + nearby Ravager as a safe compatible condition.</li>
+      <li><strong>Ritual Crafting Table cooldown:</strong> cooldown is runtime first-slice behavior; persist cooldown across restart if this becomes a balance requirement.</li>
+      <li><strong>Manual PvP validation:</strong> Avarice stealing and Soul Sever totem/healing reversal need live server validation for edge-case balance.</li>
+    </ul>
+  </section>
+
+  <section class="risk"><h2>Manual anti-dupe checklist still recommended</h2>
+    <ul>
+      <li>Ritual GUI: shift-click, number-key, collect-to-cursor, offhand swap, close, death, disconnect, reload mid-craft.</li>
+      <li>Avarice: full attacker inventory, protected custom item blacklist, target death/logout, mob held item steal.</li>
+      <li>Soul Sever: totem reversal no double-fire, no-jump restores on unequip/quit/disable, heal reversal does not stack unexpectedly.</li>
+    </ul>
+  </section>
 </main></body></html>

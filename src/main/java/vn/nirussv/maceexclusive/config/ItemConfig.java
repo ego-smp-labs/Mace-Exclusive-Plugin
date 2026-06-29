@@ -2,6 +2,7 @@ package vn.nirussv.maceexclusive.config;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import vn.nirussv.maceexclusive.item.WeaponClass;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -19,7 +20,8 @@ public record ItemConfig(
     ConfigurationSection effects,
     EnchantPolicy enchantPolicy,
     boolean enchanted,
-    String faction
+    String faction,
+    WeaponClass weaponClass
 ) {
 
     public record RecipeConfig(
@@ -55,7 +57,8 @@ public record ItemConfig(
         String faction = section == null ? null : section.getString("faction");
         if (faction != null) faction = faction.trim().toLowerCase();
         if (faction != null && faction.isBlank()) faction = null;
-        return new ItemConfig(id, enabled, material, name, lore, customModelData, recipe, effects, enchantPolicy, enchanted, faction);
+        WeaponClass weaponClass = WeaponClass.fromConfig(section == null ? null : section.getString("weapon-class"), id, material);
+        return new ItemConfig(id, enabled, material, name, lore, customModelData, recipe, effects, enchantPolicy, enchanted, faction, weaponClass);
     }
 
     private static Material resolveMaterial(ConfigurationSection section, Material fallbackMaterial) {

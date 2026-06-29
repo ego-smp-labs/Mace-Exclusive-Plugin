@@ -34,6 +34,13 @@ import java.util.UUID;
 
 public final class RecipeRegistry implements Listener {
 
+    private static final String RITUAL_CORE_RECYCLE_ID = "ritual_core_recycle";
+    private static final List<String> RITUAL_CORE_RECYCLE_SHAPE = List.of("OOO", "ORO", "OOO");
+    private static final Map<Character, String> RITUAL_CORE_RECYCLE_INGREDIENTS = Map.of(
+        'O', "OBSIDIAN",
+        'R', "ruined_core"
+    );
+
     private final Map<UUID, Long> lastCraftTimes = new HashMap<>();
 
     private final MaceExclusivePlugin plugin;
@@ -58,6 +65,7 @@ public final class RecipeRegistry implements Listener {
         removeManagedRecipes();
         for (ItemDefinition definition : itemRegistry.all()) registerWeaponRecipe(definition);
         for (CoreConfig core : coreRegistry.all()) registerCoreRecipe(core);
+        registerRuinedCoreRecycleRecipe();
     }
 
     public void removeManagedRecipes() {
@@ -111,6 +119,14 @@ public final class RecipeRegistry implements Listener {
                 plugin.getLogger().warning("Failed to resolve recipe ingredient for core " + core.id() + ": " + ingredient.getValue());
             }
         }
+        plugin.getServer().addRecipe(recipe);
+    }
+
+    private void registerRuinedCoreRecycleRecipe() {
+        ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(plugin, RITUAL_CORE_RECYCLE_ID + "_recipe"), coreItemFactory.create("ritual_core"));
+        recipe.shape(RITUAL_CORE_RECYCLE_SHAPE.toArray(new String[0]));
+        recipe.setIngredient('O', new RecipeChoice.MaterialChoice(Material.OBSIDIAN));
+        recipe.setIngredient('R', new RecipeChoice.ExactChoice(coreItemFactory.create("ruined_core")));
         plugin.getServer().addRecipe(recipe);
     }
 
@@ -203,12 +219,16 @@ public final class RecipeRegistry implements Listener {
                 ingredients = coreOpt.get().ingredients();
             }
         }
+        if (RITUAL_CORE_RECYCLE_ID.equals(customId)) {
+            shape = RITUAL_CORE_RECYCLE_SHAPE;
+            ingredients = RITUAL_CORE_RECYCLE_INGREDIENTS;
+        }
 
         if (shape == null || ingredients == null) return 0;
         return getRequiredAmount(shape, ingredients, matrixIndex);
     }
 
-    private int getRequiredAmount(List<String> shape, Map<Character, String> ingredients, int matrixIndex) {
+    public int getRequiredAmount(List<String> shape, Map<Character, String> ingredients, int matrixIndex) {
         int row = matrixIndex / 3;
         int col = matrixIndex % 3;
         if (row >= shape.size()) return 0;
@@ -315,6 +335,10 @@ public final class RecipeRegistry implements Listener {
                     ingredients = coreOpt.get().ingredients();
                 }
             }
+            if (RITUAL_CORE_RECYCLE_ID.equals(customId)) {
+                shape = RITUAL_CORE_RECYCLE_SHAPE;
+                ingredients = RITUAL_CORE_RECYCLE_INGREDIENTS;
+            }
 
             if (shape != null && ingredients != null) {
                 validateCraftAmounts(event, shape, ingredients);
@@ -329,6 +353,12 @@ public final class RecipeRegistry implements Listener {
         if (customId == null) return;
 
         if (!(event.getWhoClicked() instanceof Player player)) return;
+
+        if (!RITUAL_CORE_RECYCLE_ID.equals(customId)) {
+            event.setCancelled(true);
+            player.sendMessage(configManager.getMessage("ritual-altar.use-table"));
+            return;
+        }
 
         // Rate limit crafting (500ms cooldown) to prevent auto-clicker duplication exploits
         long now = System.currentTimeMillis();
@@ -353,6 +383,10 @@ public final class RecipeRegistry implements Listener {
                 shape = coreOpt.get().shape();
                 ingredients = coreOpt.get().ingredients();
             }
+        }
+        if (RITUAL_CORE_RECYCLE_ID.equals(customId)) {
+            shape = RITUAL_CORE_RECYCLE_SHAPE;
+            ingredients = RITUAL_CORE_RECYCLE_INGREDIENTS;
         }
 
         if (shape == null || ingredients == null) return;
